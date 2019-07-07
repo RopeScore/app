@@ -79,7 +79,7 @@ button,
   background-color: #0080ff;
   margin: 3%;
   color: #fff;
-  font-size: 2em;
+  font-size: 1em;
   text-align: center;
   padding: 0.5em;
   cursor: hand;
