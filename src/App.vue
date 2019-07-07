@@ -91,17 +91,12 @@ button:hover {
   background-color: #0066cc;
 }
 
-button.header {
-  font-size: 2em;
-  padding-top: 0.5em;
-}
-
 button.spacer {
   background-color: transparent;
   color: #000;
   cursor: initial;
   padding: 0;
-  font-size: 2em;
+  font-size: 1em;
 }
 
 .red {
