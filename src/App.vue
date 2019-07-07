@@ -85,6 +85,7 @@ button,
   cursor: hand;
   cursor: pointer;
   border: none;
+  touch-action: manipulation;
 }
 
 button:hover {
