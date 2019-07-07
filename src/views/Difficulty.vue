@@ -36,6 +36,7 @@ export default class Difficulty extends Vue {
   reset(): void {
     if (!this.resetNext) {
       this.resetNext = true;
+      navigator.vibrate(500);
       return;
     }
     this.resetNext = false;
