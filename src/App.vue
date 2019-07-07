@@ -97,7 +97,7 @@ button.header {
 }
 
 button.spacer {
-  background-color: #fff;
+  background-color: transparent;
   color: #000;
   cursor: initial;
   padding: 0;
