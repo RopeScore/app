@@ -49,8 +49,19 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 
+interface This {
+  tis: boolean[];
+  ath: boolean[];
+  pow: boolean[];
+  int: boolean[];
+  spa: boolean[];
+  tim: boolean[];
+  mis: boolean[];
+  resetNext: boolean;
+}
+
 @Component
-export default class presentationAthlete extends Vue {
+export default class DeductionsDD extends Vue {
   resetNext: boolean = false;
 
   tis: boolean[] = [];
@@ -69,10 +80,13 @@ export default class presentationAthlete extends Vue {
     }
     this.resetNext = false;
 
-    for (let type of ["tis", "spa", "pow", "int", "ath", "tim", "mis"]) {
-      console.log(type);
-      this[type].splice(0, this[type].length);
-    }
+    this.tis.splice(0, this.tis.length);
+    this.ath.splice(0, this.ath.length);
+    this.pow.splice(0, this.pow.length);
+    this.int.splice(0, this.int.length);
+    this.spa.splice(0, this.spa.length);
+    this.tim.splice(0, this.tim.length);
+    this.mis.splice(0, this.mis.length);
   }
 }
 </script>

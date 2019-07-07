@@ -26,7 +26,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
-export default class presentationAthlete extends Vue {
+export default class PresentationRoutine extends Vue {
   musicMarks: number[] = [];
   entMarks: number[] = [];
   resetNext: boolean = false;
@@ -84,7 +84,11 @@ export default class presentationAthlete extends Vue {
       entResult = 1;
     }
 
-    return Math.round(((musicResult + entResult) / 2) * 100) / 100;
+    return (
+      Math.round(
+        (((musicResult as number) + (entResult as number)) / 2) * 100
+      ) / 100
+    );
   }
 }
 </script>

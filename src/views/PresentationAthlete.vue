@@ -27,7 +27,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
-export default class presentationAthlete extends Vue {
+export default class PresentationAthlete extends Vue {
   formMarks: number[] = [];
   misses: boolean[] = [];
   resetNext: boolean = false;

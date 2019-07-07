@@ -50,7 +50,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
-export default class presentationAthlete extends Vue {
+export default class DeductionsSR extends Vue {
   resetNext: boolean = false;
 
   mul: boolean[] = [];
@@ -69,10 +69,13 @@ export default class presentationAthlete extends Vue {
     }
     this.resetNext = false;
 
-    for (let type of ["mul", "spa", "pow", "int", "rel", "tim", "mis"]) {
-      console.log(type);
-      this[type].splice(0, this[type].length);
-    }
+    this.mul.splice(0, this.mul.length);
+    this.rel.splice(0, this.rel.length);
+    this.pow.splice(0, this.pow.length);
+    this.int.splice(0, this.int.length);
+    this.spa.splice(0, this.spa.length);
+    this.tim.splice(0, this.tim.length);
+    this.mis.splice(0, this.mis.length);
   }
 }
 </script>
