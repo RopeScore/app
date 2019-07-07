@@ -6,42 +6,42 @@
 
     <button v-for="_ in [4,5,6]" class="spacer" :key="_"></button>
 
-    <button @click="mul.push(true)">
+    <button @click="miss('mul')">
       Multiples
       <br />
-      {{ mul.length }}
+      {{ misses.mul.length }}
     </button>
-    <button @click="spa.push(true)" class="red">
+    <button @click="miss('spa')" class="red">
       Space Violations
       <br />
-      {{ spa.length }}
+      {{ misses.spa.length }}
     </button>
-    <button @click="rel.push(true)">
+    <button @click="miss('rel')">
       Wraps Releases
       <br />
-      {{ rel.length }}
+      {{ misses.rel.length }}
     </button>
 
-    <button @click="pow.push(true)">
+    <button @click="miss('pow')">
       Gymnastics Power
       <br />
-      {{ pow.length }}
+      {{ misses.pow.length }}
     </button>
-    <button @click="tim.push(true)" class="red">
+    <button @click="miss('tim')" class="red">
       Time Violations
       <br />
-      {{ tim.length }}
+      {{ misses.tim.length }}
     </button>
-    <button @click="int.push(true)">
+    <button @click="miss('int')">
       Interactions
       <br />
-      {{ int.length }}
+      {{ misses.int.length }}
     </button>
 
-    <button @click="mis.push(true)" class="red">
+    <button @click="miss('mis')" class="red">
       Misses
       <br />
-      {{ mis.length }}
+      {{ misses.mis.length }}
     </button>
   </div>
 </template>
@@ -49,33 +49,50 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 
+interface MissesSR {
+  mul: boolean[];
+  rel: boolean[];
+  pow: boolean[];
+  int: boolean[];
+
+  spa: boolean[];
+  tim: boolean[];
+  mis: boolean[];
+  [selector: string]: boolean[];
+}
+
 @Component
 export default class DeductionsSR extends Vue {
   resetNext: boolean = false;
 
-  mul: boolean[] = [];
-  rel: boolean[] = [];
-  pow: boolean[] = [];
-  int: boolean[] = [];
+  misses: MissesSR = {
+    mul: [],
+    rel: [],
+    pow: [],
+    int: [],
 
-  spa: boolean[] = [];
-  tim: boolean[] = [];
-  mis: boolean[] = [];
+    spa: [],
+    tim: [],
+    mis: []
+  };
+
+  miss(type: string): void {
+    this.misses[type].push(true);
+    navigator.vibrate(100);
+  }
 
   reset(): void {
     if (!this.resetNext) {
       this.resetNext = true;
+      navigator.vibrate(500);
       return;
     }
     this.resetNext = false;
 
-    this.mul.splice(0, this.mul.length);
-    this.rel.splice(0, this.rel.length);
-    this.pow.splice(0, this.pow.length);
-    this.int.splice(0, this.int.length);
-    this.spa.splice(0, this.spa.length);
-    this.tim.splice(0, this.tim.length);
-    this.mis.splice(0, this.mis.length);
+    Object.keys(this.misses).forEach(key => {
+      this.misses[key].splice(0, this.misses[key].length);
+    });
+    navigator.vibrate(1000);
   }
 }
 </script>

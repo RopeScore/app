@@ -24,6 +24,7 @@ export default class Difficulty extends Vue {
 
   score(level: number): void {
     this.scores.push(level);
+    navigator.vibrate(100);
     console.log(this.scores);
   }
 
@@ -39,6 +40,7 @@ export default class Difficulty extends Vue {
     }
     this.resetNext = false;
     this.scores.splice(0, this.scores.length);
+    navigator.vibrate(1000);
     console.log(this.scores);
   }
 

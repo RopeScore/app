@@ -35,20 +35,24 @@ export default class PresentationAthlete extends Vue {
   form(mark: number): void {
     this.formMarks.push(mark);
     console.log(this.formMarks);
+    navigator.vibrate(100);
   }
 
   miss(): void {
     this.misses.push(true);
+    navigator.vibrate(100);
   }
 
   reset(): void {
     if (!this.resetNext) {
       this.resetNext = true;
+      navigator.vibrate(500);
       return;
     }
     this.resetNext = false;
     this.formMarks.splice(0, this.formMarks.length);
     this.misses.splice(0, this.misses.length);
+    navigator.vibrate(1000);
     console.log(this.formMarks, this.misses);
   }
 

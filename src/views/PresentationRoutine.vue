@@ -33,22 +33,26 @@ export default class PresentationRoutine extends Vue {
 
   music(mark: number): void {
     this.musicMarks.push(mark);
+    navigator.vibrate(100);
     console.log(this.musicMarks);
   }
 
   ent(mark: number): void {
     this.entMarks.push(mark);
+    navigator.vibrate(100);
     console.log(this.entMarks);
   }
 
   reset(): void {
     if (!this.resetNext) {
       this.resetNext = true;
+      navigator.vibrate(500);
       return;
     }
     this.resetNext = false;
     this.musicMarks.splice(0, this.musicMarks.length);
     this.entMarks.splice(0, this.entMarks.length);
+    navigator.vibrate(1000);
     console.log(this.musicMarks, this.entMarks);
   }
 
