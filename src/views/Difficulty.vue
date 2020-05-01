@@ -10,7 +10,11 @@
       :key="level"
       @click="score(level)"
       :class="{purple: level === 7 || level === 8}"
-    >Level {{ level }}</button>
+    >
+      Level {{ level }}
+      <br/>
+      {{ levels[level] || 0 }}
+    </button>
   </div>
 </template>
 
@@ -25,12 +29,19 @@ export default class Difficulty extends Vue {
   score(level: number): void {
     this.scores.push(level);
     navigator.vibrate(100);
-    console.log(this.scores);
   }
 
   L(level: number): number {
     if (level === 0) return 0;
     return Math.round(Math.pow(1.8, level) * 10) / 100;
+  }
+
+  get levels() {
+    return this.scores.reduce((acc, lev) => {
+      if (!acc[lev]) acc[lev] = 0
+      acc[lev] += 1
+      return acc
+    }, {} as { [prop: string]: number })
   }
 
   reset(): void {
@@ -42,7 +53,6 @@ export default class Difficulty extends Vue {
     this.resetNext = false;
     this.scores.splice(0, this.scores.length);
     navigator.vibrate(1000);
-    console.log(this.scores);
   }
 
   get result(): number | string {

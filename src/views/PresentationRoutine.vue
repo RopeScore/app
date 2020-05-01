@@ -8,17 +8,17 @@
     <button class="spacer"></button>
     <button class="spacer">Musicality</button>
 
-    <button @click="ent(1)">+</button>
+    <button @click="ent(1)">+<br/>{{ numEntMarks(1) }}</button>
     <button class="spacer">Ent Score: {{ entResult }}</button>
-    <button @click="music(1)">+</button>
+    <button @click="music(1)">+<br/>{{ numMusicMarks(1) }}</button>
 
-    <button @click="ent(0)">&#10004;</button>
+    <button @click="ent(0)">&#10004;<br/>{{ numEntMarks(0) }}</button>
     <button class="spacer">Musicality Score: {{ musicResult }}</button>
-    <button @click="music(0)">&#10004;</button>
+    <button @click="music(0)">&#10004;<br/>{{ numMusicMarks(0) }}</button>
 
-    <button @click="ent(-1)">-</button>
+    <button @click="ent(-1)">-<br/>{{ numEntMarks(-1) }}</button>
     <button class="spacer"></button>
-    <button @click="music(-1)">-</button>
+    <button @click="music(-1)">-<br/>{{ numMusicMarks(-1) }}</button>
   </div>
 </template>
 
@@ -34,13 +34,19 @@ export default class PresentationRoutine extends Vue {
   music(mark: number): void {
     this.musicMarks.push(mark);
     navigator.vibrate(100);
-    console.log(this.musicMarks);
   }
 
   ent(mark: number): void {
     this.entMarks.push(mark);
     navigator.vibrate(100);
-    console.log(this.entMarks);
+  }
+
+  numMusicMarks (mark: number) {
+    return this.musicMarks.filter(arrM => arrM === mark).length
+  }
+
+  numEntMarks (mark: number) {
+    return this.entMarks.filter(arrM => arrM === mark).length
   }
 
   reset(): void {
@@ -53,14 +59,13 @@ export default class PresentationRoutine extends Vue {
     this.musicMarks.splice(0, this.musicMarks.length);
     this.entMarks.splice(0, this.entMarks.length);
     navigator.vibrate(1000);
-    console.log(this.musicMarks, this.entMarks);
   }
 
   get musicResult(): number | string {
     if (this.musicMarks.length === 0) return "-";
     let sum = this.musicMarks.reduce((a, b) => a + b);
     let avg = sum / this.musicMarks.length;
-    let percentage = avg * 0.35;
+    let percentage = avg * (0.35 / 4);
     return Math.round((1 + percentage) * 100) / 100;
   }
 
@@ -68,7 +73,7 @@ export default class PresentationRoutine extends Vue {
     if (this.entMarks.length === 0) return "-";
     let sum = this.entMarks.reduce((a, b) => a + b);
     let avg = sum / this.entMarks.length;
-    let percentage = avg * 0.35;
+    let percentage = avg * (0.35 / 4);
     return Math.round((1 + percentage) * 100) / 100;
   }
 
@@ -88,9 +93,12 @@ export default class PresentationRoutine extends Vue {
       entResult = 1;
     }
 
+    entResult = (entResult as number) - 1;
+    musicResult = (musicResult as number) - 1;
+
     return (
       Math.round(
-        (((musicResult as number) + (entResult as number)) / 2) * 100
+        (1 + (musicResult as number) + (entResult as number)) * 100
       ) / 100
     );
   }

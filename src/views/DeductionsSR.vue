@@ -6,6 +6,7 @@
 
     <button v-for="_ in [4,5,6]" class="spacer" :key="_"></button>
 
+    <template v-if="!diffOpen">
     <button @click="miss('mul')">
       Multiples
       <br />
@@ -43,6 +44,26 @@
       <br />
       {{ misses.mis.length }}
     </button>
+    <button @click="openDiff" class="red">
+      Repeated Skills
+      <br/>
+      {{ misses.rep.length }}
+    </button>
+
+    </template>
+
+    <template v-else>
+      <button
+        v-for="level in [1,.5,4,2,7,5,3,8,6]"
+        :key="level"
+        @click="rep(level)"
+        :class="{purple: level === 7 || level === 8}"
+      >
+        Level {{ level }}
+        <br/>
+        {{ levels[level] || 0 }}
+      </button>
+    </template>
   </div>
 </template>
 
@@ -58,12 +79,14 @@ interface MissesSR {
   spa: boolean[];
   tim: boolean[];
   mis: boolean[];
-  [selector: string]: boolean[];
+
+  rep: number[];
 }
 
 @Component
 export default class DeductionsSR extends Vue {
   resetNext: boolean = false;
+  diffOpen: boolean = false;
 
   misses: MissesSR = {
     mul: [],
@@ -73,12 +96,33 @@ export default class DeductionsSR extends Vue {
 
     spa: [],
     tim: [],
-    mis: []
+    mis: [],
+
+    rep: []
   };
 
-  miss(type: string): void {
+  miss(type: keyof Omit<MissesSR, 'rep'>): void {
     this.misses[type].push(true);
     navigator.vibrate(100);
+  }
+
+  rep(level: number): void {
+    this.diffOpen = false;
+    this.misses.rep.push(level)
+    navigator.vibrate(150)
+  }
+
+  openDiff(): void {
+    this.diffOpen = true;
+    navigator.vibrate(150);
+  }
+
+  get levels() {
+    return this.misses.rep.reduce((acc, lev) => {
+      if (!acc[lev]) acc[lev] = 0
+      acc[lev] += 1
+      return acc
+    }, {} as { [prop: string]: number })
   }
 
   reset(): void {
@@ -89,7 +133,7 @@ export default class DeductionsSR extends Vue {
     }
     this.resetNext = false;
 
-    Object.keys(this.misses).forEach(key => {
+    (Object.keys(this.misses) as Array<keyof MissesSR>).forEach(key => {
       this.misses[key].splice(0, this.misses[key].length);
     });
     navigator.vibrate(1000);
