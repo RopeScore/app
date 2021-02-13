@@ -65,7 +65,7 @@ export default class PresentationRoutine extends Vue {
     if (this.musicMarks.length === 0) return "-";
     let sum = this.musicMarks.reduce((a, b) => a + b);
     let avg = sum / this.musicMarks.length;
-    let percentage = avg * (0.35 / 4);
+    let percentage = avg * (0.60 / 4);
     return Math.round((1 + percentage) * 100) / 100;
   }
 
@@ -73,7 +73,7 @@ export default class PresentationRoutine extends Vue {
     if (this.entMarks.length === 0) return "-";
     let sum = this.entMarks.reduce((a, b) => a + b);
     let avg = sum / this.entMarks.length;
-    let percentage = avg * (0.35 / 4);
+    let percentage = avg * (0.60 / 4);
     return Math.round((1 + percentage) * 100) / 100;
   }
 

@@ -62,7 +62,7 @@ export default class PresentationAthlete extends Vue {
     if (this.formMarks.length === 0) return "-";
     let sum = this.formMarks.reduce((a, b) => a + b);
     let avg = sum / this.formMarks.length;
-    let percentage = avg * (0.35 / 2);
+    let percentage = avg * (0.60 / 2);
     return Math.round((1 + percentage) * 100) / 100;
   }
 
@@ -70,9 +70,6 @@ export default class PresentationAthlete extends Vue {
     let formResult = this.formResult;
     if (formResult === "-") {
       return "-";
-    }
-    if (formResult === "-") {
-      formResult = 1;
     }
     return formResult;
   }
