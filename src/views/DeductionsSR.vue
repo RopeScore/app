@@ -54,14 +54,16 @@
 
     <template v-else>
       <button
-        v-for="level in [1,.5,4,2,7,5,3,8,6]"
+        v-for="level in [null,null,4,null,7,5,3,8,6]"
         :key="level"
         @click="rep(level)"
-        :class="{purple: level === 7 || level === 8}"
+        :class="{purple: level === 7 || level === 8, spacer: level === null}"
       >
-        Level {{ level }}
-        <br/>
-        {{ levels[level] || 0 }}
+        <span v-if="level !== null">
+          Level {{ level }}
+          <br/>
+          {{ levels[level] || 0 }}
+        </span>
       </button>
     </template>
   </div>
