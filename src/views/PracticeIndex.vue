@@ -45,7 +45,7 @@ export default defineComponent({
         rulesId: Array.isArray(model.rulesId) ? model.rulesId[0] : model.rulesId,
         competitionEventLookupCode
       })
-      await this.openScoresheet(scoresheetId)
+      this.openScoresheet(scoresheetId)
 
       this.$router.push('/score')
     },

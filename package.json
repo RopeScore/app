@@ -8,8 +8,9 @@
   "repository": "https://github.com/RopeScore/judging-app",
   "scripts": {
     "dev": "vite",
-    "build": "vuedx-typecheck . && vite build",
-    "serve": "vite preview"
+    "build": "vite build",
+    "serve": "vite preview",
+    "lint": "vuedx-typecheck ."
   },
   "dependencies": {
     "@sentry/browser": "^6.2.0",
