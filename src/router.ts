@@ -1,40 +1,10 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Home from './views/Home.vue'
+import { createWebHistory, createRouter } from 'vue-router'
 
-Vue.use(Router)
-
-export default new Router({
+export default createRouter({
+  history: createWebHistory(),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: Home
-    },
-    {
-      path: '/difficulty',
-      name: 'difficulty',
-      component: () => import(/* webpackChunkName: "difficulty" */ './views/Difficulty.vue')
-    },
-    {
-      path: '/presentation/athlete',
-      name: 'presentation.athlete',
-      component: () => import(/* webpackChunkName: "presentation.athlete" */ './views/PresentationAthlete.vue')
-    },
-    {
-      path: '/presentation/routine',
-      name: 'presentation.routine',
-      component: () => import(/* webpackChunkName: "presentation.routine" */ './views/PresentationRoutine.vue')
-    },
-    {
-      path: '/deductions/sr',
-      name: 'deductions.sr',
-      component: () => import(/* webpackChunkName: "deductions.sr" */ './views/DeductionsSR.vue')
-    },
-    {
-      path: '/deductions/dd',
-      name: 'deductions.dd',
-      component: () => import(/* webpackChunkName: "deductions.dd" */ './views/DeductionsDD.vue')
-    }
+    { path: '/', component: () => import('./views/Home.vue') },
+    { path: '/practice', component: () => import('./views/PracticeIndex.vue') },
+    { path: '/score', component: () => import('./views/Score.vue') }
   ]
 })

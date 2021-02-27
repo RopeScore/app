@@ -1,0 +1,87 @@
+<template>
+  <div>
+    <score-navigation />
+
+    <main class="grid grid-cols-3 grid-rows-score">
+      <div></div>
+      <div class="m-auto">Score: {{ result }}</div>
+      <div class="m-auto text-center">Form/Execution</div>
+
+      <div></div>
+      <div></div>
+      <score-button
+        label="+"
+        :value="formExecution.plus"
+        @click="addMark({ fieldId: 'formExecution', value: 1 })"
+      />
+
+      <div></div>
+      <div></div>
+      <score-button
+        label="&#10004;"
+        :value="formExecution.check"
+        @click="addMark({ fieldId: 'formExecution', value: 0 })"
+      />
+
+      <score-button
+        label="Misses"
+        :value="misses"
+        color="red"
+        @click="addMark({ fieldId: 'miss', value: 1 })"
+      />
+      <div></div>
+      <score-button
+        label="-"
+        :value="formExecution.minus"
+        @click="addMark({ fieldId: 'formExecution', value: -1 })"
+      />
+    </main>
+  </div>
+</template>
+
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
+import ScoreNavigation from '../../../components/ScoreNavigation.vue'
+import ScoreButton from '../../../components/ScoreButton.vue'
+import { mapMutations, useStore } from 'vuex'
+import { State } from '../../../store'
+
+export default defineComponent({
+  name: 'AthletePresentation',
+  components: {
+    ScoreButton,
+    ScoreNavigation
+  },
+  data: () => ({
+    result: 0
+  }),
+  setup () {
+    const store = useStore<State>()
+
+    return {
+      formExecution: computed(() => {
+        const marks = { plus: 0, check: 0, minus: 0 }
+
+        for (const mark of store.state.currentScoresheet?.marks ?? []) {
+          if (mark.fieldId === 'formExecution') {
+            if (mark.value === 1) marks.plus += 1
+            if (mark.value === 0) marks.check += 1
+            if (mark.value === -1) marks.minus += 1
+          }
+        }
+
+        return marks
+      }),
+      misses: computed(() => {
+        return store.state.currentScoresheet?.marks.reduce(
+          (acc, mark) => acc + (mark.fieldId === 'miss' ? mark.value : 0),
+          0
+        ) ?? 0
+      })
+    }
+  },
+  methods: {
+    ...mapMutations(['addMark'])
+  }
+})
+</script>
