@@ -2,18 +2,19 @@
   <div>
     <score-navigation />
 
-    <main class="grid grid-rows-score grid-cols-3">
+    <main class="grid grid-rows-score grid-cols-2">
       <score-button
         v-if="isHeadJudge"
         label="False Starts"
+        color="red"
         :value="falseStarts"
         single-row
         @click="addMark({ fieldId: 'falseStart', value: 1 })"
         />
-      <div></div>
       <score-button
         v-if="isHeadJudge"
         label="False Switches"
+        color="red"
         :value="falseSwitches"
         single-row
         @click="addMark({ fieldId: 'falseSwitch', value: 1 })"
@@ -22,7 +23,7 @@
       <score-button
         label="Steps"
         :value="steps"
-        class="col-span-3 row-span-3 m-12"
+        class="col-span-2 row-span-3 m-12"
         @click="addMark({ fieldId: 'speedStep', value: 1 })"
       />
     </main>

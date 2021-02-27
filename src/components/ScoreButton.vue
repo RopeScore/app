@@ -1,6 +1,6 @@
 <template>
   <button
-    class="text-white rounded select-none m-2"
+    class="text-white rounded select-none m-2 p-1"
     :class="{
       'bg-green-500': color === 'green',
       'hover:bg-green-600': color === 'green',
