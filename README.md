@@ -1,4 +1,4 @@
-# ijru-judge-training
+# RopeScore Judging v1
 
 ## Project setup
 ```
