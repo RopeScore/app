@@ -1,56 +1,57 @@
 <template>
-  <div>
-    <score-navigation />
+  <main class="grid grid-cols-3 grid-rows-score">
+    <score-button color="none" label="" />
+    <div class="m-auto">Score: {{ result }}</div>
+    <div class="m-auto text-center">Form/Execution</div>
 
-    <main class="grid grid-cols-3 grid-rows-score">
-      <div></div>
-      <div class="m-auto">Score: {{ result }}</div>
-      <div class="m-auto text-center">Form/Execution</div>
+    <score-button color="none" label="" />
+    <score-button color="none" label="" />
+    <score-button
+      label="+"
+      :value="formExecution.plus"
+      @click="addMark({ fieldId: 'formExecution', value: 1 })"
+    />
 
-      <div></div>
-      <div></div>
-      <score-button
-        label="+"
-        :value="formExecution.plus"
-        @click="addMark({ fieldId: 'formExecution', value: 1 })"
-      />
+    <score-button color="none" label="" />
+    <score-button color="none" label="" />
+    <score-button
+      label="&#10004;"
+      :value="formExecution.check"
+      @click="addMark({ fieldId: 'formExecution', value: 0 })"
+    />
 
-      <div></div>
-      <div></div>
-      <score-button
-        label="&#10004;"
-        :value="formExecution.check"
-        @click="addMark({ fieldId: 'formExecution', value: 0 })"
-      />
-
-      <score-button
-        label="Misses"
-        :value="misses"
-        color="red"
-        @click="addMark({ fieldId: 'miss', value: 1 })"
-      />
-      <div></div>
-      <score-button
-        label="-"
-        :value="formExecution.minus"
-        @click="addMark({ fieldId: 'formExecution', value: -1 })"
-      />
-    </main>
-  </div>
+    <score-button
+      label="Misses"
+      :value="misses"
+      color="red"
+      @click="addMark({ fieldId: 'miss', value: 1 })"
+    />
+    <score-button color="none" label="" />
+    <score-button
+      label="-"
+      :value="formExecution.minus"
+      @click="addMark({ fieldId: 'formExecution', value: -1 })"
+    />
+  </main>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-import ScoreNavigation from '../../../components/ScoreNavigation.vue'
+import { computed, defineComponent, PropType } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { mapMutations, useStore } from 'vuex'
 import { State } from '../../../store'
+import { Model } from '../../../models'
 
 export default defineComponent({
   name: 'AthletePresentation',
   components: {
-    ScoreButton,
-    ScoreNavigation
+    ScoreButton
+  },
+  props: {
+    model: {
+      type: Object as PropType<Model>,
+      required: true
+    }
   },
   data: () => ({
     result: 0

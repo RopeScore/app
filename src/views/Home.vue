@@ -17,7 +17,9 @@
       <!-- TODO: isntructions -->
     </p>
     <p>
-      &copy; Swantzter 2021 &mdash; <a class="text-indigo-700 hover:text-indigo-900" href="https://ropescore.com" target="_blank" rel="noopener">RopeScore - the simple scoring system</a>
+      &copy; Swantzter 2021 &mdash;
+      v{{ version }} &mdash;
+      <a class="text-indigo-700 hover:text-indigo-900" href="https://ropescore.com" target="_blank" rel="noopener">RopeScore - the simple scoring system</a>
     </p>
   </main>
 </template>
@@ -28,12 +30,14 @@ import { mapMutations, useStore } from 'vuex'
 import logo from '../assets/logo.svg'
 import ScoreButton from '../components/ScoreButton.vue'
 import { State } from '../store'
+import { version } from '../../package.json'
 
 export default defineComponent({
   components: { ScoreButton },
   name: 'Home',
   data: () => ({
     logo,
+    version,
     resetNext: null as null | number
   }),
   setup () {

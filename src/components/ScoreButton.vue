@@ -1,15 +1,28 @@
 <template>
   <button
-    class="text-white rounded select-none m-2 p-1"
+    class="rounded select-none p-1 touch-manipulation"
     :class="{
       'bg-green-500': color === 'green',
       'hover:bg-green-600': color === 'green',
+
       'bg-red-500': color === 'red',
       'hover:bg-red-600': color === 'red',
+
       'bg-indigo-500': color === 'indigo',
       'hover:bg-indigo-600': color === 'indigo',
+
+      'bg-white': color === 'none',
+      'hover:bg-white': color === 'none',
+
+      'cursor-pointer': color !== 'none',
+      'm-2': color !== 'none',
+      'text-white': color !== 'none',
+
+      'cursor-default': color === 'none',
+      'focus:outline-none': color === 'none',
+      'text-black': color === 'none'
     }"
-    @click="handleClick()"
+    @click.prevent="handleClick()"
   >
     <template v-if="value === null || value === undefined">
       {{label}}
@@ -34,7 +47,7 @@ export default defineComponent({
     color: {
       validator (value: unknown) {
         return typeof value === 'string' &&
-          ['green', 'red', 'indigo'].includes(value)
+          ['green', 'red', 'indigo', 'none'].includes(value)
       },
       default: 'green'
     },
@@ -58,3 +71,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+.touch-manipulation {
+  touch-action: manipulation;
+}
+</style>

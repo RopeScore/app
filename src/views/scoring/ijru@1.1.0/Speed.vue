@@ -1,10 +1,7 @@
 <template>
-  <div>
-    <score-navigation />
-
-    <main class="grid grid-rows-score grid-cols-2">
+  <main class="grid grid-rows-score-alternative grid-cols-2">
+    <template v-if="isHeadJudge">
       <score-button
-        v-if="isHeadJudge"
         label="False Starts"
         color="red"
         :value="falseStarts"
@@ -19,31 +16,33 @@
         single-row
         @click="addMark({ fieldId: 'falseSwitch', value: 1 })"
       />
+    </template>
+    <template v-else>
+      <score-button color="none" label="" />
+      <score-button color="none" label="" />
+    </template>
 
-      <score-button
-        label="Steps"
-        :value="steps"
-        class="col-span-2 row-span-3 m-12"
-        @click="addMark({ fieldId: 'speedStep', value: 1 })"
-      />
-    </main>
-  </div>
+    <score-button
+      label="Steps"
+      :value="steps"
+      class="col-span-2 row-span-3 mx-12"
+      @click="addMark({ fieldId: 'speedStep', value: 1 })"
+    />
+  </main>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { mapMutations, useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import ScoreNavigation from '../../../components/ScoreNavigation.vue'
 import { Model } from '../../../models'
 import { State } from '../../../store'
 
 export default defineComponent({
-  components: {
-    ScoreButton,
-    ScoreNavigation
-  },
   name: 'Speed',
+  components: {
+    ScoreButton
+  },
   props: {
     model: {
       type: Object as PropType<Model>,
@@ -87,3 +86,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.grid-rows-score-alternative {
+  grid-template-rows: 9vh 81vh;
+}
+</style>

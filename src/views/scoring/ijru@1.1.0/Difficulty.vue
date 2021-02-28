@@ -1,37 +1,38 @@
 <template>
-  <div>
-    <score-navigation />
+  <main class="grid grid-cols-3 grid-rows-score">
+    <score-button color="none" label="" />
+    <score-button color="none" :label="'Score: ' + result" />
+    <score-button color="none" label="" />
 
-    <main class="grid grid-cols-3 grid-rows-score">
-      <div></div>
-      <div class="spacer m-auto">Score: {{ result }}</div>
-      <div></div>
-
-      <score-button
-        v-for="level in [1,.5,4,2,7,5,3,8,6]"
-        :key="level"
-        :color="level < 7 ? 'green' : 'indigo'"
-        :label="`Level ${level}`"
-        :value="levels[level.toString()] ?? 0"
-        @click="addMark({ fieldId: `difficulty`, value: level })"
-      />
-    </main>
-  </div>
+    <score-button
+      v-for="level in [1,.5,4,2,7,5,3,8,6]"
+      :key="level"
+      :color="level < 7 ? 'green' : 'indigo'"
+      :label="`Level ${level}`"
+      :value="levels[level.toString()] ?? 0"
+      @click="addMark({ fieldId: `difficulty`, value: level })"
+    />
+  </main>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 import { mapMutations, useStore } from 'vuex'
-import ScoreNavigation from '../../../components/ScoreNavigation.vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { State } from '../../../store'
+import { Model } from '../../../models'
 
 export default defineComponent({
-  components: {
-    ScoreButton,
-    ScoreNavigation
-  },
   name: 'Difficulty',
+  components: {
+    ScoreButton
+  },
+  props: {
+    model: {
+      type: Object as PropType<Model>,
+      required: true
+    }
+  },
   data: () => ({
     result: 0
   }),
@@ -50,7 +51,8 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapMutations(['addMark'])
+    ...mapMutations(['addMark']),
+    noop () {}
   }
 })
 </script>

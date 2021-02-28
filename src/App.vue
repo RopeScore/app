@@ -16,9 +16,14 @@ export default defineComponent({
 * {
   box-sizing: border-box;
   user-select: none;
+  touch-action: manipulation;
 }
 
 .grid-rows-score {
   grid-template-rows: 6vh repeat(3, 28vh);
 }
+
+/* body {
+  touch-action: none;
+} */
 </style>

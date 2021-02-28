@@ -1,7 +1,7 @@
 <template>
   <nav class="grid grid-cols-3 h-header">
     <score-button @click="goBack()" label="Back" />
-    <div></div>
+    <score-button color="none" label="" />
     <score-button
       color="red"
       :label="resetNext ? 'Click Again' : 'Reset'"
