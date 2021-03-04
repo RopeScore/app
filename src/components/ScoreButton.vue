@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded select-none p-1 touch-manipulation"
+    class="rounded select-none p-1 touch-manipulation outline-none"
     :class="{
       'bg-green-500': color === 'green',
       'hover:bg-green-600': color === 'green',
