@@ -18,7 +18,7 @@
     </p>
     <p>
       &copy; Swantzter 2021 &mdash;
-      v{{ version }} &mdash;
+      {{ version }} &mdash;
       <a class="text-indigo-700 hover:text-indigo-900" href="https://ropescore.com" target="_blank" rel="noopener">RopeScore - the simple scoring system</a>
     </p>
   </main>
@@ -30,14 +30,12 @@ import { mapMutations, useStore } from 'vuex'
 import logo from '../assets/logo.svg'
 import ScoreButton from '../components/ScoreButton.vue'
 import { State } from '../store'
-import { version } from '../../package.json'
 
 export default defineComponent({
   components: { ScoreButton },
   name: 'Home',
   data: () => ({
     logo,
-    version,
     resetNext: null as null | number
   }),
   setup () {
@@ -50,6 +48,10 @@ export default defineComponent({
   computed: {
     standalone () {
       return window.matchMedia('(display-mode: standalone)').matches
+    },
+    version () {
+      console.log(import.meta.env)
+      return (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
     }
   },
   methods: {
