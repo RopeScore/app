@@ -60,7 +60,7 @@ export default defineComponent({
     },
     vibration: {
       type: Number,
-      default: 100
+      default: 50
     },
     singleRow: Boolean
   },
