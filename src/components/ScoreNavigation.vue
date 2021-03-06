@@ -41,9 +41,10 @@ export default defineComponent({
   methods: {
     ...mapActions([
       'createLocalScoresheet',
+      'openScoresheet',
+      'saveCurrentScoresheet'
     ]),
     ...mapMutations([
-      'openScoresheet',
       'completeOpenScoresheet'
     ]),
     async reset () {
@@ -56,12 +57,13 @@ export default defineComponent({
 
       clearTimeout(this.resetNext)
 
-      const scoresheetId = await this.createLocalScoresheet({
-        judgeType: this.currentScoresheet?.judgeType,
-        rulesId: this.currentScoresheet?.rulesId
-      })
+      if (!this.currentScoresheet) return
+      const { id, marks, ...rest } = this.currentScoresheet
+
+      const scoresheetId = await this.createLocalScoresheet(rest)
       this.completeOpenScoresheet()
-      this.openScoresheet(scoresheetId)
+      await this.saveCurrentScoresheet()
+      this.$router.replace(`/score/${scoresheetId}`)
 
       this.resetNext = null
     },

@@ -5,6 +5,6 @@ export default createRouter({
   routes: [
     { path: '/', component: () => import('./views/Home.vue') },
     { path: '/practice', component: () => import('./views/PracticeIndex.vue') },
-    { path: '/score', component: () => import('./views/Score.vue') }
+    { path: '/score/:id', component: () => import('./views/Score.vue') }
   ]
 })

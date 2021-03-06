@@ -4,11 +4,15 @@
     <h1 class="text-center text-4xl font-bold">RopeScore Judging</h1>
 
     <nav class="grid grid-cols-1 grid-rows-2">
-      <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded focus:outline-none" to="/practice">Practice</router-link>
+      <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none" to="/practice">Practice</router-link>
       <!-- <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded" to="/session">Judge a Competition</router-link> -->
 
-      <button @click="reset" class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded tap-transparent focus:outline-none">
+      <button @click="reset" class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded tap-transparent hover:outline-none">
         {{ resetNext ? 'Click Again' : `Remove all stored scoresheets (${numScoresheets})` }}
+      </button>
+
+      <button @click="create" class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none">
+        Create a bunch of scoresheets ({{created}})
       </button>
     </nav>
 
@@ -25,39 +29,43 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-import { mapMutations, useStore } from 'vuex'
+import { defineComponent } from 'vue'
+import { mapActions, mapMutations } from 'vuex'
 import logo from '../assets/logo.svg'
 import ScoreButton from '../components/ScoreButton.vue'
-import { State } from '../store'
 
 export default defineComponent({
   components: { ScoreButton },
   name: 'Home',
   data: () => ({
     logo,
-    resetNext: null as null | number
+    resetNext: null as null | number,
+    created: 0,
+    numScoresheets: 0
   }),
-  setup () {
-    const store = useStore<State>()
-
-    return {
-      numScoresheets: computed(() => store.state.scoresheets.length)
-    }
+  async mounted () {
+    this.updateNumScoresheets()
   },
   computed: {
     standalone () {
       return window.matchMedia('(display-mode: standalone)').matches
     },
     version () {
-      console.log(import.meta.env)
       return (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
     }
   },
   methods: {
-    ...mapMutations([
+    ...mapActions([
       'removeAllScoresheets',
-      'completeOpenScoresheet'
+      'createLocalScoresheet',
+      'openScoresheet',
+      'saveCurrentScoresheet',
+      'listScoresheets'
+    ]),
+    ...mapMutations([
+      'completeOpenScoresheet',
+      'setCurrentScoresheet',
+      'addMark'
     ]),
     async reset () {
       if (!this.resetNext) {
@@ -72,10 +80,35 @@ export default defineComponent({
       try {
         this.completeOpenScoresheet()
       } catch {}
-      this.removeAllScoresheets()
+      await this.removeAllScoresheets()
+      this.updateNumScoresheets()
 
       this.resetNext = null
     },
+    async updateNumScoresheets () {
+      this.numScoresheets = (await this.listScoresheets()).length
+    },
+    async create () {
+      console.time('create')
+      this.created = 0
+      for (let i = 0; i < 600; i++) {
+        this.created++
+        let id = await this.createLocalScoresheet({
+          judgeType: 'R',
+          rulesId: 'ijru@2.0.0',
+          competitionEventLookupCode: 'e.ijru.fs.sr.srtf.4.75'
+        })
+        await this.openScoresheet(id)
+        for (let j = 0; j < 100; j++) {
+          this.addMark({ fieldId: 'repeatedSkill', value: j })
+        }
+        this.completeOpenScoresheet()
+        await this.saveCurrentScoresheet()
+        this.setCurrentScoresheet(null)
+      }
+      console.timeEnd('create')
+      this.updateNumScoresheets()
+    }
   }
 })
 </script>

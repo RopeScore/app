@@ -31,9 +31,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions([
-      'createLocalScoresheet'
-    ]),
-    ...mapMutations([
+      'createLocalScoresheet',
       'openScoresheet'
     ]),
     rulesetList (rulesId: string | string[]) {
@@ -45,9 +43,8 @@ export default defineComponent({
         rulesId: Array.isArray(model.rulesId) ? model.rulesId[0] : model.rulesId,
         competitionEventLookupCode
       })
-      this.openScoresheet(scoresheetId)
 
-      this.$router.push('/score')
+      this.$router.push(`/score/${scoresheetId}`)
     },
     goBack () {
       this.$router.go(-1)

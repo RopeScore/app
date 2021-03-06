@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded select-none p-1 touch-manipulation focus:outline-none tap-transparent"
+    class="rounded select-none p-1 touch-manipulation hover:outline-none tap-transparent"
     :class="{
       'bg-green-500': color === 'green',
       'hover:bg-green-600': color === 'green' && focus,
@@ -18,7 +18,7 @@
       'text-white': color !== 'none',
 
       'cursor-default': color === 'none',
-      'focus:outline-none': color === 'none',
+      'hover:outline-none': color === 'none',
       'text-black': color === 'none'
     }"
     @click.prevent="handleClick()"

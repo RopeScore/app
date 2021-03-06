@@ -1,6 +1,8 @@
-import { createStore } from 'vuex'
+import { createStore, Module } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 import { v4 as uuid } from 'uuid'
+import { get, set, keys, clear } from 'idb-keyval'
+
 
 interface Mark {
   timestamp: number
@@ -58,33 +60,39 @@ type Scoresheet = RemoteScoresheet | LocalScoresheet
 
 export interface State {
   currentScoresheet: Scoresheet | null
-  scoresheets: Scoresheet[]
+}
+
+export interface SettingsState {
+  vibrate: boolean
+}
+
+const settingsModule: Module<SettingsState, State> = {
+  state: () => ({
+    vibrate: true
+  }),
+  mutations: {
+    setVibrate (state, payload: boolean) {
+      state.vibrate = payload
+    }
+  }
 }
 
 export default createStore<State>({
-  plugins: [createPersistedState()],
+  plugins: [createPersistedState({ paths: ['settings'] })],
+  modules: {
+    settings: settingsModule
+  },
   state: () => ({
-    scoresheets: [],
     currentScoresheet: null
   }),
   mutations: {
-    addScoresheet (state, scoresheet: Scoresheet) {
-      state.scoresheets.push(scoresheet)
-    },
-    removeScoresheet (state, scoresheetId: string) {
-      const idx = state.scoresheets.findIndex(scoresheet => scoresheet.id === scoresheetId)
-      state.scoresheets.splice(idx, 1)
-    },
-    openScoresheet (state, scoresheetId: string) {
-      const scoresheet = state.scoresheets.find(scoresheet => scoresheet.id === scoresheetId)
-      if (!scoresheet) throw Error('Scoresheet not found')
+    setCurrentScoresheet(state, scoresheet: Scoresheet | null) {
+      if (scoresheet !== null && !scoresheet.openedAt) scoresheet.openedAt = Date.now()
       state.currentScoresheet = scoresheet
-      state.currentScoresheet.openedAt = Date.now()
     },
     completeOpenScoresheet (state) {
       if (!state.currentScoresheet) throw Error('No current scoresheet')
       state.currentScoresheet.completedAt = Date.now()
-      state.currentScoresheet = null
     },
     addMark (state, mark: Omit<Mark, 'timestamp'>) {
       if (!state.currentScoresheet) throw Error('No current scoresheet')
@@ -92,12 +100,9 @@ export default createStore<State>({
       tsMark.timestamp = Date.now()
       state.currentScoresheet.marks.push(tsMark)
     },
-    removeAllScoresheets (state) {
-      state.scoresheets = []
-    }
   },
   actions: {
-    createLocalScoresheet({ commit }, { judgeType, rulesId, competitionEventLookupCode }) {
+    async createLocalScoresheet ({ commit }, { judgeType, rulesId, competitionEventLookupCode }) {
       const newScoresheet: LocalScoresheet = {
         id: uuid(),
         judgeType,
@@ -106,9 +111,28 @@ export default createStore<State>({
         marks: []
       }
 
-      commit('addScoresheet', newScoresheet)
+      await set(newScoresheet.id, newScoresheet)
 
       return newScoresheet.id
+    },
+    async openScoresheet ({ commit, state }, id: string) {
+      let scoresheet = await get(id)
+      if (!scoresheet) throw Error('No such scoresheet in idb')
+      if (state.currentScoresheet) {
+        await set(state.currentScoresheet.id, JSON.parse(JSON.stringify(state.currentScoresheet)))
+      }
+
+      commit('setCurrentScoresheet', scoresheet)
+    },
+    async saveCurrentScoresheet ({ state }) {
+      if (!state.currentScoresheet) throw Error('No such scoresheet in idb')
+      await set(state.currentScoresheet.id, JSON.parse(JSON.stringify(state.currentScoresheet)))
+    },
+    listScoresheets () {
+      return keys()
+    },
+    removeAllScoresheets () {
+      return clear()
     }
   }
 })

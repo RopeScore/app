@@ -20,6 +20,7 @@ import { useStore } from 'vuex'
 import { State } from '../store'
 import models from '../models'
 import ScoreNavigation from '../components/ScoreNavigation.vue'
+import { useRoute } from 'vue-router'
 
 function preventDefualt (event: TouchEvent) {
   event.preventDefault()
@@ -32,6 +33,9 @@ export default defineComponent({
   },
   setup () {
     const store = useStore<State>()
+    const route = useRoute()
+
+    store.dispatch('openScoresheet', route.params.id)
 
     return {
       currentScoresheet: computed(() => store.state.currentScoresheet),
