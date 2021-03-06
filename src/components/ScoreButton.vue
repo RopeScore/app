@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded select-none p-1 touch-manipulation focus:outline-none"
+    class="rounded select-none p-1 touch-manipulation focus:outline-none tap-transparent"
     :class="{
       'bg-green-500': color === 'green',
       'hover:bg-green-600': color === 'green',
@@ -60,7 +60,7 @@ export default defineComponent({
     },
     vibration: {
       type: Number,
-      default: 50
+      default: 75
     },
     singleRow: Boolean
   },
@@ -71,9 +71,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style>
-.touch-manipulation {
-  touch-action: manipulation;
-}
-</style>

@@ -23,7 +23,11 @@ export default defineComponent({
   grid-template-rows: 6vh repeat(3, 28vh);
 }
 
-/* body {
-  touch-action: none;
-} */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+.tap-transparent {
+  -webkit-tap-highlight-color: transparent;
+}
 </style>

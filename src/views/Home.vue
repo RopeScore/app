@@ -4,17 +4,17 @@
     <h1 class="text-center text-4xl font-bold">RopeScore Judging</h1>
 
     <nav class="grid grid-cols-1 grid-rows-2">
-      <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded" to="/practice">Practice</router-link>
+      <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded focus:outline-none" to="/practice">Practice</router-link>
       <!-- <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded" to="/session">Judge a Competition</router-link> -->
 
-      <button @click="reset" class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded">
+      <button @click="reset" class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded tap-transparent focus:outline-none">
         {{ resetNext ? 'Click Again' : `Remove all stored scoresheets (${numScoresheets})` }}
       </button>
     </nav>
 
     <p v-if="!standalone">
       For best experience, add this web-app to your homescreen
-      <!-- TODO: isntructions -->
+      <!-- TODO: instructions -->
     </p>
     <p>
       &copy; Swantzter 2021 &mdash;
