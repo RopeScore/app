@@ -63,7 +63,7 @@ export default defineComponent({
       formExecution: computed(() => {
         const marks = { plus: 0, check: 0, minus: 0 }
 
-        for (const mark of store.state.currentScoresheet?.marks ?? []) {
+        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
           if (mark.fieldId === 'formExecution') {
             if (mark.value === 1) marks.plus += 1
             if (mark.value === 0) marks.check += 1
@@ -74,7 +74,7 @@ export default defineComponent({
         return marks
       }),
       misses: computed(() => {
-        return store.state.currentScoresheet?.marks.reduce(
+        return store.state.scoresheet.currentScoresheet?.marks.reduce(
           (acc, mark) => acc + (mark.fieldId === 'miss' ? mark.value : 0),
           0
         ) ?? 0

@@ -38,9 +38,9 @@ export default defineComponent({
     store.dispatch('openScoresheet', route.params.id)
 
     return {
-      currentScoresheet: computed(() => store.state.currentScoresheet),
+      currentScoresheet: computed(() => store.state.scoresheet.currentScoresheet),
       model: computed(() => {
-        const cs = store.state.currentScoresheet
+        const cs = store.state.scoresheet.currentScoresheet
         if (!cs) return null
         const model = models.find(model => model.rulesId.includes(cs.rulesId) && model.judgeType === cs.judgeType)
         if (!model) return null

@@ -42,7 +42,7 @@ export default defineComponent({
     return {
       levels: computed(() => {
         const marks: { [prop: string]: number } = {}
-        for (const mark of store.state.currentScoresheet?.marks ?? []) {
+        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
           if (mark.fieldId !== 'difficulty') continue
           marks[mark.value.toString()] = (marks[mark.value.toString()] ?? 0) + 1
         }

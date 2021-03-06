@@ -70,7 +70,7 @@ export default defineComponent({
       entertainment: computed(() => {
         const marks = { plus: 0, check: 0, minus: 0 }
 
-        for (const mark of store.state.currentScoresheet?.marks ?? []) {
+        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
           if (mark.fieldId === 'entertainment') {
             if (mark.value === 1) marks.plus += 1
             if (mark.value === 0) marks.check += 1
@@ -83,7 +83,7 @@ export default defineComponent({
       musicality: computed(() => {
         const marks = { plus: 0, check: 0, minus: 0 }
 
-        for (const mark of store.state.currentScoresheet?.marks ?? []) {
+        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
           if (mark.fieldId === 'musicality') {
             if (mark.value === 1) marks.plus += 1
             if (mark.value === 0) marks.check += 1

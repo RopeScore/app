@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded select-none p-1 touch-manipulation hover:outline-none tap-transparent"
+    class="rounded select-none p-1 touch-manipulation hover:outline-none outline-none tap-transparent"
     :class="{
       'bg-green-500': color === 'green',
       'hover:bg-green-600': color === 'green' && focus,

@@ -54,21 +54,21 @@ export default defineComponent({
 
     return {
       steps: computed(() =>
-        store.state.currentScoresheet?.marks.reduce(
+        store.state.scoresheet.currentScoresheet?.marks.reduce(
           (acc, mark) => acc +
             (mark.fieldId === 'speedStep' ? mark.value : 0),
           0
         ) ?? 0
       ),
       falseStarts: computed(() =>
-        store.state.currentScoresheet?.marks.reduce(
+        store.state.scoresheet.currentScoresheet?.marks.reduce(
           (acc, mark) => acc +
             (mark.fieldId === 'falseStart' ? mark.value : 0),
           0
         ) ?? 0
       ),
       falseSwitches: computed(() =>
-        store.state.currentScoresheet?.marks.reduce(
+        store.state.scoresheet.currentScoresheet?.marks.reduce(
           (acc, mark) => acc +
             (mark.fieldId === 'falseSwitch' ? mark.value : 0),
           0

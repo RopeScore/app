@@ -116,42 +116,42 @@ export default defineComponent({
   },
   setup () {
     const store = useStore<State>()
-    const lookupCodeParts = store.state.currentScoresheet?.competitionEventLookupCode.split('.') ?? []
+    const lookupCodeParts = store.state.scoresheet.currentScoresheet?.competitionEventLookupCode.split('.') ?? []
 
     return {
       isDoubleDutch: computed(() => lookupCodeParts[3] === 'dd'),
       hasInteractions: computed(() => parseInt(lookupCodeParts[5], 10) > (lookupCodeParts[3] === 'dd' ? 3 : 1)),
 
       misses: computed(() => {
-        return store.state.currentScoresheet?.marks.reduce(
+        return store.state.scoresheet.currentScoresheet?.marks.reduce(
           (acc, mark) => acc + (mark.fieldId === 'miss' ? mark.value : 0),
           0
         ) ?? 0
       }),
       timeViolations: computed(() => {
-        return store.state.currentScoresheet?.marks.reduce(
+        return store.state.scoresheet.currentScoresheet?.marks.reduce(
           (acc, mark) => acc + (mark.fieldId === 'timeViolation' ? mark.value : 0),
           0
         ) ?? 0
       }),
       spaceViolations: computed(() => {
-        return store.state.currentScoresheet?.marks.reduce(
+        return store.state.scoresheet.currentScoresheet?.marks.reduce(
           (acc, mark) => acc + (mark.fieldId === 'spaceViolation' ? mark.value : 0),
           0
         ) ?? 0
       }),
       repeatedSkills: computed(() => {
         const marks: { [prop: string]: number } = {}
-        for (const mark of store.state.currentScoresheet?.marks ?? []) {
+        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
           if (mark.fieldId !== 'repeatedSkill') continue
           marks[mark.value.toString()] = (marks[mark.value.toString()] ?? 0) + 1
         }
         return marks
       }),
-      numRepeatedSkills: computed(() => (store.state.currentScoresheet?.marks ?? []).filter(mark => mark.fieldId === 'repeatedSkill').length),
+      numRepeatedSkills: computed(() => (store.state.scoresheet.currentScoresheet?.marks ?? []).filter(mark => mark.fieldId === 'repeatedSkill').length),
       requiredElements: computed(() => {
         const marks: Partial<Record<ReqElField, number>> = {}
-        for (const mark of store.state.currentScoresheet?.marks ?? []) {
+        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
           if (!reqElFields.includes(mark.fieldId as any)) continue
           marks[mark.fieldId as ReqElField] = (marks[mark.fieldId as ReqElField] ?? 0) + mark.value
         }

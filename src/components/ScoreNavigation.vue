@@ -32,7 +32,7 @@ export default defineComponent({
     const store = useStore<State>()
 
     return {
-      currentScoresheet: computed(() => store.state.currentScoresheet)
+      currentScoresheet: computed(() => store.state.scoresheet.currentScoresheet)
     }
   },
   data: () => ({

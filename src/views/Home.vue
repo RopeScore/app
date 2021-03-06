@@ -14,6 +14,8 @@
       <button @click="create" class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none">
         Create a bunch of scoresheets ({{created}})
       </button>
+
+      {{ batteryLevel }}
     </nav>
 
     <p v-if="!standalone">
@@ -52,6 +54,11 @@ export default defineComponent({
     },
     version () {
       return (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
+    },
+    batteryLevel (): string {
+      console.log(this.$store.state)
+      if (!this.$store.state.device.batteryLevel) return ''
+      return Math.round(this.$store.state.device.batteryLevel * 100).toString() + '%'
     }
   },
   methods: {
