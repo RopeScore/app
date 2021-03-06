@@ -3,16 +3,15 @@
     class="rounded select-none p-1 touch-manipulation focus:outline-none tap-transparent"
     :class="{
       'bg-green-500': color === 'green',
-      'hover:bg-green-600': color === 'green',
+      'hover:bg-green-600': color === 'green' && focus,
 
       'bg-red-500': color === 'red',
-      'hover:bg-red-600': color === 'red',
+      'hover:bg-red-600': color === 'red' && focus,
 
       'bg-indigo-500': color === 'indigo',
-      'hover:bg-indigo-600': color === 'indigo',
+      'hover:bg-indigo-600': color === 'indigo' && focus,
 
       'bg-white': color === 'none',
-      'hover:bg-white': color === 'none',
 
       'cursor-pointer': color !== 'none',
       'm-2': color !== 'none',
@@ -23,6 +22,10 @@
       'text-black': color === 'none'
     }"
     @click.prevent="handleClick()"
+    @mousedown="focus = true"
+    @mouseup="focus = false"
+    @touchstart="focus = true"
+    @touchend="focus = false"
   >
     <template v-if="value === null || value === undefined">
       {{label}}
@@ -64,8 +67,12 @@ export default defineComponent({
     },
     singleRow: Boolean
   },
+  data: () => ({
+    focus: false
+  }),
   methods: {
     handleClick () {
+      if (this.color === 'none') return
       navigator.vibrate?.(this.vibration)
     }
   }

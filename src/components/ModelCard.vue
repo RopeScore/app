@@ -15,7 +15,7 @@
     </template>
     <button
       @click="$emit('select', model, competitionEventLookupCode)"
-      class="p-2 mt-4 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
+      class="p-2 mt-4 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded focus:outline-none"
     >Open</button>
   </section>
 </template>
