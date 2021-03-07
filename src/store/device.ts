@@ -1,7 +1,7 @@
 import { Module } from "vuex";
 import { RootState } from "../store";
 
-interface DeviceState {
+export interface DeviceState {
   charging: boolean
   batteryLevel: number | null
 }

@@ -9,7 +9,7 @@ interface Mark {
   value: number
 }
 
-interface LocalScoresheet {
+export interface LocalScoresheet {
   id: string
 
   competitionEventLookupCode: string
@@ -55,7 +55,7 @@ export interface RemoteScoresheet {
   marks: Mark[]
 }
 
-type Scoresheet = RemoteScoresheet | LocalScoresheet
+export type Scoresheet = RemoteScoresheet | LocalScoresheet
 
 export interface ScoresheetState {
   currentScoresheet: Scoresheet | null
@@ -65,6 +65,11 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
   state: () => ({
     currentScoresheet: null
   }),
+  getters: {
+    currentScoresheet (state) {
+      return state.currentScoresheet
+    }
+  },
   mutations: {
     setCurrentScoresheet(state, scoresheet: Scoresheet | null) {
       if (scoresheet !== null && !scoresheet.openedAt) scoresheet.openedAt = Date.now()
@@ -95,17 +100,18 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
 
       return newScoresheet.id
     },
-    async openScoresheet({ commit, state }, id: string) {
+    async openScoresheet({ commit, state, dispatch }, id: string) {
+      if (id === state.currentScoresheet?.id) return
       let scoresheet = await get(id)
       if (!scoresheet) throw Error('No such scoresheet in idb')
-      if (state.currentScoresheet) {
-        await set(state.currentScoresheet.id, JSON.parse(JSON.stringify(state.currentScoresheet)))
-      }
+      if (state.currentScoresheet) await dispatch('saveCurrentScoresheet')
 
+      console.log('Setting new current scoresheet')
       commit('setCurrentScoresheet', scoresheet)
     },
     async saveCurrentScoresheet({ state }) {
-      if (!state.currentScoresheet) throw Error('No such scoresheet in idb')
+      if (!state.currentScoresheet) throw Error('No scoresheet open')
+      console.log('Saving current scoresheet')
       await set(state.currentScoresheet.id, JSON.parse(JSON.stringify(state.currentScoresheet)))
     },
     listScoresheets() {

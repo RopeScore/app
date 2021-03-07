@@ -4,20 +4,22 @@
     <h1 class="text-center text-4xl font-bold">RopeScore Judging</h1>
 
     <nav class="grid grid-cols-1 grid-rows-2">
-      <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none" to="/practice">Practice</router-link>
+      <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none focus:outline-none outline-none" to="/practice">Practice</router-link>
       <!-- <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded" to="/session">Judge a Competition</router-link> -->
 
-      <button @click="reset" class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded tap-transparent hover:outline-none">
+      <button @click="reset" class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded tap-transparent hover:outline-none focus:outline-none outline-none">
         {{ resetNext ? 'Click Again' : `Remove all stored scoresheets (${numScoresheets})` }}
       </button>
 
-      <button @click="create" class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none">
+      <button @click="create" class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none focus:outline-none outline-none">
         Create a bunch of scoresheets ({{created}})
       </button>
 
-      {{ batteryLevel }}
     </nav>
 
+    <p v-if="batteryLevel">
+      Battery: {{ batteryLevel }} {{ charging ? '(Charging)' : '' }}
+    </p>
     <p v-if="!standalone">
       For best experience, add this web-app to your homescreen
       <!-- TODO: instructions -->
@@ -56,9 +58,11 @@ export default defineComponent({
       return (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
     },
     batteryLevel (): string {
-      console.log(this.$store.state)
       if (!this.$store.state.device.batteryLevel) return ''
       return Math.round(this.$store.state.device.batteryLevel * 100).toString() + '%'
+    },
+    charging (): string {
+      return this.$store.state.device.charging
     }
   },
   methods: {

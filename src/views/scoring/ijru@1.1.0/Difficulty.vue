@@ -19,7 +19,7 @@
 import { computed, defineComponent, PropType } from 'vue'
 import { mapMutations, useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import { State } from '../../../store'
+import { RootState } from '../../../store'
 import { Model } from '../../../models'
 
 export default defineComponent({
@@ -33,20 +33,33 @@ export default defineComponent({
       required: true
     }
   },
-  data: () => ({
-    result: 0
-  }),
   setup () {
-    const store = useStore<State>()
+    const store = useStore<RootState>()
+    const levels = computed(() => {
+      const marks: { [prop: string]: number } = {}
+      for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
+        if (mark.fieldId !== 'difficulty') continue
+        marks[mark.value.toString()] = (marks[mark.value.toString()] ?? 0) + 1
+      }
+      return marks
+    })
+
+    function L (level: number): number {
+      if (level === 0) return 0
+      return Math.round(Math.pow(1.8, level) * 10) / 100
+    }
 
     return {
-      levels: computed(() => {
-        const marks: { [prop: string]: number } = {}
-        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
-          if (mark.fieldId !== 'difficulty') continue
-          marks[mark.value.toString()] = (marks[mark.value.toString()] ?? 0) + 1
-        }
-        return marks
+      levels,
+      result: computed(() => {
+        return (
+          Math.round(
+            (store.state.scoresheet.currentScoresheet?.marks ?? [])
+              .filter(mark => mark.fieldId === 'difficulty')
+              .map(mark => L(mark.value))
+              .reduce((a, b) => a + b, 0) * 100
+          ) / 100
+        )
       })
     }
   },

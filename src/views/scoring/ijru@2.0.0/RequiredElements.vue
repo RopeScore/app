@@ -61,7 +61,7 @@
       <score-button
         label="Repeated Skills"
         color="red"
-        :value="numRepeatedSkills"
+        :value="`${numRepeatedSkills} (-${repeatedSkillsResult})`"
         :vibration="150"
         @click="diffOpen = true"
       />
@@ -95,7 +95,7 @@ import { computed, defineComponent, PropType } from 'vue'
 import { mapMutations, useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { Model } from '../../../models'
-import { State } from '../../../store'
+import { RootState } from '../../../store'
 
 const reqElFields = [
   'multiples', 'wrapsReleases', 'gymnasticsPower',
@@ -115,12 +115,28 @@ export default defineComponent({
     }
   },
   setup () {
-    const store = useStore<State>()
+    const store = useStore<RootState>()
     const lookupCodeParts = store.state.scoresheet.currentScoresheet?.competitionEventLookupCode.split('.') ?? []
 
+    const isDoubleDutch = computed(() => lookupCodeParts[3] === 'dd')
+    const hasInteractions = computed(() => parseInt(lookupCodeParts[5], 10) > (lookupCodeParts[3] === 'dd' ? 3 : 1))
+    const requiredElements = computed(() => {
+      const marks: Partial<Record<ReqElField, number>> = {}
+      for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
+        if (!reqElFields.includes(mark.fieldId as any)) continue
+        marks[mark.fieldId as ReqElField] = (marks[mark.fieldId as ReqElField] ?? 0) + mark.value
+      }
+      return marks
+    })
+
+    function L (level: number): number {
+      if (level === 0) return 0
+      return Math.round(Math.pow(1.8, level) * 10) / 100
+    }
+
     return {
-      isDoubleDutch: computed(() => lookupCodeParts[3] === 'dd'),
-      hasInteractions: computed(() => parseInt(lookupCodeParts[5], 10) > (lookupCodeParts[3] === 'dd' ? 3 : 1)),
+      isDoubleDutch,
+      hasInteractions,
 
       misses: computed(() => {
         return store.state.scoresheet.currentScoresheet?.marks.reduce(
@@ -149,19 +165,33 @@ export default defineComponent({
         return marks
       }),
       numRepeatedSkills: computed(() => (store.state.scoresheet.currentScoresheet?.marks ?? []).filter(mark => mark.fieldId === 'repeatedSkill').length),
-      requiredElements: computed(() => {
-        const marks: Partial<Record<ReqElField, number>> = {}
-        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
-          if (!reqElFields.includes(mark.fieldId as any)) continue
-          marks[mark.fieldId as ReqElField] = (marks[mark.fieldId as ReqElField] ?? 0) + mark.value
+      repeatedSkillsResult: computed(() =>
+        Math.round(
+          (store.state.scoresheet.currentScoresheet?.marks ?? [])
+            .filter(mark => mark.fieldId === 'repeatedSkill')
+            .map(mark => L(mark.value))
+            .reduce((a, b) => a + b, 0) * 100
+        ) / 100
+      ),
+      requiredElements,
+      result: computed(() => {
+        let elements = 0
+        let completed = 0
+        if (isDoubleDutch.value) elements += 2
+        else elements += 3
+
+        if (hasInteractions.value) elements += 1
+
+        for (const done of Object.values(requiredElements.value)) {
+          completed += (done ?? 0) > 4 ? 4 : done ?? 0
         }
-        return marks
+
+        return 1 - (((elements * 4) - completed) * 0.025)
       })
     }
   },
   data: () => ({
-    diffOpen: false,
-    result: 0
+    diffOpen: false
   }),
   methods: {
     ...mapMutations(['addMark']),

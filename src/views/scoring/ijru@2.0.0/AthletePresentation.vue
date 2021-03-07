@@ -39,7 +39,7 @@
 import { computed, defineComponent, PropType } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { mapMutations, useStore } from 'vuex'
-import { State } from '../../../store'
+import { RootState } from '../../../store'
 import { Model } from '../../../models'
 
 export default defineComponent({
@@ -53,14 +53,10 @@ export default defineComponent({
       required: true
     }
   },
-  data: () => ({
-    result: 0
-  }),
   setup () {
-    const store = useStore<State>()
+    const store = useStore<RootState>()
 
-    return {
-      formExecution: computed(() => {
+    const formExecution = computed(() => {
         const marks = { plus: 0, check: 0, minus: 0 }
 
         for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
@@ -72,12 +68,22 @@ export default defineComponent({
         }
 
         return marks
-      }),
+      })
+
+    return {
+      formExecution,
       misses: computed(() => {
         return store.state.scoresheet.currentScoresheet?.marks.reduce(
           (acc, mark) => acc + (mark.fieldId === 'miss' ? mark.value : 0),
           0
         ) ?? 0
+      }),
+      result: computed(() => {
+        const { plus, check, minus } = formExecution.value
+        if (plus + check + minus === 0) return 1
+        let average = (plus - minus) / (plus + check + minus)
+        let percentage = average * (0.60 / 2);
+        return Math.round((1 + percentage) * 100) / 100;
       })
     }
   },

@@ -14,7 +14,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { mapActions, mapMutations, useStore } from 'vuex'
-import { State } from '../store'
+import { RootState } from '../store'
 import ScoreButton from './ScoreButton.vue'
 
 export default defineComponent({
@@ -29,7 +29,7 @@ export default defineComponent({
     }
   },
   setup () {
-    const store = useStore<State>()
+    const store = useStore<RootState>()
 
     return {
       currentScoresheet: computed(() => store.state.scoresheet.currentScoresheet)
@@ -58,7 +58,7 @@ export default defineComponent({
       clearTimeout(this.resetNext)
 
       if (!this.currentScoresheet) return
-      const { id, marks, ...rest } = this.currentScoresheet
+      const { id, marks, completedAt, openedAt, ...rest } = this.currentScoresheet
 
       const scoresheetId = await this.createLocalScoresheet(rest)
       this.completeOpenScoresheet()

@@ -36,7 +36,7 @@ import { computed, defineComponent, PropType } from 'vue'
 import { mapMutations, useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { Model } from '../../../models'
-import { State } from '../../../store'
+import { RootState } from '../../../store'
 
 export default defineComponent({
   name: 'Speed',
@@ -50,7 +50,7 @@ export default defineComponent({
     }
   },
   setup () {
-    const store = useStore<State>()
+    const store = useStore<RootState>()
 
     return {
       steps: computed(() =>
