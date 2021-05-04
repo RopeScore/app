@@ -75,7 +75,7 @@
       <score-button v-else color="none" label="" />
     </template>
     <template v-else>
-      <template v-for="level in levels" :key="level">
+      <template v-for="level in levels" :key="level.schema">
         <score-button
           v-if="level !== null"
           :color="level[1] < 7 ? 'green' : 'indigo'"

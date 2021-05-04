@@ -5,6 +5,9 @@
       'bg-green-500': color === 'green',
       'hover:bg-green-600': color === 'green' && focus,
 
+      'bg-orange-500': color === 'orange',
+      'hover:bg-orange-600': color === 'orange' && focus,
+
       'bg-red-500': color === 'red',
       'hover:bg-red-600': color === 'red' && focus,
 
@@ -49,7 +52,7 @@ export default defineComponent({
     color: {
       validator (value: unknown) {
         return typeof value === 'string' &&
-          ['green', 'red', 'indigo', 'none'].includes(value)
+          ['green', 'red', 'indigo', 'orange', 'none'].includes(value)
       },
       default: 'green'
     },
@@ -64,6 +67,7 @@ export default defineComponent({
       type: Number,
       default: 75
     },
+    disabled: Boolean,
     singleRow: Boolean
   },
   data: () => ({

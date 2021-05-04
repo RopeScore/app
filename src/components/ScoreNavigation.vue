@@ -1,7 +1,8 @@
 <template>
   <nav class="grid grid-cols-3 h-header">
     <score-button @click="goBack()" label="Back" />
-    <score-button color="none" label="" />
+    <score-button v-if="!disableUndo" @click="addMark({ schema: 'undo', target: lastMarkSequence })" color="orange" label="Undo" />
+    <score-button v-else color="none" label="" />
     <score-button
       color="red"
       :label="resetNext ? 'Click Again' : 'Reset'"
@@ -19,20 +20,21 @@ import ScoreButton from './ScoreButton.vue'
 
 export default defineComponent({
   components: {
-    ScoreButton,
-
+    ScoreButton
   },
   name: 'ScoreNavigation',
-  computed: {
-    isLocal () {
-      return true
-    }
-  },
   setup () {
     const store = useStore<RootState>()
+    const lastMarkSequence = computed(() => store.getters.currentScoresheet?.marks.length - 1)
+    const disableUndo = computed(() => {
+      const marks = store.getters.currentScoresheet?.marks ?? []
+      return marks.length > 0 && marks[marks.length - 1]?.schema === 'undo'
+    })
 
     return {
-      currentScoresheet: computed(() => store.state.scoresheet.currentScoresheet)
+      lastMarkSequence,
+      disableUndo,
+      currentScoresheet: computed(() => store.getters.currentScoresheet)
     }
   },
   data: () => ({
@@ -42,7 +44,8 @@ export default defineComponent({
     ...mapActions([
       'createLocalScoresheet',
       'openScoresheet',
-      'saveCurrentScoresheet'
+      'saveCurrentScoresheet',
+      'addMark'
     ]),
     ...mapMutations([
       'completeOpenScoresheet'
