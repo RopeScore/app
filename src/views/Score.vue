@@ -9,7 +9,7 @@
   </div>
   <component
     v-else
-    :is="model.component"
+    :is="model?.component"
     :model="model"
   />
 </template>

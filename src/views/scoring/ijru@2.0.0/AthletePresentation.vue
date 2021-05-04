@@ -8,29 +8,29 @@
     <score-button color="none" label="" />
     <score-button
       label="+"
-      :value="formExecution.plus"
-      @click="addMark({ fieldId: 'formExecution', value: 1 })"
+      :value="tally.formExecutionPlus ?? 0"
+      @click="addMark({ schema: 'formExecutionPlus' })"
     />
 
     <score-button color="none" label="" />
     <score-button color="none" label="" />
     <score-button
       label="&#10004;"
-      :value="formExecution.check"
-      @click="addMark({ fieldId: 'formExecution', value: 0 })"
+      :value="tally.formExecutionCheck ?? 0"
+      @click="addMark({ schema: 'formExecutionCheck' })"
     />
 
     <score-button
       label="Misses"
-      :value="misses"
+      :value="tally.miss ?? 0"
       color="red"
-      @click="addMark({ fieldId: 'miss', value: 1 })"
+      @click="addMark({ schema: 'miss' })"
     />
     <score-button color="none" label="" />
     <score-button
       label="-"
-      :value="formExecution.minus"
-      @click="addMark({ fieldId: 'formExecution', value: -1 })"
+      :value="tally.formExecutionMinus ?? 0"
+      @click="addMark({ schema: 'formExecutionMinus' })"
     />
   </main>
 </template>
@@ -38,9 +38,11 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import { mapMutations, useStore } from 'vuex'
-import { RootState } from '../../../store'
-import { Model } from '../../../models'
+import { mapActions, useStore } from 'vuex'
+import type { RootState } from '../../../store'
+import type { Model } from '../../../models'
+
+export type schemas = `formExecution${'Plus' | 'Check' | 'Minus'}` | 'miss'
 
 export default defineComponent({
   name: 'AthletePresentation',
@@ -56,30 +58,14 @@ export default defineComponent({
   setup () {
     const store = useStore<RootState>()
 
-    const formExecution = computed(() => {
-        const marks = { plus: 0, check: 0, minus: 0 }
-
-        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
-          if (mark.fieldId === 'formExecution') {
-            if (mark.value === 1) marks.plus += 1
-            if (mark.value === 0) marks.check += 1
-            if (mark.value === -1) marks.minus += 1
-          }
-        }
-
-        return marks
-      })
-
     return {
-      formExecution,
-      misses: computed(() => {
-        return store.state.scoresheet.currentScoresheet?.marks.reduce(
-          (acc, mark) => acc + (mark.fieldId === 'miss' ? mark.value : 0),
-          0
-        ) ?? 0
-      }),
+      tally: store.getters.tally,
       result: computed(() => {
-        const { plus, check, minus } = formExecution.value
+        const {
+          formExecutionPlus: plus = 0,
+          formExecutionCheck: check = 0,
+          formExecutionMinus: minus = 0
+        } = store.getters.tally
         if (plus + check + minus === 0) return 1
         let average = (plus - minus) / (plus + check + minus)
         let percentage = average * (0.60 / 2);
@@ -88,7 +74,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapMutations(['addMark'])
+    ...mapActions(['addMark'])
   }
 })
 </script>

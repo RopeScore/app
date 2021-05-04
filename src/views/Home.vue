@@ -71,12 +71,12 @@ export default defineComponent({
       'createLocalScoresheet',
       'openScoresheet',
       'saveCurrentScoresheet',
-      'listScoresheets'
+      'listScoresheets',
+      'addMark'
     ]),
     ...mapMutations([
       'completeOpenScoresheet',
       'setCurrentScoresheet',
-      'addMark'
     ]),
     async reset () {
       if (!this.resetNext) {
@@ -111,7 +111,7 @@ export default defineComponent({
         })
         await this.openScoresheet(id)
         for (let j = 0; j < 100; j++) {
-          this.addMark({ fieldId: 'repeatedSkill', value: j })
+          this.addMark({ schema: 'repeatedSkill', value: j })
         }
         this.completeOpenScoresheet()
         await this.saveCurrentScoresheet()

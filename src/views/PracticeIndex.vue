@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions } from 'vuex'
 import ModelCard from '../components/ModelCard.vue'
 import ScoreButton from '../components/ScoreButton.vue'
 import models, { Model } from '../models'

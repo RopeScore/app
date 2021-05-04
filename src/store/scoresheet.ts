@@ -3,10 +3,35 @@ import { v4 as uuid } from 'uuid'
 import { get, set, keys, clear } from 'idb-keyval'
 import { RootState } from "../store"
 
-interface Mark {
-  timestamp: number
-  fieldId: string
-  value: number
+import type { schemas as ijru_1_1_0_diff_schemas } from '../views/scoring/ijru@1.1.0/Difficulty.vue'
+import type { schemas as ijru_1_1_0_speed_schemas } from '../views/scoring/ijru@1.1.0/Speed.vue'
+import type { schemas as ijru_2_0_0_ath_pres_schemas } from '../views/scoring/ijru@2.0.0/AthletePresentation.vue'
+import type { schemas as ijru_2_0_0_rout_pres_schemas } from '../views/scoring/ijru@2.0.0/RoutinePresentation.vue'
+import type { schemas as ijru_2_0_0_req_el_schemas } from '../views/scoring/ijru@2.0.0/RequiredElements.vue'
+
+export type schemas = ijru_1_1_0_diff_schemas | ijru_1_1_0_speed_schemas
+  | ijru_2_0_0_ath_pres_schemas | ijru_2_0_0_rout_pres_schemas
+  | ijru_2_0_0_req_el_schemas
+
+export interface GenericMark {
+  readonly timestamp: number
+  readonly sequence: number // should always === index
+  readonly schema: schemas
+}
+
+export interface UndoMark {
+  readonly timestamp: number
+  readonly sequence: number
+  readonly schema: 'undo'
+  readonly target: number
+}
+
+export type Mark = GenericMark | UndoMark
+
+type MarkPayload = { schema: 'undo', target: number } | { schema: schemas }
+
+export type ScoreTally = {
+  [prop in keyof schemas]?: number
 }
 
 export interface LocalScoresheet {
@@ -59,35 +84,52 @@ export type Scoresheet = RemoteScoresheet | LocalScoresheet
 
 export interface ScoresheetState {
   currentScoresheet: Scoresheet | null
+  tally: ScoreTally
 }
 
 const scoresheetModule: Module<ScoresheetState, RootState> = {
   state: () => ({
-    currentScoresheet: null
+    currentScoresheet: null,
+    tally: {}
   }),
   getters: {
     currentScoresheet (state) {
       return state.currentScoresheet
+    },
+    tally (state) {
+      return state.tally
     }
   },
   mutations: {
-    setCurrentScoresheet(state, scoresheet: Scoresheet | null) {
+    setCurrentScoresheet (state, scoresheet: Scoresheet | null) {
       if (scoresheet !== null && !scoresheet.openedAt) scoresheet.openedAt = Date.now()
       state.currentScoresheet = scoresheet
+      state.tally = {}
     },
-    completeOpenScoresheet(state) {
+    completeOpenScoresheet (state) {
       if (!state.currentScoresheet) throw Error('No current scoresheet')
       state.currentScoresheet.completedAt = Date.now()
     },
-    addMark(state, mark: Omit<Mark, 'timestamp'>) {
+    addMark (state, mark: MarkPayload) {
       if (!state.currentScoresheet) throw Error('No current scoresheet')
-      const tsMark = mark as Mark
-      tsMark.timestamp = Date.now()
+      if (state.currentScoresheet.completedAt) throw Error('Can\'t change completed scoresheet')
+      const tsMark: Mark = {
+        timestamp: Date.now(),
+        sequence: state.currentScoresheet.marks.length,
+        ...mark
+      }
       state.currentScoresheet.marks.push(tsMark)
     },
+
+    incrementTally (state, schema: schemas) {
+      state.tally[schema] = (state.tally[schema] ?? 0) + 1
+    },
+    decrementTally (state, schema: schemas) {
+      state.tally[schema] = (state.tally[schema] ?? 0) - 1
+    }
   },
   actions: {
-    async createLocalScoresheet({ commit }, { judgeType, rulesId, competitionEventLookupCode }) {
+    async createLocalScoresheet({ }, { judgeType, rulesId, competitionEventLookupCode }) {
       const newScoresheet: LocalScoresheet = {
         id: uuid(),
         judgeType,
@@ -97,7 +139,6 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
       }
 
       await set(newScoresheet.id, newScoresheet)
-
       return newScoresheet.id
     },
     async openScoresheet({ commit, state, dispatch }, id: string) {
@@ -119,6 +160,17 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
     },
     removeAllScoresheets() {
       return clear()
+    },
+    addMark ({ commit, state }, mark: MarkPayload) {
+      commit('addMark', mark)
+
+      if (mark.schema === 'undo') {
+        let undoneMark = state.currentScoresheet?.marks[mark.target]
+        if (!undoneMark) throw new Error('Undone mark missing')
+        commit('decrementTally', undoneMark.schema)
+      } else {
+        commit('incrementTally', mark.schema)
+      }
     }
   }
 }

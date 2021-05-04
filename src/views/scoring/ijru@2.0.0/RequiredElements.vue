@@ -9,44 +9,44 @@
       <score-button
         v-else
         label="Multiples"
-        :value="requiredElements.multiples ?? 0"
-        @click="addMark({ fieldId: 'multiples', value: 1 })"
+        :value="tally.rqMmultiples ?? 0"
+        @click="addMark({ schema: 'rqMmultiples' })"
       />
 
       <score-button
         label="Space Violations"
         color="red"
-        :value="spaceViolations"
-        @click="addMark({ fieldId: 'spaceViolation', value: 1 })"
+        :value="tally.spaceViolation ?? 0"
+        @click="addMark({ schema: 'spaceViolation' })"
       />
 
       <score-button v-if="isDoubleDutch" color="none" label="" />
       <score-button
         v-else
         label="Wraps / Releases"
-        :value="requiredElements.wrapsReleases ?? 0"
-        @click="addMark({ fieldId: 'wrapsReleases', value: 1 })"
+        :value="tally.rqWrapsReleases ?? 0"
+        @click="addMark({ schema: 'rqWrapsReleases' })"
       />
 
 
       <score-button
         label="Gymnastics / Power"
-        :value="requiredElements.gymnasticsPower ?? 0"
-        @click="addMark({ fieldId: 'gymnasticsPower', value: 1 })"
+        :value="tally.rqGymnasticsPower ?? 0"
+        @click="addMark({ schema: 'rqGymnasticsPower' })"
       />
 
       <score-button
         label="Time Violations"
         color="red"
-        :value="timeViolations"
-        @click="addMark({ fieldId: 'timeViolation', value: 1 })"
+        :value="tally.timeViolation ?? 0"
+        @click="addMark({ schema: 'timeViolation' })"
       />
 
       <score-button
         v-if="hasInteractions"
         label="Interactions"
-        :value="requiredElements.interactions ?? 0"
-        @click="addMark({ fieldId: 'interactions', value: 1 })"
+        :value="tally.rqInteractions ?? 0"
+        @click="addMark({ schema: 'rqInteractions' })"
       />
       <score-button v-else color="none" label="" />
 
@@ -54,8 +54,8 @@
       <score-button
         label="Misses"
         color="red"
-        :value="misses"
-        @click="addMark({ fieldId: 'miss', value: 1 })"
+        :value="tally.miss ?? 0"
+        @click="addMark({ schema: 'miss' })"
       />
 
       <score-button
@@ -69,20 +69,20 @@
       <score-button
         v-if="isDoubleDutch"
         label="Turner Involvement"
-        :value="requiredElements.turnerInvolvement ?? 0"
-        @click="addMark({ fieldId: 'turnerInvolvement', value: 1 })"
+        :value="tally.rqTurnerInvolvement ?? 0"
+        @click="addMark({ schema: 'rqTurnerInvolvement' })"
       />
       <score-button v-else color="none" label="" />
     </template>
     <template v-else>
-      <template v-for="level in [null,null,4,null,7,5,3,8,6]" :key="level">
+      <template v-for="level in levels" :key="level">
         <score-button
           v-if="level !== null"
-          :color="level < 7 ? 'green' : 'indigo'"
-          :label="`Level ${level}`"
-          :value="repeatedSkills[level.toString()] ?? 0"
+          :color="level[1] < 7 ? 'green' : 'indigo'"
+          :label="`Level ${level[1]}`"
+          :value="tally[level[0]] ?? 0"
           :vibration="150"
-          @click="addRepeatedSkill(level)"
+          @click="addRepeatedSkill(level[0])"
         />
         <score-button v-else color="none" label="" />
       </template>
@@ -92,16 +92,15 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { mapMutations, useStore } from 'vuex'
+import { mapActions, useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import { Model } from '../../../models'
-import { RootState } from '../../../store'
+import type { Model } from '../../../models'
+import type { RootState } from '../../../store'
 
-const reqElFields = [
-  'multiples', 'wrapsReleases', 'gymnasticsPower',
-  'interactions', 'turnerInvolvement'
-] as const
-type ReqElField = typeof reqElFields[number]
+export type schemas = 'rqMultiples' | 'rqWrapsReleases' | 'rqGymnasticsPower'
+  | 'rqInteractions' | 'rqTurnerInvolvement'
+  | `repL${3 | 4 | 5 | 6 | 7 | 8}`
+  | 'miss' | 'timeViolation' | 'spaceViolation'
 
 export default defineComponent({
   name: 'RequiredElements',
@@ -118,16 +117,30 @@ export default defineComponent({
     const store = useStore<RootState>()
     const lookupCodeParts = store.state.scoresheet.currentScoresheet?.competitionEventLookupCode.split('.') ?? []
 
+    const levels = computed((): Array<[schemas, number] | null> => [
+      null,
+      null,
+      ['repL4', 4],
+
+      null,
+      ['repL7', 7],
+      ['repL5', 5],
+
+      ['repL3', 3],
+      ['repL8', 8],
+      ['repL6', 6],
+    ])
+
+    const requiredElements = computed((): schemas[] => [
+      'rqMultiples',
+      'rqWrapsReleases',
+      'rqGymnasticsPower',
+      'rqInteractions',
+      'rqTurnerInvolvement'
+    ])
+
     const isDoubleDutch = computed(() => lookupCodeParts[3] === 'dd')
     const hasInteractions = computed(() => parseInt(lookupCodeParts[5], 10) > (lookupCodeParts[3] === 'dd' ? 3 : 1))
-    const requiredElements = computed(() => {
-      const marks: Partial<Record<ReqElField, number>> = {}
-      for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
-        if (!reqElFields.includes(mark.fieldId as any)) continue
-        marks[mark.fieldId as ReqElField] = (marks[mark.fieldId as ReqElField] ?? 0) + mark.value
-      }
-      return marks
-    })
 
     function L (level: number): number {
       if (level === 0) return 0
@@ -135,45 +148,22 @@ export default defineComponent({
     }
 
     return {
+      tally: store.getters.tally,
       isDoubleDutch,
       hasInteractions,
+      levels,
 
-      misses: computed(() => {
-        return store.state.scoresheet.currentScoresheet?.marks.reduce(
-          (acc, mark) => acc + (mark.fieldId === 'miss' ? mark.value : 0),
-          0
-        ) ?? 0
-      }),
-      timeViolations: computed(() => {
-        return store.state.scoresheet.currentScoresheet?.marks.reduce(
-          (acc, mark) => acc + (mark.fieldId === 'timeViolation' ? mark.value : 0),
-          0
-        ) ?? 0
-      }),
-      spaceViolations: computed(() => {
-        return store.state.scoresheet.currentScoresheet?.marks.reduce(
-          (acc, mark) => acc + (mark.fieldId === 'spaceViolation' ? mark.value : 0),
-          0
-        ) ?? 0
-      }),
-      repeatedSkills: computed(() => {
-        const marks: { [prop: string]: number } = {}
-        for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
-          if (mark.fieldId !== 'repeatedSkill') continue
-          marks[mark.value.toString()] = (marks[mark.value.toString()] ?? 0) + 1
+      numRepeatedSkills: computed(() => levels.value
+        .map(level => level ? store.getters.tally[level[0]] ?? 0 : 0)
+        .reduce((a, b) => a + b)),
+      repeatedSkillsResult: computed(() => {
+        let res = 0
+        for (let level of levels.value) {
+          if (level === null) continue
+          res += L(level[1]) * (store.getters.tally[level[0]] ?? 0)
         }
-        return marks
+        return Math.round(res * 100) / 100
       }),
-      numRepeatedSkills: computed(() => (store.state.scoresheet.currentScoresheet?.marks ?? []).filter(mark => mark.fieldId === 'repeatedSkill').length),
-      repeatedSkillsResult: computed(() =>
-        Math.round(
-          (store.state.scoresheet.currentScoresheet?.marks ?? [])
-            .filter(mark => mark.fieldId === 'repeatedSkill')
-            .map(mark => L(mark.value))
-            .reduce((a, b) => a + b, 0) * 100
-        ) / 100
-      ),
-      requiredElements,
       result: computed(() => {
         let elements = 0
         let completed = 0
@@ -182,8 +172,9 @@ export default defineComponent({
 
         if (hasInteractions.value) elements += 1
 
-        for (const done of Object.values(requiredElements.value)) {
-          completed += (done ?? 0) > 4 ? 4 : done ?? 0
+        for (let schema of requiredElements.value) {
+          let done = store.getters.tally[schema] ?? 0
+          completed += done > 4 ? 4 : done
         }
 
         return 1 - (((elements * 4) - completed) * 0.025)
@@ -194,9 +185,9 @@ export default defineComponent({
     diffOpen: false
   }),
   methods: {
-    ...mapMutations(['addMark']),
-    addRepeatedSkill (level: number) {
-      this.addMark({ fieldId: 'repeatedSkill', value: level })
+    ...mapActions(['addMark']),
+    addRepeatedSkill (schema: schemas) {
+      this.addMark({ schema })
       this.diffOpen = false
     }
   }

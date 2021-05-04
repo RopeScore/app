@@ -4,17 +4,17 @@
       <score-button
         label="False Starts"
         color="red"
-        :value="falseStarts"
+        :value="tally.falseStart ?? 0"
         single-row
-        @click="addMark({ fieldId: 'falseStart', value: 1 })"
+        @click="addMark({ schema: 'falseStart' })"
         />
       <score-button
         v-if="isHeadJudge"
         label="False Switches"
         color="red"
-        :value="falseSwitches"
+        :value="tally.falseSwitch ?? 0"
         single-row
-        @click="addMark({ fieldId: 'falseSwitch', value: 1 })"
+        @click="addMark({ schema: 'falseSwitch' })"
       />
     </template>
     <template v-else>
@@ -24,19 +24,21 @@
 
     <score-button
       label="Steps"
-      :value="steps"
+      :value="tally.step ?? 0"
       class="col-span-2 row-span-3 mx-12"
-      @click="addMark({ fieldId: 'speedStep', value: 1 })"
+      @click="addMark({ schema: 'step' })"
     />
   </main>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
-import { mapMutations, useStore } from 'vuex'
+import { defineComponent, PropType } from 'vue'
+import { mapActions, useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import { Model } from '../../../models'
-import { RootState } from '../../../store'
+import type { Model } from '../../../models'
+import type { RootState } from '../../../store'
+
+export type schemas = 'step' | 'falseStart' | 'falseSwitch'
 
 export default defineComponent({
   name: 'Speed',
@@ -53,27 +55,7 @@ export default defineComponent({
     const store = useStore<RootState>()
 
     return {
-      steps: computed(() =>
-        store.state.scoresheet.currentScoresheet?.marks.reduce(
-          (acc, mark) => acc +
-            (mark.fieldId === 'speedStep' ? mark.value : 0),
-          0
-        ) ?? 0
-      ),
-      falseStarts: computed(() =>
-        store.state.scoresheet.currentScoresheet?.marks.reduce(
-          (acc, mark) => acc +
-            (mark.fieldId === 'falseStart' ? mark.value : 0),
-          0
-        ) ?? 0
-      ),
-      falseSwitches: computed(() =>
-        store.state.scoresheet.currentScoresheet?.marks.reduce(
-          (acc, mark) => acc +
-            (mark.fieldId === 'falseSwitch' ? mark.value : 0),
-          0
-        ) ?? 0
-      )
+      tally: store.getters.tally
     }
   },
   computed: {
@@ -82,7 +64,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapMutations(['addMark'])
+    ...mapActions(['addMark'])
   }
 })
 </script>

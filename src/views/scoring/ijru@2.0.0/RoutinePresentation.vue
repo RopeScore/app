@@ -6,48 +6,51 @@
 
     <score-button
       label="+"
-      :value="entertainment.plus"
-      @click="addMark({ fieldId: 'entertainment', value: 1 })"
+      :value="tally.entertainmentPlus ?? 0"
+      @click="addMark({ schema: 'entertainmentPlus' })"
     />
     <score-button color="none" label="Ent Score" :value="entertainmentResult" />
     <score-button
       label="+"
-      :value="musicality.plus"
-      @click="addMark({ fieldId: 'musicality', value: 1 })"
+      :value="tally.musicalityPlus ?? 0"
+      @click="addMark({ schema: 'musicalityPlus' })"
     />
 
     <score-button
       label="&#10004;"
-      :value="entertainment.check"
-      @click="addMark({ fieldId: 'entertainment', value: 0 })"
+      :value="tally.entertainmentCheck ?? 0"
+      @click="addMark({ schema: 'entertainmentCheck' })"
     />
     <score-button color="none" label="Musicality Score" :value="musicalityResult" />
     <score-button
       label="&#10004;"
-      :value="musicality.check"
-      @click="addMark({ fieldId: 'musicality', value: 0 })"
+      :value="tally.musicalityCheck ?? 0"
+      @click="addMark({ schema: 'musicalityCheck' })"
     />
 
     <score-button
       label="-"
-      :value="entertainment.minus"
-      @click="addMark({ fieldId: 'entertainment', value: -1 })"
+      :value="tally.entertainmentMinus ?? 0"
+      @click="addMark({ schema: 'entertainmentMinus' })"
     />
     <score-button color="none" label="" />
     <score-button
       label="-"
-      :value="musicality.minus"
-      @click="addMark({ fieldId: 'musicality', value: -1 })"
+      :value="tally.musicalityMinus ?? 0"
+      @click="addMark({ schema: 'musicalityMinus'})"
     />
   </main>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { mapMutations, useStore } from 'vuex'
+import { mapActions, useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import { Model } from '../../../models'
-import { RootState } from '../../../store'
+import type { Model } from '../../../models'
+import type { RootState } from '../../../store'
+
+export type schemas = `entertainment${'Plus' | 'Check' | 'Minus'}`
+  | `musicality${'Plus' | 'Check' | 'Minus'}`
 
 export default defineComponent({
   name: 'RoutinePresentation',
@@ -63,44 +66,16 @@ export default defineComponent({
   setup () {
     const store = useStore<RootState>()
 
-    const entertainment = computed(() => {
-      const marks = { plus: 0, check: 0, minus: 0 }
-
-      for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
-        if (mark.fieldId === 'entertainment') {
-          if (mark.value === 1) marks.plus += 1
-          if (mark.value === 0) marks.check += 1
-          if (mark.value === -1) marks.minus += 1
-        }
-      }
-
-      return marks
-    })
-
     const entertainmentResult = computed(() => {
-      const { plus, check, minus } = entertainment.value
+      const { entertainmentPlus: plus = 0, entertainmentCheck: check = 0, entertainmentMinus: minus = 0 } = store.getters.tally
       if (plus + check + minus === 0) return 1
       let average = (plus - minus) / (plus + check + minus)
       let percentage = average * (0.60 / 4);
       return Math.round((1 + percentage) * 100) / 100;
     })
 
-    const musicality = computed(() => {
-      const marks = { plus: 0, check: 0, minus: 0 }
-
-      for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
-        if (mark.fieldId === 'musicality') {
-          if (mark.value === 1) marks.plus += 1
-          if (mark.value === 0) marks.check += 1
-          if (mark.value === -1) marks.minus += 1
-        }
-      }
-
-      return marks
-    })
-
     const musicalityResult = computed(() => {
-      const { plus, check, minus } = musicality.value
+      const { musicalityPlus: plus = 0, musicalityCheck: check = 0, musicalityMinus: minus = 0 } = store.getters.tally
       if (plus + check + minus === 0) return 1
       let average = (plus - minus) / (plus + check + minus)
       let percentage = average * (0.60 / 4);
@@ -108,9 +83,8 @@ export default defineComponent({
     })
 
     return {
-      entertainment,
+      tally: store.getters.tally,
       entertainmentResult,
-      musicality,
       musicalityResult,
       result: computed(() => {
         return (
@@ -122,7 +96,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapMutations(['addMark'])
+    ...mapActions(['addMark'])
   }
 })
 </script>

@@ -5,22 +5,24 @@
     <score-button color="none" label="" />
 
     <score-button
-      v-for="level in [1,.5,4,2,7,5,3,8,6]"
-      :key="level"
+      v-for="[schema, level] in levels"
+      :key="schema"
       :color="level < 7 ? 'green' : 'indigo'"
       :label="`Level ${level}`"
-      :value="levels[level.toString()] ?? 0"
-      @click="addMark({ fieldId: `difficulty`, value: level })"
+      :value="tally[schema] ?? 0"
+      @click="addMark({ schema })"
     />
   </main>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { mapMutations, useStore } from 'vuex'
+import { mapActions, useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import { RootState } from '../../../store'
-import { Model } from '../../../models'
+import type { RootState } from '../../../store'
+import type { Model } from '../../../models'
+
+export type schemas = `diffL${'0.5' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}`
 
 export default defineComponent({
   name: 'Difficulty',
@@ -35,37 +37,40 @@ export default defineComponent({
   },
   setup () {
     const store = useStore<RootState>()
-    const levels = computed(() => {
-      const marks: { [prop: string]: number } = {}
-      for (const mark of store.state.scoresheet.currentScoresheet?.marks ?? []) {
-        if (mark.fieldId !== 'difficulty') continue
-        marks[mark.value.toString()] = (marks[mark.value.toString()] ?? 0) + 1
-      }
-      return marks
-    })
 
     function L (level: number): number {
       if (level === 0) return 0
       return Math.round(Math.pow(1.8, level) * 10) / 100
     }
 
+    const levels = computed((): Array<[schemas, number]> => [
+      ['diffL1', 1],
+      ['diffL0.5', 0.5],
+      ['diffL4', 4],
+
+      ['diffL2', 2],
+      ['diffL7', 7],
+      ['diffL5', 5],
+
+      ['diffL3', 3],
+      ['diffL8', 8],
+      ['diffL6', 6],
+    ])
+
     return {
+      tally: store.getters.tally,
       levels,
       result: computed(() => {
-        return (
-          Math.round(
-            (store.state.scoresheet.currentScoresheet?.marks ?? [])
-              .filter(mark => mark.fieldId === 'difficulty')
-              .map(mark => L(mark.value))
-              .reduce((a, b) => a + b, 0) * 100
-          ) / 100
-        )
+        let res = 0
+        for (let [schema, level] of levels.value) {
+          res += L(level) * (store.getters.tally[schema] ?? 0)
+        }
+        return Math.round(res * 100) / 100
       })
     }
   },
   methods: {
-    ...mapMutations(['addMark']),
-    noop () {}
+    ...mapActions(['addMark'])
   }
 })
 </script>
