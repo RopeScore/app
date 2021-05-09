@@ -8,7 +8,7 @@
     <score-button color="none" label="" />
     <score-button
       label="+"
-      :value="tally.formExecutionPlus ?? 0"
+      :value="tally('formExecutionPlus')"
       @click="addMark({ schema: 'formExecutionPlus' })"
     />
 
@@ -16,20 +16,20 @@
     <score-button color="none" label="" />
     <score-button
       label="&#10004;"
-      :value="tally.formExecutionCheck ?? 0"
+      :value="tally('formExecutionCheck')"
       @click="addMark({ schema: 'formExecutionCheck' })"
     />
 
     <score-button
       label="Misses"
-      :value="tally.miss ?? 0"
+      :value="tally('miss')"
       color="red"
       @click="addMark({ schema: 'miss' })"
     />
     <score-button color="none" label="" />
     <score-button
       label="-"
-      :value="tally.formExecutionMinus ?? 0"
+      :value="tally('formExecutionMinus')"
       @click="addMark({ schema: 'formExecutionMinus' })"
     />
   </main>

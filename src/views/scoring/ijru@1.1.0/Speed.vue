@@ -4,7 +4,7 @@
       <score-button
         label="False Starts"
         color="red"
-        :value="tally.falseStart ?? 0"
+        :value="tally('falseStart')"
         single-row
         @click="addMark({ schema: 'falseStart' })"
         />
@@ -12,7 +12,7 @@
         v-if="isHeadJudge"
         label="False Switches"
         color="red"
-        :value="tally.falseSwitch ?? 0"
+        :value="tally('falseSwitch')"
         single-row
         @click="addMark({ schema: 'falseSwitch' })"
       />
@@ -24,7 +24,7 @@
 
     <score-button
       label="Steps"
-      :value="tally.step ?? 0"
+      :value="tally('step')"
       class="col-span-2 row-span-3 mx-12"
       @click="addMark({ schema: 'step' })"
     />

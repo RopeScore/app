@@ -6,37 +6,37 @@
 
     <score-button
       label="+"
-      :value="tally.entertainmentPlus ?? 0"
+      :value="tally('entertainmentPlus')"
       @click="addMark({ schema: 'entertainmentPlus' })"
     />
     <score-button color="none" label="Ent Score" :value="entertainmentResult" />
     <score-button
       label="+"
-      :value="tally.musicalityPlus ?? 0"
+      :value="tally('musicalityPlus')"
       @click="addMark({ schema: 'musicalityPlus' })"
     />
 
     <score-button
       label="&#10004;"
-      :value="tally.entertainmentCheck ?? 0"
+      :value="tally('entertainmentCheck')"
       @click="addMark({ schema: 'entertainmentCheck' })"
     />
     <score-button color="none" label="Musicality Score" :value="musicalityResult" />
     <score-button
       label="&#10004;"
-      :value="tally.musicalityCheck ?? 0"
+      :value="tally('musicalityCheck')"
       @click="addMark({ schema: 'musicalityCheck' })"
     />
 
     <score-button
       label="-"
-      :value="tally.entertainmentMinus ?? 0"
+      :value="tally('entertainmentMinus')"
       @click="addMark({ schema: 'entertainmentMinus' })"
     />
     <score-button color="none" label="" />
     <score-button
       label="-"
-      :value="tally.musicalityMinus ?? 0"
+      :value="tally('musicalityMinus')"
       @click="addMark({ schema: 'musicalityMinus'})"
     />
   </main>

@@ -9,14 +9,14 @@
       <score-button
         v-else
         label="Multiples"
-        :value="tally.rqMmultiples ?? 0"
+        :value="tally('rqMmultiples')"
         @click="addMark({ schema: 'rqMmultiples' })"
       />
 
       <score-button
         label="Space Violations"
         color="red"
-        :value="tally.spaceViolation ?? 0"
+        :value="tally('spaceViolation')"
         @click="addMark({ schema: 'spaceViolation' })"
       />
 
@@ -24,28 +24,28 @@
       <score-button
         v-else
         label="Wraps / Releases"
-        :value="tally.rqWrapsReleases ?? 0"
+        :value="tally('rqWrapsReleases')"
         @click="addMark({ schema: 'rqWrapsReleases' })"
       />
 
 
       <score-button
         label="Gymnastics / Power"
-        :value="tally.rqGymnasticsPower ?? 0"
+        :value="tally('rqGymnasticsPower')"
         @click="addMark({ schema: 'rqGymnasticsPower' })"
       />
 
       <score-button
         label="Time Violations"
         color="red"
-        :value="tally.timeViolation ?? 0"
+        :value="tally('timeViolation')"
         @click="addMark({ schema: 'timeViolation' })"
       />
 
       <score-button
         v-if="hasInteractions"
         label="Interactions"
-        :value="tally.rqInteractions ?? 0"
+        :value="tally('rqInteractions')"
         @click="addMark({ schema: 'rqInteractions' })"
       />
       <score-button v-else color="none" label="" />
@@ -54,7 +54,7 @@
       <score-button
         label="Misses"
         color="red"
-        :value="tally.miss ?? 0"
+        :value="tally('miss')"
         @click="addMark({ schema: 'miss' })"
       />
 
@@ -69,7 +69,7 @@
       <score-button
         v-if="isDoubleDutch"
         label="Turner Involvement"
-        :value="tally.rqTurnerInvolvement ?? 0"
+        :value="tally('rqTurnerInvolvement')"
         @click="addMark({ schema: 'rqTurnerInvolvement' })"
       />
       <score-button v-else color="none" label="" />
@@ -80,7 +80,7 @@
           v-if="level !== null"
           :color="level[1] < 7 ? 'green' : 'indigo'"
           :label="`Level ${level[1]}`"
-          :value="tally[level[0]] ?? 0"
+          :value="tally(level[0])"
           :vibration="150"
           @click="addRepeatedSkill(level[0])"
         />
@@ -154,13 +154,13 @@ export default defineComponent({
       levels,
 
       numRepeatedSkills: computed(() => levels.value
-        .map(level => level ? store.getters.tally[level[0]] ?? 0 : 0)
+        .map(level => level ? store.getters.tally(level[0]) : 0)
         .reduce((a, b) => a + b)),
       repeatedSkillsResult: computed(() => {
         let res = 0
         for (let level of levels.value) {
           if (level === null) continue
-          res += L(level[1]) * (store.getters.tally[level[0]] ?? 0)
+          res += L(level[1]) * store.getters.tally(level[0])
         }
         return Math.round(res * 100) / 100
       }),
@@ -173,7 +173,7 @@ export default defineComponent({
         if (hasInteractions.value) elements += 1
 
         for (let schema of requiredElements.value) {
-          let done = store.getters.tally[schema] ?? 0
+          let done = store.getters.tally(schema)
           completed += done > 4 ? 4 : done
         }
 

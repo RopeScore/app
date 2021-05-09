@@ -97,7 +97,7 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
       return state.currentScoresheet
     },
     tally (state) {
-      return state.tally
+      return (prop: string) => state.tally[prop] ?? 0
     }
   },
   mutations: {

@@ -9,7 +9,7 @@
       :key="schema"
       :color="level < 7 ? 'green' : 'indigo'"
       :label="`Level ${level}`"
-      :value="tally[schema] ?? 0"
+      :value="tally(schema)"
       @click="addMark({ schema })"
     />
   </main>
@@ -63,7 +63,7 @@ export default defineComponent({
       result: computed(() => {
         let res = 0
         for (let [schema, level] of levels.value) {
-          res += L(level) * (store.getters.tally[schema] ?? 0)
+          res += L(level) * store.getters.tally(schema)
         }
         return Math.round(res * 100) / 100
       })
