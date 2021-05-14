@@ -5,7 +5,7 @@
   "author": "Svante Bengtson <svante@swantzter.se> (https://swantzter.se)",
   "license": "MIT",
   "homepage": "https://ropescore.app",
-  "repository": "https://github.com/RopeScore/judging-app",
+  "repository": "https://github.com/RopeScore/ropescore.app",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
