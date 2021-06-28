@@ -67,7 +67,9 @@ export default defineComponent({
     const store = useStore<RootState>()
 
     const entertainmentResult = computed(() => {
-      const { entertainmentPlus: plus = 0, entertainmentCheck: check = 0, entertainmentMinus: minus = 0 } = store.getters.tally
+      const plus = store.getters.tally('entertainmentPlus')
+      const check = store.getters.tally('entertainmentCheck')
+      const minus = store.getters.tally('entertainmentMinus')
       if (plus + check + minus === 0) return 1
       let average = (plus - minus) / (plus + check + minus)
       let percentage = average * (0.60 / 4);
@@ -75,7 +77,9 @@ export default defineComponent({
     })
 
     const musicalityResult = computed(() => {
-      const { musicalityPlus: plus = 0, musicalityCheck: check = 0, musicalityMinus: minus = 0 } = store.getters.tally
+      const plus = store.getters.tally('musicalityPlus')
+      const check = store.getters.tally('musicalityCheck')
+      const minus = store.getters.tally('musicalityMinus')
       if (plus + check + minus === 0) return 1
       let average = (plus - minus) / (plus + check + minus)
       let percentage = average * (0.60 / 4);

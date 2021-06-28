@@ -61,11 +61,9 @@ export default defineComponent({
     return {
       tally: store.getters.tally,
       result: computed(() => {
-        const {
-          formExecutionPlus: plus = 0,
-          formExecutionCheck: check = 0,
-          formExecutionMinus: minus = 0
-        } = store.getters.tally
+        const plus = store.getters.tally('formExecutionPlus')
+        const check = store.getters.tally('formExecutionCheck')
+        const minus = store.getters.tally('formExecutionMinus')
         if (plus + check + minus === 0) return 1
         let average = (plus - minus) / (plus + check + minus)
         let percentage = average * (0.60 / 2);
