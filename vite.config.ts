@@ -8,6 +8,9 @@ export default defineConfig({
   build: {
     sourcemap: true
   },
+  server: {
+    port: 5001
+  },
   plugins: [
     vue(),
     WindiCSS(),
