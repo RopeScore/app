@@ -2,6 +2,7 @@ import { Module } from "vuex"
 import { v4 as uuid } from 'uuid'
 import { get, set, keys, clear } from 'idb-keyval'
 import { RootState } from "../store"
+import idbReady from 'safari-14-idb-fix'
 
 import type { schemas as ijru_1_1_0_diff_schemas } from '../views/scoring/ijru@1.1.0/Difficulty.vue'
 import type { schemas as ijru_1_1_0_speed_schemas } from '../views/scoring/ijru@1.1.0/Speed.vue'
@@ -87,6 +88,8 @@ export interface ScoresheetState {
   tally: ScoreTally
 }
 
+const ready = idbReady()
+
 const scoresheetModule: Module<ScoresheetState, RootState> = {
   state: () => ({
     currentScoresheet: null,
@@ -143,6 +146,7 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
     },
     async openScoresheet({ commit, state, dispatch }, id: string) {
       if (id === state.currentScoresheet?.id) return
+      await ready
       let scoresheet = await get(id)
       if (!scoresheet) throw Error('No such scoresheet in idb')
       if (state.currentScoresheet) await dispatch('saveCurrentScoresheet')
@@ -150,15 +154,18 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
       console.log('Setting new current scoresheet')
       commit('setCurrentScoresheet', scoresheet)
     },
-    async saveCurrentScoresheet({ state }) {
+    async saveCurrentScoresheet ({ state }) {
       if (!state.currentScoresheet) throw Error('No scoresheet open')
       console.log('Saving current scoresheet')
+      await ready
       await set(state.currentScoresheet.id, JSON.parse(JSON.stringify(state.currentScoresheet)))
     },
-    listScoresheets() {
+    async listScoresheets () {
+      await ready
       return keys()
     },
-    removeAllScoresheets() {
+    async removeAllScoresheets () {
+      await ready
       return clear()
     },
     addMark ({ commit, state }, mark: MarkPayload) {
