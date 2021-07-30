@@ -1,5 +1,5 @@
 <template>
-  <main class="grid grid-rows-score-alternative grid-cols-2">
+  <main class="grid grid-rows-score grid-cols-2">
     <template v-if="isHeadJudge">
       <score-button
         label="False Starts"
@@ -68,9 +68,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.grid-rows-score-alternative {
-  grid-template-rows: 9vh 81vh;
-}
-</style>

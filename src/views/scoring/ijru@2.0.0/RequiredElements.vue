@@ -9,8 +9,8 @@
       <score-button
         v-else
         label="Multiples"
-        :value="tally('rqMmultiples')"
-        @click="addMark({ schema: 'rqMmultiples' })"
+        :value="tally('rqMultiples')"
+        @click="addMark({ schema: 'rqMultiples' })"
       />
 
       <score-button
@@ -75,7 +75,7 @@
       <score-button v-else color="none" label="" />
     </template>
     <template v-else>
-      <template v-for="level in levels" :key="level.schema">
+      <template v-for="(level, idx) in levels" :key="level ? level[0] : idx">
         <score-button
           v-if="level !== null"
           :color="level[1] < 7 ? 'green' : 'indigo'"
@@ -176,6 +176,8 @@ export default defineComponent({
           let done = store.getters.tally(schema)
           completed += done > 4 ? 4 : done
         }
+
+        console.log(elements, completed)
 
         return 1 - (((elements * 4) - completed) * 0.025)
       })
