@@ -7,7 +7,7 @@
         :value="tally('falseStart')"
         single-row
         @click="store.dispatch('addMark', { schema: 'falseStart' })"
-        />
+      />
       <score-button
         v-if="isHeadJudge"
         label="False Switches"
@@ -18,8 +18,14 @@
       />
     </template>
     <template v-else>
-      <score-button color="none" label="" />
-      <score-button color="none" label="" />
+      <score-button
+        color="none"
+        label=""
+      />
+      <score-button
+        color="none"
+        label=""
+      />
     </template>
 
     <score-button

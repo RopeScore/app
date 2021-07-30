@@ -1,8 +1,17 @@
 <template>
   <main class="grid grid-cols-3 grid-rows-score">
-    <score-button color="none" label="" />
-    <score-button color="none" :label="'Score: ' + result" />
-    <score-button color="none" label="" />
+    <score-button
+      color="none"
+      label=""
+    />
+    <score-button
+      color="none"
+      :label="'Score: ' + result"
+    />
+    <score-button
+      color="none"
+      label=""
+    />
 
     <score-button
       v-for="[schema, level] in levels"
@@ -51,13 +60,13 @@ const levels = computed((): Array<[schemas, number]> => [
 
   ['diffL3', 3],
   ['diffL8', 8],
-  ['diffL6', 6],
+  ['diffL6', 6]
 ])
 
 const tally = store.getters.tally
 const result = computed(() => {
   let res = 0
-  for (let [schema, level] of levels.value) {
+  for (const [schema, level] of levels.value) {
     res += L(level) * store.getters.tally(schema)
   }
   return Math.round(res * 100) / 100

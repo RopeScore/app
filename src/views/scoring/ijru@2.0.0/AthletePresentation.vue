@@ -1,19 +1,38 @@
 <template>
   <main class="grid grid-cols-3 grid-rows-score">
-    <score-button color="none" label="" />
-    <div class="m-auto">Score: {{ result }}</div>
-    <div class="m-auto text-center">Form/Execution</div>
+    <score-button
+      color="none"
+      label=""
+    />
+    <div class="m-auto">
+      Score: {{ result }}
+    </div>
+    <div class="m-auto text-center">
+      Form/Execution
+    </div>
 
-    <score-button color="none" label="" />
-    <score-button color="none" label="" />
+    <score-button
+      color="none"
+      label=""
+    />
+    <score-button
+      color="none"
+      label=""
+    />
     <score-button
       label="+"
       :value="tally('formExecutionPlus')"
       @click="store.dispatch('addMark', { schema: 'formExecutionPlus' })"
     />
 
-    <score-button color="none" label="" />
-    <score-button color="none" label="" />
+    <score-button
+      color="none"
+      label=""
+    />
+    <score-button
+      color="none"
+      label=""
+    />
     <score-button
       label="&#10004;"
       :value="tally('formExecutionCheck')"
@@ -26,7 +45,10 @@
       color="red"
       @click="store.dispatch('addMark', { schema: 'miss' })"
     />
-    <score-button color="none" label="" />
+    <score-button
+      color="none"
+      label=""
+    />
     <score-button
       label="-"
       :value="tally('formExecutionMinus')"
@@ -61,8 +83,8 @@ const result = computed(() => {
   const check = store.getters.tally('formExecutionCheck')
   const minus = store.getters.tally('formExecutionMinus')
   if (plus + check + minus === 0) return 1
-  let average = (plus - minus) / (plus + check + minus)
-  let percentage = average * (0.60 / 2);
-  return Math.round((1 + percentage) * 100) / 100;
+  const average = (plus - minus) / (plus + check + minus)
+  const percentage = average * (0.60 / 2)
+  return Math.round((1 + percentage) * 100) / 100
 })
 </script>

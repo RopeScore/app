@@ -5,14 +5,13 @@ export interface BatteryState {
   batteryLevel: number | null
 }
 
-
 const battery = reactive<BatteryState>({
   charging: false,
   batteryLevel: null
 })
 
 navigator.getBattery?.().then(b => {
-  function updateAllBatteryInfo() {
+  function updateAllBatteryInfo () {
     updateChargeInfo()
     updateLevelInfo()
   }
@@ -20,15 +19,15 @@ navigator.getBattery?.().then(b => {
 
   b.addEventListener('chargingchange', function () {
     updateChargeInfo()
-  });
-  function updateChargeInfo() {
+  })
+  function updateChargeInfo () {
     battery.charging = b.charging
   }
 
   b.addEventListener('levelchange', function () {
     updateLevelInfo()
-  });
-  function updateLevelInfo() {
+  })
+  function updateLevelInfo () {
     battery.batteryLevel = b.level
   }
 })

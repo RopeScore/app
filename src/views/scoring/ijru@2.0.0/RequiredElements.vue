@@ -1,11 +1,23 @@
 <template>
   <main class="grid grid-cols-3 grid-rows-score">
-    <score-button color="none" label="" />
-    <div class="m-auto">Score: {{ result }}</div>
-    <score-button color="none" label="" />
+    <score-button
+      color="none"
+      label=""
+    />
+    <div class="m-auto">
+      Score: {{ result }}
+    </div>
+    <score-button
+      color="none"
+      label=""
+    />
 
     <template v-if="!diffOpen">
-      <score-button v-if="isDoubleDutch" color="none" label="" />
+      <score-button
+        v-if="isDoubleDutch"
+        color="none"
+        label=""
+      />
       <score-button
         v-else
         label="Multiples"
@@ -20,14 +32,17 @@
         @click="store.dispatch('addMark', { schema: 'spaceViolation' })"
       />
 
-      <score-button v-if="isDoubleDutch" color="none" label="" />
+      <score-button
+        v-if="isDoubleDutch"
+        color="none"
+        label=""
+      />
       <score-button
         v-else
         label="Wraps / Releases"
         :value="tally('rqWrapsReleases')"
         @click="store.dispatch('addMark', { schema: 'rqWrapsReleases' })"
       />
-
 
       <score-button
         label="Gymnastics / Power"
@@ -48,8 +63,11 @@
         :value="tally('rqInteractions')"
         @click="store.dispatch('addMark', { schema: 'rqInteractions' })"
       />
-      <score-button v-else color="none" label="" />
-
+      <score-button
+        v-else
+        color="none"
+        label=""
+      />
 
       <score-button
         label="Misses"
@@ -72,10 +90,17 @@
         :value="tally('rqTurnerInvolvement')"
         @click="store.dispatch('addMark', { schema: 'rqTurnerInvolvement' })"
       />
-      <score-button v-else color="none" label="" />
+      <score-button
+        v-else
+        color="none"
+        label=""
+      />
     </template>
     <template v-else>
-      <template v-for="(level, idx) in levels" :key="level ? level[0] : idx">
+      <template
+        v-for="(level, idx) in levels"
+        :key="level ? level[0] : idx"
+      >
         <score-button
           v-if="level !== null"
           :color="level[1] < 7 ? 'green' : 'indigo'"
@@ -84,7 +109,11 @@
           :vibration="150"
           @click="addRepeatedSkill(level[0])"
         />
-        <score-button v-else color="none" label="" />
+        <score-button
+          v-else
+          color="none"
+          label=""
+        />
       </template>
     </template>
   </main>
@@ -127,7 +156,7 @@ const levels = [
 
   ['repL3', 3],
   ['repL8', 8],
-  ['repL6', 6],
+  ['repL6', 6]
 ] as const
 
 const requiredElements = [
@@ -152,7 +181,7 @@ const numRepeatedSkills = computed(() => levels
 
 const repeatedSkillsResult = computed(() => {
   let res = 0
-  for (let level of levels) {
+  for (const level of levels) {
     if (level === null) continue
     res += L(level[1]) * store.getters.tally(level[0])
   }
@@ -167,8 +196,8 @@ const result = computed(() => {
 
   if (hasInteractions.value) elements += 1
 
-  for (let schema of requiredElements) {
-    let done = store.getters.tally(schema)
+  for (const schema of requiredElements) {
+    const done = store.getters.tally(schema)
     completed += done > 4 ? 4 : done
   }
 

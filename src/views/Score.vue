@@ -8,8 +8,8 @@
     Unsupported Judge Type
   </div>
   <component
-    v-else
     :is="model?.component"
+    v-else
     :model="model"
   />
 </template>
@@ -44,7 +44,7 @@ onUnmounted(async () => {
 
 watch(() => route.params, () => {
   console.log(route.params.id)
-  route.params.id ? store.dispatch('openScoresheet', route.params.id) : true
+  if (route.params.id) store.dispatch('openScoresheet', route.params.id)
 })
 
 const model = computed(() => {

@@ -1,7 +1,7 @@
-import { Module } from "vuex"
+import { Module } from 'vuex'
 import { v4 as uuid } from 'uuid'
 import { get, set, keys, clear } from 'idb-keyval'
-import { RootState } from "../store"
+import { RootState } from '../store'
 import idbReady from 'safari-14-idb-fix'
 
 import type { schemas as ijru_1_1_0_diff_schemas } from '../views/scoring/ijru@1.1.0/Difficulty.vue'
@@ -11,8 +11,8 @@ import type { schemas as ijru_2_0_0_rout_pres_schemas } from '../views/scoring/i
 import type { schemas as ijru_2_0_0_req_el_schemas } from '../views/scoring/ijru@2.0.0/RequiredElements.vue'
 
 export type schemas = ijru_1_1_0_diff_schemas | ijru_1_1_0_speed_schemas
-  | ijru_2_0_0_ath_pres_schemas | ijru_2_0_0_rout_pres_schemas
-  | ijru_2_0_0_req_el_schemas
+| ijru_2_0_0_ath_pres_schemas | ijru_2_0_0_rout_pres_schemas
+| ijru_2_0_0_req_el_schemas
 
 export interface GenericMark {
   readonly timestamp: number
@@ -31,9 +31,7 @@ export type Mark = GenericMark | UndoMark
 
 export type MarkPayload = { schema: 'undo', target: number } | { schema: schemas }
 
-export type ScoreTally = {
-  [prop in keyof schemas]?: number
-}
+export type ScoreTally = Partial<Record<keyof schemas, number>>
 
 export interface LocalScoresheet {
   id: string
@@ -101,7 +99,7 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
       return state.currentScoresheet
     },
     tally (state) {
-      return (prop: string) => state.tally[prop] ?? 0
+      return (prop: keyof schemas) => state.tally[prop] ?? 0
     }
   },
   mutations: {
@@ -125,15 +123,15 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
       state.currentScoresheet.marks.push(tsMark)
     },
 
-    incrementTally (state, schema: schemas) {
+    incrementTally (state, schema: keyof schemas) {
       state.tally[schema] = (state.tally[schema] ?? 0) + 1
     },
-    decrementTally (state, schema: schemas) {
+    decrementTally (state, schema: keyof schemas) {
       state.tally[schema] = (state.tally[schema] ?? 0) - 1
     }
   },
   actions: {
-    async createLocalScoresheet({ }, { judgeType, rulesId, competitionEventLookupCode }) {
+    async createLocalScoresheet (_, { judgeType, rulesId, competitionEventLookupCode }) {
       const newScoresheet: LocalScoresheet = {
         id: uuid(),
         judgeType,
@@ -145,10 +143,10 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
       await set(newScoresheet.id, newScoresheet)
       return newScoresheet.id
     },
-    async openScoresheet({ commit, state, dispatch }, id: string) {
+    async openScoresheet ({ commit, state, dispatch }, id: string) {
       if (id === state.currentScoresheet?.id) return
       await ready
-      let scoresheet = await get(id)
+      const scoresheet = await get(id)
       if (!scoresheet) throw Error('No such scoresheet in idb')
       if (state.currentScoresheet) await dispatch('saveCurrentScoresheet')
 
@@ -173,7 +171,7 @@ const scoresheetModule: Module<ScoresheetState, RootState> = {
       commit('addMark', mark)
 
       if (mark.schema === 'undo') {
-        let undoneMark = state.currentScoresheet?.marks[mark.target]
+        const undoneMark = state.currentScoresheet?.marks[mark.target]
         if (!undoneMark) throw new Error('Undone mark missing')
         commit('decrementTally', undoneMark.schema)
       } else {

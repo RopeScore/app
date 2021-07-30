@@ -1,8 +1,20 @@
 <template>
   <nav class="grid grid-cols-3 h-header">
-    <score-button @click="goBack()" label="Back" />
-    <score-button v-if="!disableUndo" @click="store.dispatch('addMark', { schema: 'undo', target: lastMarkSequence })" color="orange" label="Undo" />
-    <score-button v-else color="none" label="" />
+    <score-button
+      label="Back"
+      @click="goBack()"
+    />
+    <score-button
+      v-if="!disableUndo"
+      color="orange"
+      label="Undo"
+      @click="store.dispatch('addMark', { schema: 'undo', target: lastMarkSequence })"
+    />
+    <score-button
+      v-else
+      color="none"
+      label=""
+    />
     <score-button
       color="red"
       :label="resetNext ? 'Click Again' : 'Reset'"
@@ -32,7 +44,7 @@ const resetNext = ref<null | number>(null)
 
 async function reset () {
   if (!resetNext.value) {
-    resetNext.value = setTimeout(() => {
+    resetNext.value = window.setTimeout(() => {
       resetNext.value = null
     }, 3000)
     return

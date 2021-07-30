@@ -1,7 +1,10 @@
 <template>
   <div>
     <nav class="grid grid-cols-3 h-header">
-      <score-button @click="goBack()" label="Back"/>
+      <score-button
+        label="Back"
+        @click="goBack()"
+      />
     </nav>
     <main class="flex flex-col mb-2">
       <model-card

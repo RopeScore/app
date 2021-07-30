@@ -30,15 +30,15 @@
     @touchend="focus = false"
   >
     <template v-if="value === null || value === undefined">
-      {{label}}
+      {{ label }}
     </template>
     <template v-else-if="!singleRow">
       {{ label }}
-      <br />
+      <br>
       {{ value }}
     </template>
     <template v-else>
-      {{label}} ({{ value }})
+      {{ label }} ({{ value }})
     </template>
   </button>
 </template>
@@ -59,7 +59,8 @@ const props = defineProps({
     required: true
   },
   value: {
-    type: [String, Number]
+    type: [String, Number],
+    default: undefined
   },
   vibration: {
     type: Number,
