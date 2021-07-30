@@ -17,7 +17,7 @@ const models: Model[] = [
   },
   {
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0'],
-    judgeType: 'H',
+    judgeType: 'Shj',
     name: 'Speed Head Judge',
     component: defineAsyncComponent(() => import('./views/scoring/ijru@1.1.0/Speed.vue'))
   },

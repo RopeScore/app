@@ -10,15 +10,10 @@
       <button @click="reset" class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded tap-transparent hover:outline-none focus:outline-none outline-none">
         {{ resetNext ? 'Click Again' : `Remove all stored scoresheets (${numScoresheets})` }}
       </button>
-
-      <button @click="create" class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none focus:outline-none outline-none">
-        Create a bunch of scoresheets ({{created}})
-      </button>
-
     </nav>
 
-    <p v-if="batteryLevel">
-      Battery: {{ batteryLevel }} {{ charging ? '(Charging)' : '' }}
+    <p v-if="battery.batteryLevel">
+      Battery: {{ battery.batteryLevel.value }} {{ battery.battery.charging ? '(Charging)' : '' }}
     </p>
     <p v-if="!standalone">
       For best experience, add this web-app to your homescreen
@@ -32,94 +27,52 @@
   </main>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import { mapActions, mapMutations } from 'vuex'
+<script lang="ts" setup>
+import { onMounted, ref, watchEffect, onUnmounted } from 'vue'
+import { useStore } from 'vuex'
+import { useBattery } from '../hooks/battery'
 import logo from '../assets/logo.svg'
-import ScoreButton from '../components/ScoreButton.vue'
 
-export default defineComponent({
-  components: { ScoreButton },
-  name: 'Home',
-  data: () => ({
-    logo,
-    resetNext: null as null | number,
-    created: 0,
-    numScoresheets: 0
-  }),
-  async mounted () {
-    this.updateNumScoresheets()
-  },
-  computed: {
-    standalone () {
-      return window.matchMedia('(display-mode: standalone)').matches
-    },
-    version () {
-      return (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
-    },
-    batteryLevel (): string {
-      if (!this.$store.state.device.batteryLevel) return ''
-      return Math.round(this.$store.state.device.batteryLevel * 100).toString() + '%'
-    },
-    charging (): string {
-      return this.$store.state.device.charging
-    }
-  },
-  methods: {
-    ...mapActions([
-      'removeAllScoresheets',
-      'createLocalScoresheet',
-      'openScoresheet',
-      'saveCurrentScoresheet',
-      'listScoresheets',
-      'addMark'
-    ]),
-    ...mapMutations([
-      'completeOpenScoresheet',
-      'setCurrentScoresheet',
-    ]),
-    async reset () {
-      if (!this.resetNext) {
-        this.resetNext = setTimeout(() => {
-          this.resetNext = null
-        }, 3000)
-        return
-      }
+const store = useStore()
+const battery = useBattery()
 
-      clearTimeout(this.resetNext)
+const resetNext = ref<null | number>(null)
+const numScoresheets = ref(0)
+const standalone = ref(false)
 
-      try {
-        this.completeOpenScoresheet()
-      } catch {}
-      await this.removeAllScoresheets()
-      this.updateNumScoresheets()
-
-      this.resetNext = null
-    },
-    async updateNumScoresheets () {
-      this.numScoresheets = (await this.listScoresheets()).length
-    },
-    async create () {
-      console.time('create')
-      this.created = 0
-      for (let i = 0; i < 600; i++) {
-        this.created++
-        let id = await this.createLocalScoresheet({
-          judgeType: 'R',
-          rulesId: 'ijru@2.0.0',
-          competitionEventLookupCode: 'e.ijru.fs.sr.srtf.4.75'
-        })
-        await this.openScoresheet(id)
-        for (let j = 0; j < 100; j++) {
-          this.addMark({ schema: 'repeatedSkill', value: j })
-        }
-        this.completeOpenScoresheet()
-        await this.saveCurrentScoresheet()
-        this.setCurrentScoresheet(null)
-      }
-      console.timeEnd('create')
-      this.updateNumScoresheets()
-    }
-  }
+onMounted(() => {
+  updateNumScoresheets()
 })
+
+onUnmounted(() => {
+  if (resetNext.value) clearTimeout(resetNext.value)
+})
+
+watchEffect(() => {
+  standalone.value = window.matchMedia('(display-mode: standalone)').matches
+})
+
+const version = (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
+
+async function reset () {
+  if (!resetNext.value) {
+    resetNext.value = setTimeout(() => {
+      resetNext.value = null
+    }, 3000)
+    return
+  }
+  clearTimeout(resetNext.value)
+
+  try {
+    store.commit('completeOpenScoresheet')
+  } catch {}
+
+  await store.dispatch('removeAllScoresheets')
+  updateNumScoresheets()
+  resetNext.value = null
+}
+
+async function updateNumScoresheets () {
+  numScoresheets.value = (await store.dispatch('listScoresheets')).length
+}
 </script>

@@ -14,41 +14,33 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import { mapActions } from 'vuex'
+<script lang="ts" setup>
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import models from '../models'
 import ModelCard from '../components/ModelCard.vue'
 import ScoreButton from '../components/ScoreButton.vue'
-import models, { Model } from '../models'
 
-export default defineComponent({
-  components: { ScoreButton, ModelCard },
-  name: 'PracticeIndex',
-  setup() {
-    return {
-      models
-    }
-  },
-  methods: {
-    ...mapActions([
-      'createLocalScoresheet',
-      'openScoresheet'
-    ]),
-    rulesetList (rulesId: string | string[]) {
-      return Array.isArray(rulesId) ? rulesId.join(', ') : rulesId
-    },
-    async selectModel (model: Model, competitionEventLookupCode?: string) {
-      const scoresheetId = await this.createLocalScoresheet({
-        judgeType: model.judgeType,
-        rulesId: Array.isArray(model.rulesId) ? model.rulesId[0] : model.rulesId,
-        competitionEventLookupCode
-      })
+import type { Model } from '../models'
 
-      this.$router.push(`/score/${scoresheetId}`)
-    },
-    goBack () {
-      this.$router.go(-1)
-    }
-  }
-})
+const store = useStore()
+const router = useRouter()
+
+function rulesetList (rulesId: string | string[]) {
+  return Array.isArray(rulesId) ? rulesId.join(', ') : rulesId
+}
+
+async function selectModel (model: Model, competitionEventLookupCode?: string) {
+  const scoresheetId = await store.dispatch('createLocalScoresheet', {
+    judgeType: model.judgeType,
+    rulesId: Array.isArray(model.rulesId) ? model.rulesId[0] : model.rulesId,
+    competitionEventLookupCode
+  })
+
+  router.push(`/score/${scoresheetId}`)
+}
+
+function goBack () {
+  router.go(-1)
+}
 </script>

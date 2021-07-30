@@ -6,7 +6,7 @@
         color="red"
         :value="tally('falseStart')"
         single-row
-        @click="addMark({ schema: 'falseStart' })"
+        @click="store.dispatch('addMark', { schema: 'falseStart' })"
         />
       <score-button
         v-if="isHeadJudge"
@@ -14,7 +14,7 @@
         color="red"
         :value="tally('falseSwitch')"
         single-row
-        @click="addMark({ schema: 'falseSwitch' })"
+        @click="store.dispatch('addMark', { schema: 'falseSwitch' })"
       />
     </template>
     <template v-else>
@@ -26,45 +26,31 @@
       label="Steps"
       :value="tally('step')"
       class="col-span-2 row-span-3 mx-12"
-      @click="addMark({ schema: 'step' })"
+      @click="store.dispatch('addMark', { schema: 'step' })"
     />
   </main>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { mapActions, useStore } from 'vuex'
+<script lang="ts" setup>
+import { computed, defineProps } from 'vue'
+import { useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
+
+import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 import type { RootState } from '../../../store'
 
 export type schemas = 'step' | 'falseStart' | 'falseSwitch'
 
-export default defineComponent({
-  name: 'Speed',
-  components: {
-    ScoreButton
-  },
-  props: {
-    model: {
-      type: Object as PropType<Model>,
-      required: true
-    }
-  },
-  setup () {
-    const store = useStore<RootState>()
-
-    return {
-      tally: store.getters.tally
-    }
-  },
-  computed: {
-    isHeadJudge (): boolean {
-      return this.model.judgeType === 'H'
-    }
-  },
-  methods: {
-    ...mapActions(['addMark'])
+const props = defineProps({
+  model: {
+    type: Object as PropType<Model>,
+    required: true
   }
 })
+
+const store = useStore<RootState>()
+const tally = store.getters.tally
+
+const isHeadJudge = computed(() => props.model.judgeType === 'Shj')
 </script>

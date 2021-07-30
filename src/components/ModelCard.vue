@@ -20,25 +20,20 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { Model } from '../models'
+<script lang="ts" setup>
+import { computed, ref } from 'vue'
 
-export default defineComponent({
-  name: 'ModelCard',
-  props: {
-    model: {
-      type: Object as PropType<Model>,
-      required: true
-    }
-  },
-  data: () => ({
-    competitionEventLookupCode: ''
-  }),
-  computed: {
-    rulesetList (): string {
-      return Array.isArray(this.model.rulesId) ? this.model.rulesId.join(', ') : this.model.rulesId
-    }
+import type { Model } from '../models'
+import type { PropType } from 'vue'
+
+const props = defineProps({
+  model: {
+    type: Object as PropType<Model>,
+    required: true
   }
 })
+
+const competitionEventLookupCode = ref('')
+
+const rulesetList = computed(() => Array.isArray(props.model.rulesId) ? props.model.rulesId.join(', ') : props.model.rulesId)
 </script>

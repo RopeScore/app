@@ -29,7 +29,7 @@ export interface UndoMark {
 
 export type Mark = GenericMark | UndoMark
 
-type MarkPayload = { schema: 'undo', target: number } | { schema: schemas }
+export type MarkPayload = { schema: 'undo', target: number } | { schema: schemas }
 
 export type ScoreTally = {
   [prop in keyof schemas]?: number
@@ -74,6 +74,7 @@ export interface RemoteScoresheet {
   openedAt?: number // app
   completedAt?: number // app
   didNotSkip: boolean
+  heat: number
 
   // optional feature toggles
   options?: Object

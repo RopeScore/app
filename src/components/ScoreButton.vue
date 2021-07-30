@@ -43,41 +43,35 @@
   </button>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 
-export default defineComponent({
-  name: 'ScoreButton',
-  props: {
-    color: {
-      validator (value: unknown) {
-        return typeof value === 'string' &&
-          ['green', 'red', 'indigo', 'orange', 'none'].includes(value)
-      },
-      default: 'green'
+const props = defineProps({
+  color: {
+    validator (value: unknown) {
+      return typeof value === 'string' &&
+        ['green', 'red', 'indigo', 'orange', 'none'].includes(value)
     },
-    label: {
-      type: String,
-      required: true
-    },
-    value: {
-      type: [String, Number]
-    },
-    vibration: {
-      type: Number,
-      default: 75
-    },
-    disabled: Boolean,
-    singleRow: Boolean
+    default: 'green'
   },
-  data: () => ({
-    focus: false
-  }),
-  methods: {
-    handleClick () {
-      if (this.color === 'none') return
-      navigator.vibrate?.(this.vibration)
-    }
-  }
+  label: {
+    type: String,
+    required: true
+  },
+  value: {
+    type: [String, Number]
+  },
+  vibration: {
+    type: Number,
+    default: 75
+  },
+  disabled: Boolean,
+  singleRow: Boolean
 })
+
+const focus = ref(false)
+function handleClick () {
+  if (props.color === 'none') return
+  navigator.vibrate?.(props.vibration)
+}
 </script>

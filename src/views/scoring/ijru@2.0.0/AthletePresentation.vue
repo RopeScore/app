@@ -9,7 +9,7 @@
     <score-button
       label="+"
       :value="tally('formExecutionPlus')"
-      @click="addMark({ schema: 'formExecutionPlus' })"
+      @click="store.dispatch('addMark', { schema: 'formExecutionPlus' })"
     />
 
     <score-button color="none" label="" />
@@ -17,62 +17,52 @@
     <score-button
       label="&#10004;"
       :value="tally('formExecutionCheck')"
-      @click="addMark({ schema: 'formExecutionCheck' })"
+      @click="store.dispatch('addMark', { schema: 'formExecutionCheck' })"
     />
 
     <score-button
       label="Misses"
       :value="tally('miss')"
       color="red"
-      @click="addMark({ schema: 'miss' })"
+      @click="store.dispatch('addMark', { schema: 'miss' })"
     />
     <score-button color="none" label="" />
     <score-button
       label="-"
       :value="tally('formExecutionMinus')"
-      @click="addMark({ schema: 'formExecutionMinus' })"
+      @click="store.dispatch('addMark', { schema: 'formExecutionMinus' })"
     />
   </main>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+import { computed, defineComponent, defineProps } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import { mapActions, useStore } from 'vuex'
+import { useStore } from 'vuex'
+
+import type { PropType } from 'vue'
 import type { RootState } from '../../../store'
 import type { Model } from '../../../models'
 
 export type schemas = `formExecution${'Plus' | 'Check' | 'Minus'}` | 'miss'
 
-export default defineComponent({
-  name: 'AthletePresentation',
-  components: {
-    ScoreButton
-  },
-  props: {
-    model: {
-      type: Object as PropType<Model>,
-      required: true
-    }
-  },
-  setup () {
-    const store = useStore<RootState>()
-
-    return {
-      tally: store.getters.tally,
-      result: computed(() => {
-        const plus = store.getters.tally('formExecutionPlus')
-        const check = store.getters.tally('formExecutionCheck')
-        const minus = store.getters.tally('formExecutionMinus')
-        if (plus + check + minus === 0) return 1
-        let average = (plus - minus) / (plus + check + minus)
-        let percentage = average * (0.60 / 2);
-        return Math.round((1 + percentage) * 100) / 100;
-      })
-    }
-  },
-  methods: {
-    ...mapActions(['addMark'])
+defineProps({
+  model: {
+    type: Object as PropType<Model>,
+    required: true
   }
+})
+
+const store = useStore<RootState>()
+const tally = store.getters.tally
+
+const result = computed(() => {
+  const plus = store.getters.tally('formExecutionPlus')
+  const check = store.getters.tally('formExecutionCheck')
+  const minus = store.getters.tally('formExecutionMinus')
+  if (plus + check + minus === 0) return 1
+  let average = (plus - minus) / (plus + check + minus)
+  let percentage = average * (0.60 / 2);
+  return Math.round((1 + percentage) * 100) / 100;
 })
 </script>
