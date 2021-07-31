@@ -20,7 +20,9 @@
   </nav>
 
   <div class="m-2 mt-0">
-    <h1 class="text-2xl">{{ group?.name }}</h1>
+    <h1 class="text-2xl">
+      {{ group?.name }}
+    </h1>
   </div>
 
   <div class="flex flex-col gap-4 px-2 mt-2">
