@@ -3,14 +3,18 @@
     <score-button
       color="none"
       label="Entertainment"
+      single-row
     />
     <score-button
       color="none"
-      :label="'Score: ' + result"
+      label="Score"
+      :value="result"
+      single-row
     />
     <score-button
       color="none"
       label="Musicality"
+      single-row
     />
 
     <score-button
@@ -91,7 +95,7 @@ const entertainmentResult = computed(() => {
   if (plus + check + minus === 0) return 1
   const average = (plus - minus) / (plus + check + minus)
   const percentage = average * (0.60 / 4)
-  return Math.round((1 + percentage) * 100) / 100
+  return (1 + percentage)
 })
 
 const musicalityResult = computed(() => {
@@ -101,14 +105,10 @@ const musicalityResult = computed(() => {
   if (plus + check + minus === 0) return 1
   const average = (plus - minus) / (plus + check + minus)
   const percentage = average * (0.60 / 4)
-  return Math.round((1 + percentage) * 100) / 100
+  return (1 + percentage)
 })
 
 const result = computed(() => {
-  return (
-    Math.round(
-      (1 + (musicalityResult.value - 1) + (entertainmentResult.value - 1)) * 100
-    ) / 100
-  )
+  return (1 + (musicalityResult.value - 1) + (entertainmentResult.value - 1))
 })
 </script>

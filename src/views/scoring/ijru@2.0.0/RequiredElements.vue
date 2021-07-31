@@ -1,15 +1,11 @@
 <template>
   <main class="grid grid-cols-3 grid-rows-score">
     <score-button
+      label="Score"
       color="none"
-      label=""
-    />
-    <div class="m-auto">
-      Score: {{ result }}
-    </div>
-    <score-button
-      color="none"
-      label=""
+      :value="result"
+      single-row
+      class="col-span-3"
     />
 
     <template v-if="!diffOpen">
@@ -185,7 +181,7 @@ const repeatedSkillsResult = computed(() => {
     if (level === null) continue
     res += L(level[1]) * store.getters.tally(level[0])
   }
-  return Math.round(res * 100) / 100
+  return res
 })
 
 const result = computed(() => {

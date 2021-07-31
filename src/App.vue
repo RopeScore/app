@@ -12,7 +12,7 @@
 }
 
 .grid-rows-score {
-  grid-template-rows: 6vh repeat(3, 28vh);
+  grid-template-rows: 9vh repeat(3, calc(82vh / 3));
 }
 
 .touch-manipulation {

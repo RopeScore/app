@@ -3,11 +3,15 @@
     <score-button
       color="none"
       label=""
+      single-row
     />
-    <div class="m-auto">
-      Score: {{ result }}
-    </div>
-    <div class="m-auto text-center">
+    <score-button
+      label="Score"
+      color="none"
+      :value="result"
+      single-row
+    />
+    <div class="m-auto text-center" single-row>
       Form/Execution
     </div>
 
@@ -58,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineComponent, defineProps } from 'vue'
+import { computed, defineProps } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { useStore } from 'vuex'
 
@@ -85,6 +89,6 @@ const result = computed(() => {
   if (plus + check + minus === 0) return 1
   const average = (plus - minus) / (plus + check + minus)
   const percentage = average * (0.60 / 2)
-  return Math.round((1 + percentage) * 100) / 100
+  return (1 + percentage)
 })
 </script>

@@ -34,16 +34,17 @@
     <template v-else-if="!singleRow">
       {{ label }}
       <br>
-      {{ value }}
+      <span class="text-2xl">{{ typeof value === 'number' ? numFmt(value) : value }}</span>
     </template>
     <template v-else>
-      {{ label }} ({{ value }})
+      {{ label }} ({{ typeof value === 'number' ? numFmt(value) : value }})
     </template>
   </button>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { numFmt } from '../helpers'
 
 const props = defineProps({
   color: {

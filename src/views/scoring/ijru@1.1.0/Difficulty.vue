@@ -2,15 +2,10 @@
   <main class="grid grid-cols-3 grid-rows-score">
     <score-button
       color="none"
-      label=""
-    />
-    <score-button
-      color="none"
-      :label="'Score: ' + result"
-    />
-    <score-button
-      color="none"
-      label=""
+      label="Score"
+      :value="result"
+      class="col-span-3"
+      single-row
     />
 
     <score-button
@@ -69,6 +64,6 @@ const result = computed(() => {
   for (const [schema, level] of levels.value) {
     res += L(level) * store.getters.tally(schema)
   }
-  return Math.round(res * 100) / 100
+  return res
 })
 </script>

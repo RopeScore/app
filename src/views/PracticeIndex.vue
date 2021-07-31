@@ -3,6 +3,7 @@
     <nav class="grid grid-cols-3 h-header">
       <score-button
         label="Back"
+        single-row
         @click="goBack()"
       />
     </nav>
