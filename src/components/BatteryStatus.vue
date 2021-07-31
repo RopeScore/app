@@ -21,7 +21,7 @@
       class="absolute top-4 bottom-4 left-4 right-4 flex justify-center items-center"
     >
       <label>
-        <span class="text-white text-stroke-sm text-stroke-black font-bold">Battery Level (%) {{ needUpdate ? '(enter current)' : '' }}</span>
+        <span class="text-white text-stroke-sm text-stroke-black font-bold">Battery Level (%)</span>
         <input
           v-model="manualLevel"
           :disabled="loading"
@@ -29,7 +29,7 @@
           min="0"
           max="100"
           step="1"
-          class="border border-black rounded p-2 w-full"
+          class="border border-black rounded w-full"
         >
       </label>
     </div>
@@ -78,6 +78,8 @@ watchWithFilter(manualLevel, level => {
       automatic: false,
       batteryLevel: parseInt(level, 10)
     }
+  }).then(() => {
+    needUpdate.value = false
   })
 }, {
   eventFilter: filter.eventFilter

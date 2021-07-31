@@ -24,17 +24,11 @@
   </div>
 
   <div class="flex flex-col gap-4 px-2 mt-2">
-    <router-link
+    <scoresheet-link
       v-for="scoresheet in remainingScoresheets"
       :key="scoresheet.id"
-      :to="`/score/${scoresheet.id}`"
-      class="block grid grid-cols-[3rem,auto] grid-rows-3 rounded bg-green-500 hover:bg-green-600 text-white p-2"
-    >
-      <span class="row-span-3 flex justify-center items-center">{{ scoresheet.heat }}</span>
-      <span class="col-start-2">{{ scoresheet.participantId }}: {{ scoresheet.participantName }}</span>
-      <span class="col-start-2">{{ scoresheet.rulesId }}: {{ scoresheet.competitionEventLookupCode }}</span>
-      <span class="col-start-2">{{ scoresheet.judgeId }} ({{ scoresheet.judgeType }}): {{ scoresheet.judgeName }}</span>
-    </router-link>
+      :scoresheet="scoresheet"
+    />
   </div>
 
   <div
@@ -51,23 +45,17 @@
     {{ error }}
   </div>
 
-  <details class="px-2 mt-2">
-    <summary class="sticky top-0">
+  <details class="px-2 mt-2 mb-2">
+    <summary class="sticky top-0 w-full bg-white py-4 cursor-pointer">
       Completed Scoresheets ({{ completedScoresheets.length }})
     </summary>
 
     <div class="flex flex-col gap-4 mt-2">
-      <router-link
+      <scoresheet-link
         v-for="scoresheet in completedScoresheets"
         :key="scoresheet.id"
-        :to="`/score/${scoresheet.id}`"
-        class="block grid grid-cols-[3rem,auto] grid-rows-3 rounded bg-green-500 hover:bg-green-600 text-white p-2"
-      >
-        <span class="row-span-3 flex justify-center items-center">{{ scoresheet.heat }}</span>
-        <span class="col-start-2">{{ scoresheet.participantId }}: {{ scoresheet.participantName }}</span>
-        <span class="col-start-2">{{ scoresheet.rulesId }}: {{ scoresheet.competitionEventLookupCode }}</span>
-        <span class="col-start-2">{{ scoresheet.judgeId }} ({{ scoresheet.judgeType }}): {{ scoresheet.judgeName }}</span>
-      </router-link>
+        :scoresheet="scoresheet"
+      />
     </div>
   </details>
 </template>
@@ -78,6 +66,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../hooks/auth'
 import ScoreButton from '../components/ScoreButton.vue'
 import BatteryStatus from '../components/BatteryStatus.vue'
+import ScoresheetLink from '../components/ScoresheetLink.vue'
 import { useGroupScoresheetsQuery } from '../graphql/generated'
 import { useResult } from '@vue/apollo-composable'
 
