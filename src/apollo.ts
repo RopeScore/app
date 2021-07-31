@@ -19,7 +19,7 @@ const authLink = setContext(async (_, { headers }) => {
 
 const cache = new InMemoryCache()
 
-await persistCache({
+persistCache({ // eslint-disable-line @typescript-eslint/no-floating-promises
   cache,
   storage: new LocalStorageWrapper(window.localStorage) as any
 })
