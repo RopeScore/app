@@ -23,10 +23,9 @@
       'cursor-default': color === 'none',
       'text-black': color === 'none'
     }"
-    @click.prevent="handleClick()"
     @mousedown="focus = true"
     @mouseup="focus = false"
-    @touchstart="focus = true"
+    @touchstart="handleClick()"
     @touchend="focus = false"
   >
     <template v-if="value === null || value === undefined">
