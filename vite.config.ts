@@ -19,7 +19,9 @@ export default defineConfig({
         name: 'RopeScore Judging',
         short_name: 'RSJudge',
         orientation: 'portrait',
+        lang: 'en',
         theme_color: '#ffffff',
+        categories: ['sports', 'productivity'],
         icons: [
           {
             src: '/icons/android-icon-36x36.png',

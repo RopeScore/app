@@ -1,0 +1,14 @@
+query Me {
+  me {
+    ... on Device {
+      id
+      battery {
+        batteryLevel
+        updatedAt
+      }
+    }
+    ... on User {
+      id
+    }
+  }
+}

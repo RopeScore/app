@@ -1,0 +1,11 @@
+mutation UpdateBattery ($batteryStatus: BatteryStatusInput!) {
+  updateDeviceStatus(batteryStatus: $batteryStatus) {
+    id
+    battery {
+      automatic
+      charging
+      batteryLevel
+      updatedAt
+    }
+  }
+}

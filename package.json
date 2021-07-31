@@ -13,11 +13,18 @@
     "postversion": "git push && git push --tags",
     "lint": "eslint . --ignore-path .gitignore --ext .ts,.vue,.js",
     "lint:fix": "npm run lint -- --fix",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen:watch": "npm run codegen -- --watch"
   },
   "dependencies": {
+    "@apollo/client": "^3.4.1",
     "@sentry/browser": "^6.10.0",
     "@sentry/tracing": "^6.10.0",
+    "@vue/apollo-composable": "^4.0.0-alpha.14",
+    "@vueuse/core": "^5.2.0",
+    "apollo3-cache-persist": "^0.11.0",
+    "graphql": "^15.5.1",
     "idb-keyval": "^5.1.1",
     "safari-14-idb-fix": "^1.0.4",
     "uuid": "^8.3.2",
@@ -26,6 +33,11 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.21.8",
+    "@graphql-codegen/introspection": "^1.18.2",
+    "@graphql-codegen/typescript": "^1.23.0",
+    "@graphql-codegen/typescript-operations": "^1.18.4",
+    "@graphql-codegen/typescript-vue-apollo": "^2.3.9",
     "@types/uuid": "^8.3.1",
     "@typescript-eslint/eslint-plugin": "^4.28.5",
     "@typescript-eslint/parser": "^4.28.5",

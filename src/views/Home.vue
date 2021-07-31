@@ -18,7 +18,12 @@
       >
         Practice
       </router-link>
-      <!-- <router-link class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded" to="/session">Judge a Competition</router-link> -->
+      <router-link
+        class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
+        to="/groups"
+      >
+        Judge a Competition
+      </router-link>
 
       <button
         class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded tap-transparent hover:outline-none focus:outline-none outline-none"
@@ -28,9 +33,6 @@
       </button>
     </nav>
 
-    <p v-if="battery.batteryLevel">
-      Battery: {{ battery.batteryLevel.value }} {{ battery.battery.charging ? '(Charging)' : '' }}
-    </p>
     <p v-if="!standalone">
       For best experience, add this web-app to your homescreen
       <!-- TODO: instructions -->
@@ -51,11 +53,9 @@
 <script lang="ts" setup>
 import { onMounted, ref, watchEffect, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
-import { useBattery } from '../hooks/battery'
 import logo from '../assets/logo.svg'
 
 const store = useStore()
-const battery = useBattery()
 
 const resetNext = ref < null | number >(null)
 const numScoresheets = ref(0)

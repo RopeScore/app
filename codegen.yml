@@ -1,0 +1,22 @@
+overwrite: true
+schema:
+  - https://api.ropescore.app
+config:
+  scalars:
+    JSON: "{ [prop: string]: any }"
+generates:
+  graphql.schema.json:
+    plugins:
+      - introspection
+  src/graphql/generated.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-vue-apollo'
+    config:
+      exportFragmentSpreadSubTypes: true
+      vueCompositionApiImportFrom: vue
+    documents:
+      - './src/**/*.{gql,graphql}'
+      - './src/**/!(*.d).{ts,vue}'
+      - '!./src/apollo.ts'
