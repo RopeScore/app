@@ -68,6 +68,8 @@ watch(battery.level, () => {
       charging: battery.charging.value,
       batteryLevel: Math.round(battery.level.value * 100)
     }
+  }).then(() => {
+    needUpdate.value = false
   })
 })
 
@@ -95,8 +97,20 @@ const needUpdate = ref(false)
 
 useIntervalFn(() => {
   if (auth.user.value?.__typename !== 'Device') return
-  if (auth.user.value.battery?.updatedAt < Date.now() - minWait) needUpdate.value = true
-  else needUpdate.value = false
+  if (auth.user.value.battery?.updatedAt < Date.now() - minWait) {
+    needUpdate.value = true
+    if (auth.isLoggedIn.value && !battery.isSupported) {
+      mutate({
+        batteryStatus: {
+          automatic: true,
+          charging: battery.charging.value,
+          batteryLevel: Math.round(battery.level.value * 100)
+        }
+      }).then(() => {
+        needUpdate.value = false
+      })
+    }
+  } else needUpdate.value = false
 }, 5000)
 </script>
 
