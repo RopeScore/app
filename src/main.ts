@@ -1,29 +1,26 @@
 import { createApp } from 'vue'
-import * as Sentry from '@sentry/browser'
+import * as Sentry from '@sentry/vue'
 import { Integrations } from '@sentry/tracing'
-import 'windi.css'
+import 'virtual:windi.css'
 import App from './App.vue'
 import router from './router'
 import { DefaultApolloClient } from '@vue/apollo-composable'
 import { apolloClient } from './apollo'
 
-createApp(App)
-  .provide(DefaultApolloClient, apolloClient)
+const app = createApp(App)
+
+app.provide(DefaultApolloClient, apolloClient)
   .use(router)
   .mount('#app')
 
 Sentry.init({
+  app,
   dsn: 'https://91d516fcee2348da93854140a4a8cdcc@o127465.ingest.sentry.io/5654198',
   release: import.meta.env.VITE_COMMIT_REF?.toString(),
   environment: import.meta.env.VITE_CONTEXT?.toString(),
   integrations: [new Integrations.BrowserTracing({
     tracingOrigins: ['ropescore.app'],
-    beforeNavigate: context => {
-      return {
-        ...context,
-        name: location.pathname.replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i, ':id')
-      }
-    }
+    routingInstrumentation: Sentry.vueRouterInstrumentation(router)
   })],
   tracesSampleRate: 1.0
 })

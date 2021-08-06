@@ -22,7 +22,7 @@
         class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
         to="/groups"
       >
-        Judge a Competition
+        Judge a RopeScore Competition
       </router-link>
 
       <!-- <button
@@ -32,6 +32,16 @@
         {{ resetNext ? 'Click Again' : `Remove all stored scoresheets (${numScoresheets})` }}
       </button> -->
     </nav>
+
+    <div v-if="!needRefresh" class="mb-8">
+      <span class="font-bold">Update required, reload to activate</span>
+      <button
+        class="block p-2 mt-2 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none focus:outline-none outline-none w-full"
+        @click="updateSW()"
+      >
+        Reload
+      </button>
+    </div>
 
     <p v-if="!standalone">
       For best experience, add this web-app to your homescreen
@@ -51,11 +61,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watchEffect, onUnmounted } from 'vue'
+import { ref, watchEffect } from 'vue'
 import logo from '../assets/logo.svg'
+import useSW from '../hooks/sw'
 
-const resetNext = ref < null | number >(null)
-const numScoresheets = ref(0)
 const standalone = ref(false)
 
 watchEffect(() => {
@@ -64,25 +73,5 @@ watchEffect(() => {
 
 const version = (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
 
-// async function reset () {
-//   if (!resetNext.value) {
-//     resetNext.value = window.setTimeout(() => {
-//       resetNext.value = null
-//     }, 3000)
-//     return
-//   }
-//   clearTimeout(resetNext.value)
-
-//   try {
-//     store.commit('completeOpenScoresheet')
-//   } catch {}
-
-//   await store.dispatch('removeAllScoresheets')
-//   updateNumScoresheets()
-//   resetNext.value = null
-// }
-
-// async function updateNumScoresheets () {
-//   numScoresheets.value = (await store.dispatch('listScoresheets')).length
-// }
+const { needRefresh, updateSW } = useSW()
 </script>
