@@ -161,9 +161,16 @@ const openRs = async (groupId: string, scoresheetId: string) => {
   return new Promise((resolve, reject) => {
     provideApolloClient(apolloClient)
     const enabled = ref(true)
-    const { onResult } = useGroupScoresheetQuery({ groupId, scoresheetId }, { fetchPolicy: 'network-only', enabled })
+    const { onResult } = useGroupScoresheetQuery({
+      groupId,
+      scoresheetId
+    }, {
+      fetchPolicy: 'network-only',
+      // according to the docs refs are actually supported, nay, expected here
+      enabled: enabled as unknown as boolean
+    })
 
-    onResult(async res => {
+    onResult(res => {
       console.log('got result')
       let loaded = res.data.group?.scoresheet
       if (!loaded) return reject(new Error(`RopeScore scoresheet not found: ${scoresheetId}`))
@@ -174,7 +181,7 @@ const openRs = async (groupId: string, scoresheetId: string) => {
 
       if (!scoresheet.value.completedAt) {
         const { mutate } = useOpenScoresheetMutation({})
-        await mutate({ scoresheetId, openedAt: Date.now() })
+        mutate({ scoresheetId, openedAt: Date.now() })
       }
 
       resolve(undefined)
