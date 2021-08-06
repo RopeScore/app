@@ -33,7 +33,7 @@
       </button> -->
     </nav>
 
-    <div v-if="!needRefresh" class="mb-8">
+    <div v-if="needRefresh" class="mb-8">
       <span class="font-bold">Update required, reload to activate</span>
       <button
         class="block p-2 mt-2 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none focus:outline-none outline-none w-full"
