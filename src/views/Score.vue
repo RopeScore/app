@@ -1,11 +1,12 @@
 <template>
   <score-navigation />
 
-  <div v-if="!store.getters.currentScoresheet">
+  <div v-if="!scsh.scoresheet.value">
     No active Scoresheet
   </div>
   <div v-else-if="!model">
     Unsupported Judge Type
+    {{ scsh.scoresheet.value }}
   </div>
   <component
     :is="model?.component"
@@ -15,44 +16,47 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, ref, onMounted, onUnmounted } from 'vue'
-import { useStore } from 'vuex'
+import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import models from '../models'
 import ScoreNavigation from '../components/ScoreNavigation.vue'
-
-import type { RootState } from '../store'
+import { useScoresheet } from '../hooks/scoresheet'
 
 function preventDefualt (event: TouchEvent) {
   event.preventDefault()
 }
 
-const store = useStore<RootState>()
 const route = useRoute()
-store.dispatch('openScoresheet', route.params.id)
+const scsh = useScoresheet()
 
 onMounted(() => {
   document.body.addEventListener('touchmove', preventDefualt, { passive: false })
-  store.dispatch('openScoresheet', route.params.id)
+  scsh.open(route.params.system as string, ...route.params.vendor)
 })
 
 onUnmounted(async () => {
+  await scsh.close()
   document.body.removeEventListener('touchmove', preventDefualt)
-  await store.dispatch('saveCurrentScoresheet', route.params.id)
-  store.commit('setCurrentScoresheet', null)
 })
 
-watch(() => route.params, () => {
-  console.log(route.params.id)
-  if (route.params.id) store.dispatch('openScoresheet', route.params.id)
+watch(() => route.params, async (next, prev) => {
+  if (next.system === prev.system &&
+    (Array.isArray(next.vendor)
+      ? next.vendor.every((p, idx) => p === prev.vendor[idx])
+      : next.vendor === prev.vendor)
+  ) {
+    console.log('already open')
+    return
+  }
+  await scsh.close()
+  await scsh.open(next.system as string, ...next.vendor)
 })
 
 const model = computed(() => {
-  const cs = store.getters.currentScoresheet
-  if (!cs) return null
-  const model = models.find(model => model.rulesId.includes(cs.rulesId) && model.judgeType === cs.judgeType)
+  const sc = scsh.scoresheet.value
+  if (!sc) return null
+  const model = models.find(model => model.rulesId.includes(sc.rulesId) && model.judgeType === sc.judgeType)
   if (!model) return null
   return model
 })
-
 </script>

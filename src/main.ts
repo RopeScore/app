@@ -4,14 +4,12 @@ import { Integrations } from '@sentry/tracing'
 import 'windi.css'
 import App from './App.vue'
 import router from './router'
-import store from './store'
 import { DefaultApolloClient } from '@vue/apollo-composable'
 import { apolloClient } from './apollo'
 
 createApp(App)
   .provide(DefaultApolloClient, apolloClient)
   .use(router)
-  .use(store)
   .mount('#app')
 
 Sentry.init({

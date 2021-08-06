@@ -1,7 +1,7 @@
 <template>
   <router-link
-    :to="`/score/${scoresheet.id}`"
     class="block grid grid-cols-[3rem,auto] grid-rows-4 rounded bg-green-500 hover:bg-green-600 text-white p-2"
+    :to="`/score/rs/${groupId}/${scoresheet.id}`"
   >
     <span class="row-span-4 flex justify-center items-center">{{ scoresheet.heat }}</span>
     <span class="col-start-2 font-bold">{{ scoresheet.categoryName }}</span>
@@ -12,12 +12,16 @@
 </template>
 
 <script lang="ts" setup>
-import type { PropType } from 'vue'
 import type { Scoresheet } from '../graphql/generated'
+import type { PropType } from 'vue'
 
 defineProps({
   scoresheet: {
     type: Object as PropType<Pick<Scoresheet, 'id' | 'heat' | 'categoryName' | 'participantId' | 'participantName' | 'rulesId' | 'competitionEventLookupCode' | 'judgeId' | 'judgeType' | 'judgeName'>>,
+    required: true
+  },
+  groupId: {
+    type: String,
     required: true
   }
 })

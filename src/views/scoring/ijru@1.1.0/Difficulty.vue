@@ -14,18 +14,17 @@
       :color="level < 7 ? 'green' : 'indigo'"
       :label="`Level ${level}`"
       :value="tally(schema)"
-      @click="store.dispatch('addMark', { schema })"
+      @click="addMark({ schema })"
     />
   </main>
 </template>
 
 <script lang="ts" setup>
 import { computed, defineProps } from 'vue'
-import { useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
+import { useScoresheet } from '../../../hooks/scoresheet'
 
 import type { Model } from '../../../models'
-import type { RootState } from '../../../store'
 import type { PropType } from 'vue'
 
 export type schemas = `diffL${'0.5' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}`
@@ -37,7 +36,7 @@ defineProps({
   }
 })
 
-const store = useStore<RootState>()
+const { addMark, tally } = useScoresheet()
 
 function L (level: number): number {
   if (level === 0) return 0
@@ -58,11 +57,10 @@ const levels = computed((): Array<[schemas, number]> => [
   ['diffL6', 6]
 ])
 
-const tally = store.getters.tally
 const result = computed(() => {
   let res = 0
   for (const [schema, level] of levels.value) {
-    res += L(level) * store.getters.tally(schema)
+    res += L(level) * tally(schema)
   }
   return res
 })

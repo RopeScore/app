@@ -1,0 +1,8 @@
+query GroupScoresheet ($groupId: ID!, $scoresheetId: ID!) {
+  group (groupId: $groupId) {
+    id
+    scoresheet (scoresheetId: $scoresheetId) {
+      ...FullScoresheet
+    }
+  }
+}

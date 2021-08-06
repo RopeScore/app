@@ -3,7 +3,8 @@ schema:
   - https://api.ropescore.app
 config:
   scalars:
-    JSON: "{ [prop: string]: any }"
+    JSONObject: "{ [prop: string]: any }"
+    Timestamp: number
 generates:
   graphql.schema.json:
     plugins:

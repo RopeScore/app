@@ -1,0 +1,5 @@
+mutation SaveScoresheet ($scoresheetId: ID!, $completedAt: Timestamp, $marks: [JSONObject!]!) {
+  fillScoresheet(scoresheetId: $scoresheetId, completedAt: $completedAt, marks: $marks) {
+    ...FullScoresheet
+  }
+}

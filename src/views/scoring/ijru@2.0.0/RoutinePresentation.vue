@@ -20,7 +20,7 @@
     <score-button
       label="+"
       :value="tally('entertainmentPlus')"
-      @click="store.dispatch('addMark', { schema: 'entertainmentPlus' })"
+      @click="addMark({ schema: 'entertainmentPlus' })"
     />
     <score-button
       color="none"
@@ -30,13 +30,13 @@
     <score-button
       label="+"
       :value="tally('musicalityPlus')"
-      @click="store.dispatch('addMark', { schema: 'musicalityPlus' })"
+      @click="addMark({ schema: 'musicalityPlus' })"
     />
 
     <score-button
       label="&#10004;"
       :value="tally('entertainmentCheck')"
-      @click="store.dispatch('addMark', { schema: 'entertainmentCheck' })"
+      @click="addMark({ schema: 'entertainmentCheck' })"
     />
     <score-button
       color="none"
@@ -46,13 +46,13 @@
     <score-button
       label="&#10004;"
       :value="tally('musicalityCheck')"
-      @click="store.dispatch('addMark', { schema: 'musicalityCheck' })"
+      @click="addMark({ schema: 'musicalityCheck' })"
     />
 
     <score-button
       label="-"
       :value="tally('entertainmentMinus')"
-      @click="store.dispatch('addMark', { schema: 'entertainmentMinus' })"
+      @click="addMark({ schema: 'entertainmentMinus' })"
     />
     <score-button
       color="none"
@@ -61,19 +61,18 @@
     <score-button
       label="-"
       :value="tally('musicalityMinus')"
-      @click="store.dispatch('addMark', { schema: 'musicalityMinus'})"
+      @click="addMark({ schema: 'musicalityMinus'})"
     />
   </main>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
+import { useScoresheet } from '../../../hooks/scoresheet'
 
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
-import type { RootState } from '../../../store'
 
 export type schemas = `entertainment${'Plus' | 'Check' | 'Minus'}`
   | `musicality${'Plus' | 'Check' | 'Minus'}`
@@ -85,8 +84,7 @@ defineProps({
   }
 })
 
-const store = useStore<RootState>()
-const tally = store.getters.tally
+const { addMark, tally } = useScoresheet()
 
 const entertainmentResult = computed(() => {
   const plus = tally('entertainmentPlus')

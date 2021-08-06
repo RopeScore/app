@@ -26,11 +26,12 @@
     </h1>
   </div>
 
-  <div class="flex flex-col gap-4 px-2 mt-2">
+  <div v-if="group" class="flex flex-col gap-4 px-2 mt-2">
     <scoresheet-link
       v-for="scoresheet in remainingScoresheets"
       :key="scoresheet.id"
       :scoresheet="scoresheet"
+      :group-id="group.id"
     />
   </div>
 
@@ -53,11 +54,12 @@
       Completed Scoresheets ({{ completedScoresheets.length }})
     </summary>
 
-    <div class="flex flex-col gap-4 mt-2">
+    <div v-if="group" class="flex flex-col gap-4 mt-2">
       <scoresheet-link
         v-for="scoresheet in completedScoresheets"
         :key="scoresheet.id"
         :scoresheet="scoresheet"
+        :group-id="group.id"
       />
     </div>
   </details>

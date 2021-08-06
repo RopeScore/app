@@ -8,7 +8,7 @@ const fired = ref(false)
 
 export function useAuth () {
   provideApolloClient(apolloClient)
-  const { onResult, loading, refetch, result } = useMeQuery({ fetchPolicy: 'network-only' })
+  const { onResult, loading, refetch, result } = useMeQuery({})
   const token = useLocalStorage<null | string>('rs-auth', null)
   const mutation = useRegisterDeviceMutation()
 
@@ -16,7 +16,6 @@ export function useAuth () {
     console.log('token', nT)
     if (pT === null && nT !== null) return refetch()
   })
-  console.log('token', token.value)
 
   onResult(qRes => {
     if (!qRes.data?.me && !fired.value) {

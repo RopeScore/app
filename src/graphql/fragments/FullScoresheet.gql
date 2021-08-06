@@ -1,0 +1,26 @@
+fragment FullScoresheet on Scoresheet {
+  id
+
+  categoryId
+  competitionEventLookupCode
+  participantId
+  judgeId
+  rulesId
+  judgeType
+
+  participantName
+  judgeName
+  categoryName
+
+  createdAt
+  updatedAt
+  openedAt
+  completedAt
+  submittedAt
+  didNotSkipAt
+  heat
+
+  options
+
+  marks
+}

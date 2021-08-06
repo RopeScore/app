@@ -26,7 +26,7 @@
     <score-button
       label="+"
       :value="tally('formExecutionPlus')"
-      @click="store.dispatch('addMark', { schema: 'formExecutionPlus' })"
+      @click="addMark({ schema: 'formExecutionPlus' })"
     />
 
     <score-button
@@ -40,14 +40,14 @@
     <score-button
       label="&#10004;"
       :value="tally('formExecutionCheck')"
-      @click="store.dispatch('addMark', { schema: 'formExecutionCheck' })"
+      @click="addMark({ schema: 'formExecutionCheck' })"
     />
 
     <score-button
       label="Misses"
       :value="tally('miss')"
       color="red"
-      @click="store.dispatch('addMark', { schema: 'miss' })"
+      @click="addMark({ schema: 'miss' })"
     />
     <score-button
       color="none"
@@ -56,7 +56,7 @@
     <score-button
       label="-"
       :value="tally('formExecutionMinus')"
-      @click="store.dispatch('addMark', { schema: 'formExecutionMinus' })"
+      @click="addMark({ schema: 'formExecutionMinus' })"
     />
   </main>
 </template>
@@ -64,10 +64,9 @@
 <script lang="ts" setup>
 import { computed, defineProps } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import { useStore } from 'vuex'
+import { useScoresheet } from '../../../hooks/scoresheet'
 
 import type { PropType } from 'vue'
-import type { RootState } from '../../../store'
 import type { Model } from '../../../models'
 
 export type schemas = `formExecution${'Plus' | 'Check' | 'Minus'}` | 'miss'
@@ -79,13 +78,12 @@ defineProps({
   }
 })
 
-const store = useStore<RootState>()
-const tally = store.getters.tally
+const { addMark, tally } = useScoresheet()
 
 const result = computed(() => {
-  const plus = store.getters.tally('formExecutionPlus')
-  const check = store.getters.tally('formExecutionCheck')
-  const minus = store.getters.tally('formExecutionMinus')
+  const plus = tally('formExecutionPlus')
+  const check = tally('formExecutionCheck')
+  const minus = tally('formExecutionMinus')
   if (plus + check + minus === 0) return 1
   const average = (plus - minus) / (plus + check + minus)
   const percentage = average * (0.60 / 2)

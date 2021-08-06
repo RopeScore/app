@@ -25,12 +25,12 @@
         Judge a Competition
       </router-link>
 
-      <button
+      <!-- <button
         class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded tap-transparent hover:outline-none focus:outline-none outline-none"
         @click="reset"
       >
         {{ resetNext ? 'Click Again' : `Remove all stored scoresheets (${numScoresheets})` }}
-      </button>
+      </button> -->
     </nav>
 
     <p v-if="!standalone">
@@ -52,22 +52,11 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, watchEffect, onUnmounted } from 'vue'
-import { useStore } from 'vuex'
 import logo from '../assets/logo.svg'
-
-const store = useStore()
 
 const resetNext = ref < null | number >(null)
 const numScoresheets = ref(0)
 const standalone = ref(false)
-
-onMounted(() => {
-  updateNumScoresheets()
-})
-
-onUnmounted(() => {
-  if (resetNext.value) clearTimeout(resetNext.value)
-})
 
 watchEffect(() => {
   standalone.value = window.matchMedia('(display-mode: standalone)').matches
@@ -75,25 +64,25 @@ watchEffect(() => {
 
 const version = (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
 
-async function reset () {
-  if (!resetNext.value) {
-    resetNext.value = window.setTimeout(() => {
-      resetNext.value = null
-    }, 3000)
-    return
-  }
-  clearTimeout(resetNext.value)
+// async function reset () {
+//   if (!resetNext.value) {
+//     resetNext.value = window.setTimeout(() => {
+//       resetNext.value = null
+//     }, 3000)
+//     return
+//   }
+//   clearTimeout(resetNext.value)
 
-  try {
-    store.commit('completeOpenScoresheet')
-  } catch {}
+//   try {
+//     store.commit('completeOpenScoresheet')
+//   } catch {}
 
-  await store.dispatch('removeAllScoresheets')
-  updateNumScoresheets()
-  resetNext.value = null
-}
+//   await store.dispatch('removeAllScoresheets')
+//   updateNumScoresheets()
+//   resetNext.value = null
+// }
 
-async function updateNumScoresheets () {
-  numScoresheets.value = (await store.dispatch('listScoresheets')).length
-}
+// async function updateNumScoresheets () {
+//   numScoresheets.value = (await store.dispatch('listScoresheets')).length
+// }
 </script>

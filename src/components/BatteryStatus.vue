@@ -97,7 +97,7 @@ const needUpdate = ref(false)
 
 useIntervalFn(() => {
   if (auth.user.value?.__typename !== 'Device') return
-  if (auth.user.value.battery?.updatedAt < Date.now() - minWait) {
+  if (!auth.user.value.battery?.updatedAt || auth.user.value.battery?.updatedAt < Date.now() - minWait) {
     needUpdate.value = true
     if (auth.isLoggedIn.value && !battery.isSupported) {
       mutate({

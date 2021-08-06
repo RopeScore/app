@@ -6,7 +6,7 @@
         color="red"
         :value="tally('falseStart')"
         single-row
-        @click="store.dispatch('addMark', { schema: 'falseStart' })"
+        @click="addMark({ schema: 'falseStart' })"
       />
       <score-button
         v-if="isHeadJudge"
@@ -14,7 +14,7 @@
         color="red"
         :value="tally('falseSwitch')"
         single-row
-        @click="store.dispatch('addMark', { schema: 'falseSwitch' })"
+        @click="addMark({ schema: 'falseSwitch' })"
       />
     </template>
     <template v-else>
@@ -32,19 +32,18 @@
       label="Steps"
       :value="tally('step')"
       class="col-span-2 row-span-3 mx-12"
-      @click="store.dispatch('addMark', { schema: 'step' })"
+      @click="addMark({ schema: 'step' })"
     />
   </main>
 </template>
 
 <script lang="ts" setup>
 import { computed, defineProps } from 'vue'
-import { useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
+import { useScoresheet } from '../../../hooks/scoresheet'
 
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
-import type { RootState } from '../../../store'
 
 export type schemas = 'step' | 'falseStart' | 'falseSwitch'
 
@@ -55,8 +54,7 @@ const props = defineProps({
   }
 })
 
-const store = useStore<RootState>()
-const tally = store.getters.tally
+const { addMark, tally } = useScoresheet()
 
 const isHeadJudge = computed(() => props.model.judgeType === 'Shj')
 </script>

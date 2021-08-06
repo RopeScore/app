@@ -18,14 +18,14 @@
         v-else
         label="Multiples"
         :value="tally('rqMultiples')"
-        @click="store.dispatch('addMark', { schema: 'rqMultiples' })"
+        @click="addMark({ schema: 'rqMultiples' })"
       />
 
       <score-button
         label="Space Violations"
         color="red"
         :value="tally('spaceViolation')"
-        @click="store.dispatch('addMark', { schema: 'spaceViolation' })"
+        @click="addMark({ schema: 'spaceViolation' })"
       />
 
       <score-button
@@ -37,27 +37,27 @@
         v-else
         label="Wraps / Releases"
         :value="tally('rqWrapsReleases')"
-        @click="store.dispatch('addMark', { schema: 'rqWrapsReleases' })"
+        @click="addMark({ schema: 'rqWrapsReleases' })"
       />
 
       <score-button
         label="Gymnastics / Power"
         :value="tally('rqGymnasticsPower')"
-        @click="store.dispatch('addMark', { schema: 'rqGymnasticsPower' })"
+        @click="addMark({ schema: 'rqGymnasticsPower' })"
       />
 
       <score-button
         label="Time Violations"
         color="red"
         :value="tally('timeViolation')"
-        @click="store.dispatch('addMark', { schema: 'timeViolation' })"
+        @click="addMark({ schema: 'timeViolation' })"
       />
 
       <score-button
         v-if="hasInteractions"
         label="Interactions"
         :value="tally('rqInteractions')"
-        @click="store.dispatch('addMark', { schema: 'rqInteractions' })"
+        @click="addMark({ schema: 'rqInteractions' })"
       />
       <score-button
         v-else
@@ -69,7 +69,7 @@
         label="Misses"
         color="red"
         :value="tally('miss')"
-        @click="store.dispatch('addMark', { schema: 'miss' })"
+        @click="addMark({ schema: 'miss' })"
       />
 
       <score-button
@@ -84,7 +84,7 @@
         v-if="isDoubleDutch"
         label="Turner Involvement"
         :value="tally('rqTurnerInvolvement')"
-        @click="store.dispatch('addMark', { schema: 'rqTurnerInvolvement' })"
+        @click="addMark({ schema: 'rqTurnerInvolvement' })"
       />
       <score-button
         v-else
@@ -117,12 +117,11 @@
 
 <script lang="ts" setup>
 import { computed, ref, defineProps } from 'vue'
-import { useStore } from 'vuex'
 import ScoreButton from '../../../components/ScoreButton.vue'
+import { useScoresheet } from '../../../hooks/scoresheet'
 
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
-import type { RootState } from '../../../store'
 
 export type schemas = 'rqMultiples' | 'rqWrapsReleases' | 'rqGymnasticsPower'
   | 'rqInteractions' | 'rqTurnerInvolvement'
@@ -136,9 +135,9 @@ defineProps({
   }
 })
 
-const store = useStore<RootState>()
-const tally = store.getters.tally
-const lookupCodeParts = computed(() => store.getters.currentScoresheet?.competitionEventLookupCode.split('.') ?? [])
+const { scoresheet, addMark, tally } = useScoresheet()
+
+const lookupCodeParts = computed(() => scoresheet.value?.competitionEventLookupCode.split('.') ?? [])
 const diffOpen = ref(false)
 
 const levels = [
@@ -172,14 +171,14 @@ function L (level: number): number {
 }
 
 const numRepeatedSkills = computed(() => levels
-  .map(level => level ? store.getters.tally(level[0]) : 0)
+  .map(level => level ? tally(level[0]) : 0)
   .reduce((a, b) => a + b))
 
 const repeatedSkillsResult = computed(() => {
   let res = 0
   for (const level of levels) {
     if (level === null) continue
-    res += L(level[1]) * store.getters.tally(level[0])
+    res += L(level[1]) * tally(level[0])
   }
   return res
 })
@@ -193,7 +192,7 @@ const result = computed(() => {
   if (hasInteractions.value) elements += 1
 
   for (const schema of requiredElements) {
-    const done = store.getters.tally(schema)
+    const done = tally(schema)
     completed += done > 4 ? 4 : done
   }
 
@@ -201,7 +200,7 @@ const result = computed(() => {
 })
 
 function addRepeatedSkill (schema: schemas) {
-  store.dispatch('addMark', { schema })
+  addMark({ schema })
   diffOpen.value = false
 }
 </script>

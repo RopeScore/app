@@ -20,28 +20,23 @@
 
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
 import models from '../models'
 import ModelCard from '../components/ModelCard.vue'
 import ScoreButton from '../components/ScoreButton.vue'
 
 import type { Model } from '../models'
+import { createLocalScoresheet } from '../hooks/scoresheet'
 
-const store = useStore()
 const router = useRouter()
 
-function rulesetList (rulesId: string | string[]) {
-  return Array.isArray(rulesId) ? rulesId.join(', ') : rulesId
-}
-
 async function selectModel (model: Model, competitionEventLookupCode?: string) {
-  const scoresheetId = await store.dispatch('createLocalScoresheet', {
-    judgeType: model.judgeType,
+  const id = await createLocalScoresheet({
+    judgeType: Array.isArray(model.judgeType) ? model.judgeType[0] : model.judgeType,
     rulesId: Array.isArray(model.rulesId) ? model.rulesId[0] : model.rulesId,
     competitionEventLookupCode
   })
 
-  router.push(`/score/${scoresheetId}`)
+  router.push(`/score/local/${id}`)
 }
 
 function goBack () {

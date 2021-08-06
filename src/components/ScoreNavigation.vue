@@ -8,7 +8,7 @@
       v-if="!disableUndo"
       color="orange"
       label="Undo"
-      @click="store.dispatch('addMark', { schema: 'undo', target: lastMarkSequence })"
+      @click="scsh.addMark({ schema: 'undo', target: lastMarkSequence })"
     />
     <score-button
       v-else
@@ -26,18 +26,17 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { createLocalScoresheet, useScoresheet } from '../hooks/scoresheet'
 import ScoreButton from './ScoreButton.vue'
 
-import type { RootState } from '../store'
-
 const router = useRouter()
-const store = useStore<RootState>()
-const lastMarkSequence = computed(() => store.getters.currentScoresheet?.marks.length - 1)
+const scsh = useScoresheet()
+
+const lastMarkSequence = computed(() => (scsh.scoresheet.value?.marks.length ?? 0) - 1)
 const disableUndo = computed(() => {
-  const marks = store.getters.currentScoresheet?.marks ?? []
-  return marks.length > 0 && marks[marks.length - 1]?.schema === 'undo'
+  const marks = scsh.scoresheet.value?.marks ?? []
+  return marks.length === 0 || marks[marks.length - 1]?.schema === 'undo'
 })
 
 const resetNext = ref<null | number>(null)
@@ -50,19 +49,19 @@ async function reset () {
     return
   }
   clearTimeout(resetNext.value)
-  if (!store.getters.currentScoresheet) return
-  const { id, marks, completedAt, openedAt, ...rest } = store.getters.currentScoresheet
-  const scoresheetId = await store.dispatch('createLocalScoresheet', rest)
-  store.commit('completeOpenScoresheet')
-  await store.dispatch('saveCurrentScoresheet')
-  router.replace(`/score/${scoresheetId}`)
+  if (!scsh.scoresheet.value) return
+  const { id, marks, completedAt, openedAt, ...rest } = scsh.scoresheet.value
+  await scsh.complete()
+  await scsh.close()
+  const newId = await createLocalScoresheet(rest)
+  router.replace(`/score/local/${newId}`)
   resetNext.value = null
 }
 
 async function goBack () {
   if (resetNext.value) clearTimeout(resetNext.value)
-  store.commit('completeOpenScoresheet')
-  await store.dispatch('saveCurrentScoresheet')
+  await scsh.complete()
+  await scsh.close()
   router.go(-1)
 }
 </script>
