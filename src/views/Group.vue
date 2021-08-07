@@ -96,7 +96,7 @@ const completedScoresheets = computed(() =>
   scRes.value
     ? [...scRes.value]
         .filter(sc => !!sc.completedAt)
-        .sort((a, b) => a.heat === b.heat ? a.participantId.localeCompare(b.participantId) : a.heat - b.heat)
+        .sort((a, b) => a.heat === b.heat ? b.participantId.localeCompare(a.participantId) : b.heat - a.heat)
     : []
 )
 </script>
