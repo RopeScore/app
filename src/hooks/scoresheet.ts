@@ -92,6 +92,8 @@ interface UseScoresheetReturn {
   complete: () => Promise<void> | void
   open: (system: string, ...vendor: string[]) => Promise<void> | void
   close: (save?: boolean) => Promise<void> | void
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  reset: () => Promise<string[] | void> | string[] | void
 }
 
 const scoresheet = ref<Scoresheet>()
@@ -157,6 +159,17 @@ const closeLocal = async () => {
   await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
 }
 
+const resetLocal = async ({ complete }: Pick<UseScoresheetReturn, 'complete'>) => {
+  if (!scoresheet.value) {
+    console.warn('No scoresheet open, cannot reset')
+    return
+  }
+  const { id, marks, completedAt, openedAt, ...rest } = scoresheet.value
+  await complete()
+  const newId = await createLocalScoresheet(rest)
+  return [newId]
+}
+
 const openRs = async (groupId: string, scoresheetId: string) => {
   return new Promise((resolve, reject) => {
     provideApolloClient(apolloClient)
@@ -171,7 +184,6 @@ const openRs = async (groupId: string, scoresheetId: string) => {
     })
 
     onResult(res => {
-      console.log('got result')
       let loaded = res.data.group?.scoresheet
       if (!loaded) return reject(new Error(`RopeScore scoresheet not found: ${scoresheetId}`))
       loaded = reactive(JSON.parse(JSON.stringify(loaded)))
@@ -208,6 +220,15 @@ const closeRs = async () => {
       resolve(undefined)
     })
   })
+}
+
+const resetRs = async ({ complete }: Pick<UseScoresheetReturn, 'complete'>) => {
+  if (!scoresheet.value) {
+    console.warn('No scoresheet open, cannot reset')
+    return
+  }
+  scoresheet.value.marks = []
+  tally.value = reactive({})
 }
 
 export function useScoresheet (): UseScoresheetReturn {
@@ -261,6 +282,16 @@ export function useScoresheet (): UseScoresheetReturn {
       scoresheet.value = undefined
       system.value = undefined
       tally.value = reactive({})
+    },
+    async reset () {
+      switch (system.value) {
+        case 'local':
+          return await resetLocal({ complete })
+        case 'rs':
+          return await resetRs({ complete })
+        default:
+          throw new TypeError('Unknown system specified, cannot open scoresheet')
+      }
     }
   }
 }

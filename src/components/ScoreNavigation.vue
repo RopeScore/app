@@ -42,7 +42,7 @@
       color="red"
       :label="resetNext ? 'Click Again' : 'Reset'"
       :vibration="resetNext ? 1000 : 500"
-      :disabled="!!scsh.scoresheet.value?.submittedAt"
+      :disabled="!!scsh.scoresheet.value?.submittedAt || !scsh.scoresheet.value"
       @click="reset()"
     />
   </nav>
@@ -50,11 +50,12 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { createLocalScoresheet, useScoresheet } from '../hooks/scoresheet'
+import { useRouter, useRoute } from 'vue-router'
+import { useScoresheet } from '../hooks/scoresheet'
 import { useConfirm } from '../hooks/confirm'
 import ScoreButton from './ScoreButton.vue'
 
+const route = useRoute()
 const router = useRouter()
 const scsh = useScoresheet()
 
@@ -68,11 +69,10 @@ const disableUndo = computed(() => {
 const resetRef = ref(null)
 const { fire: reset, fireNext: resetNext } = useConfirm(async () => {
   if (!scsh.scoresheet.value) return
-  const { id, marks, completedAt, openedAt, ...rest } = scsh.scoresheet.value
-  await scsh.complete()
-  await scsh.close()
-  const newId = await createLocalScoresheet(rest)
-  router.replace(`/score/local/${newId}`)
+  const vendor = await scsh.reset()
+  if (vendor) {
+    router.replace(`/score/${route.params.system}/${vendor.join('/')}`)
+  }
 }, resetRef)
 
 const { fire: exit, fireNext: confirmExit } = useConfirm(async (mode?: 'submit' | 'discard') => {

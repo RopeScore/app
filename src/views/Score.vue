@@ -45,7 +45,7 @@ watch(() => route.params, async (next, prev) => {
       ? next.vendor.every((p, idx) => p === prev.vendor[idx])
       : next.vendor === prev.vendor)
   ) {
-    console.log('already open')
+    console.log('the specified scoresheet is already open')
     return
   }
   if (next.system && next.vendor) {
