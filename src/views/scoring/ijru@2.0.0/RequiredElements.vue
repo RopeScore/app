@@ -106,7 +106,7 @@
         :key="level ? level[0] : idx"
       >
         <score-button
-          v-if="level !== null"
+          v-if="level !== null && level !== 'close'"
           :color="level[1] < 7 ? 'green' : 'indigo'"
           :label="`Level ${level[1]}`"
           :value="tally(level[0])"
@@ -114,7 +114,12 @@
           :disabled="!!scoresheet?.completedAt"
           @click="addRepeatedSkill(level[0])"
         />
-        <!-- TODO: close button -->
+        <score-button
+          v-else-if="level === 'close'"
+          label="Close"
+          color="orange"
+          @click="diffOpen = false"
+        />
         <score-button
           v-else
           color="none"
@@ -151,7 +156,7 @@ const lookupCodeParts = computed(() => scoresheet.value?.competitionEventLookupC
 const diffOpen = ref(false)
 
 const levels = [
-  null,
+  'close',
   null,
   ['repL4', 4],
 
@@ -181,13 +186,13 @@ function L (level: number): number {
 }
 
 const numRepeatedSkills = computed(() => levels
-  .map(level => level ? tally(level[0]) : 0)
+  .map(level => level && level !== 'close' ? tally(level[0]) : 0)
   .reduce((a, b) => a + b))
 
 const repeatedSkillsResult = computed(() => {
   let res = 0
   for (const level of levels) {
-    if (level === null) continue
+    if (level === null || level === 'close') continue
     res += L(level[1]) * tally(level[0])
   }
   return res
