@@ -10,7 +10,7 @@ const updateSW = registerSW({
   }
 })
 
-export default function useSW () {
+export function useSW () {
   return {
     needRefresh,
     updateSW,

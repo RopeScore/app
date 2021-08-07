@@ -16,6 +16,7 @@
       label=""
     />
     <score-button
+      ref="resetRef"
       color="red"
       :label="resetNext ? 'Click Again' : 'Reset'"
       :vibration="resetNext ? 1000 : 500"
@@ -28,6 +29,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { createLocalScoresheet, useScoresheet } from '../hooks/scoresheet'
+import { useConfirm } from '../hooks/confirm'
 import ScoreButton from './ScoreButton.vue'
 
 const router = useRouter()
@@ -40,27 +42,17 @@ const disableUndo = computed(() => {
   return marks.length === 0 || marks[marks.length - 1]?.schema === 'undo'
 })
 
-const resetNext = ref<null | number>(null)
-
-async function reset () {
-  if (!resetNext.value) {
-    resetNext.value = window.setTimeout(() => {
-      resetNext.value = null
-    }, 3000)
-    return
-  }
-  clearTimeout(resetNext.value)
+const resetRef = ref(null)
+const { fire: reset, fireNext: resetNext } = useConfirm(async () => {
   if (!scsh.scoresheet.value) return
   const { id, marks, completedAt, openedAt, ...rest } = scsh.scoresheet.value
   await scsh.complete()
   await scsh.close()
   const newId = await createLocalScoresheet(rest)
   router.replace(`/score/local/${newId}`)
-  resetNext.value = null
-}
+}, resetRef)
 
 async function goBack () {
-  if (resetNext.value) clearTimeout(resetNext.value)
   await scsh.complete()
   await scsh.close()
   router.go(-1)

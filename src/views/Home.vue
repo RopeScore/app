@@ -63,7 +63,7 @@
 <script lang="ts" setup>
 import { ref, watchEffect } from 'vue'
 import logo from '../assets/logo.svg'
-import useSW from '../hooks/sw'
+import { useSW } from '../hooks/sw'
 
 const standalone = ref(false)
 
