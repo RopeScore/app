@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg30"
+   sodipodi:docname="logo-maskable.svg"
+   width="512"
+   height="512"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs34" />
+  <sodipodi:namedview
+     id="namedview32"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="0.64302523"
+     inkscape:cx="-39.656298"
+     inkscape:cy="461.87923"
+     inkscape:window-width="1920"
+     inkscape:window-height="1130"
+     inkscape:window-x="-6"
+     inkscape:window-y="-6"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg30" />
+  <g
+     id="g865"
+     transform="matrix(0.18125043,0,0,0.18125043,81.831881,116.61607)">
+    <path
+       d="m 470.9,418.8 c 0,0 229.4,111.6 302,61.4 C 929.7,371.4 962,467.9 962,467.9 c 0,0 335.3,252.6 -17.3,252.5 -289,-0.1 -5.2,-255.8 -5.2,-255.8 0,0 119.2,-48.2 189.3,-29.7 197.2,52 304.1,-59.8 304.1,-59.8"
+       fill="none"
+       stroke="#000000"
+       stroke-width="34.6945"
+       id="path2" />
+    <g
+       transform="matrix(-0.69388894,-0.00121107,0.00121107,-0.69388894,1488.0677,1526.6986)"
+       fill-rule="evenodd"
+       id="g10">
+      <rect
+         width="531.59998"
+         height="165.89999"
+         x="2199.2"
+         y="510.10001"
+         transform="rotate(31.7)"
+         rx="20"
+         ry="20"
+         id="rect4" />
+      <rect
+         width="142.10001"
+         height="117"
+         x="2075"
+         y="531.59998"
+         transform="rotate(31.7)"
+         ry="10"
+         rx="10"
+         id="rect6" />
+      <path
+         d="m 2037.6,1884.8 a 59.3,43.8 -58.5 0 1 15.7,50.9 59.3,43.8 -58.5 0 1 -39.7,50.5 59.3,43.8 -58.5 0 1 -48,-9.8 l 41,-41 z"
+         id="path8" />
+    </g>
+    <g
+       transform="matrix(-0.69388894,-0.00121107,0.00121107,-0.69388894,1488.0677,1526.6986)"
+       fill-rule="evenodd"
+       id="g18">
+      <rect
+         width="139.10001"
+         height="117.8"
+         x="-828"
+         y="1437.8"
+         rx="10"
+         ry="10"
+         transform="rotate(-28.6)"
+         id="rect12" />
+      <rect
+         width="568.40002"
+         height="169.3"
+         x="-1374.1"
+         y="1405.2"
+         rx="20"
+         ry="20"
+         transform="rotate(-28.8)"
+         id="rect14" />
+      <path
+         d="m -436.9,2006.8 a 59,56.1 53.8 0 1 -58.2,4.2 59,56.1 53.8 0 1 -33.7,-50.4 59,56.1 53.8 0 1 26.3,-51.9"
+         id="path16" />
+    </g>
+    <g
+       transform="matrix(0.8613,0,0,0.8613,302.8,161.3)"
+       id="g24">
+      <circle
+         cx="763.09998"
+         cy="1227"
+         r="700"
+         fill-rule="evenodd"
+         id="circle20" />
+      <circle
+         cx="759.40002"
+         cy="1218.7"
+         r="600"
+         stroke="#ffffff"
+         stroke-width="50"
+         id="circle22" />
+    </g>
+    <g
+       style="line-height:25px;-inkscape-font-specification:Verdana"
+       aria-label="1"
+       font-weight="400"
+       font-size="40px"
+       font-family="Verdana"
+       letter-spacing="0"
+       word-spacing="0"
+       id="g28">
+      <path
+         d="M 1172.3,1537 H 747.7 V 1426 H 881.8 V 1089.7 H 747.7 V 986 q 30.7,0 59,-3.4 28.1,-3.8 47,-12.8 22.1,-10.7 33.2,-27.8 11.1,-17 12.9,-42.7 h 141.4 V 1426 h 131.1 z"
+         font-weight="700"
+         font-size="1083.6px"
+         fill="#ffffff"
+         id="path26" />
+    </g>
+  </g>
+</svg>

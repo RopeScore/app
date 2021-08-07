@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 1920 1920"
+   version="1.1"
+   id="svg30"
+   sodipodi:docname="logo-momochrome.svg"
+   inkscape:export-filename="\\wsl$\Ubuntu\home\sbe\git\rs-app\public\icons\android-icon-512x512.png"
+   inkscape:export-xdpi="25.6"
+   inkscape:export-ydpi="25.6"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs34" />
+  <sodipodi:namedview
+     id="namedview32"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     showgrid="false"
+     inkscape:zoom="0.4546875"
+     inkscape:cx="729.07216"
+     inkscape:cy="1062.268"
+     inkscape:window-width="1920"
+     inkscape:window-height="1130"
+     inkscape:window-x="-6"
+     inkscape:window-y="-6"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg30" />
+  <path
+     d="m 470.9,418.8 c 0,0 229.4,111.6 302,61.4 C 929.7,371.4 962,467.9 962,467.9 c 0,0 83.825,63.15 123.575,126.2875 9.9375,15.78437 17.1203,31.56797 19.55,46.36387 2.4297,14.7959 -16.3885,0.013 -25.4635,11.84662 -18.15,23.66719 -42.9627,-6.74962 -131.1127,-6.77462 -72.25,-0.025 -90.55567,29.61074 -104.59005,5.6248 -7.01719,-11.99297 -30.42359,3.15847 -27.90602,-11.82883 2.51758,-14.98731 8.96602,-30.97247 17.67227,-46.95684 C 868.55,528.525 939.5,464.6 939.5,464.6 c 0,0 119.2,-48.2 189.3,-29.7 197.2,52 304.1,-59.8 304.1,-59.8"
+     fill="none"
+     stroke="#000000"
+     stroke-width="34.6945"
+     id="path2"
+     sodipodi:nodetypes="cccssscsssccc" />
+  <g
+     transform="rotate(-179.9 744.7 762.7) scale(.69389)"
+     fill-rule="evenodd"
+     id="g10">
+    <rect
+       width="531.6"
+       height="165.9"
+       x="2199.2"
+       y="510.1"
+       transform="rotate(31.7)"
+       rx="20"
+       ry="20"
+       id="rect4" />
+    <rect
+       width="142.1"
+       height="117"
+       x="2075"
+       y="531.6"
+       transform="rotate(31.7)"
+       ry="10"
+       rx="10"
+       id="rect6" />
+    <path
+       d="M2037.6 1884.8a59.3 43.8-58.5 0115.7 50.9 59.3 43.8-58.5 01-39.7 50.5 59.3 43.8-58.5 01-48-9.8l41-41z"
+       id="path8" />
+  </g>
+  <g
+     transform="rotate(-179.9 744.7 762.7) scale(.69389)"
+     fill-rule="evenodd"
+     id="g18">
+    <rect
+       width="139.1"
+       height="117.8"
+       x="-828"
+       y="1437.8"
+       rx="10"
+       ry="10"
+       transform="rotate(-28.6)"
+       id="rect12" />
+    <rect
+       width="568.4"
+       height="169.3"
+       x="-1374.1"
+       y="1405.2"
+       rx="20"
+       ry="20"
+       transform="rotate(-28.8)"
+       id="rect14" />
+    <path
+       d="M-436.9 2006.8a59 56.1 53.8 01-58.2 4.2 59 56.1 53.8 01-33.7-50.4 59 56.1 53.8 0126.3-51.9"
+       id="path16" />
+  </g>
+  <path
+     id="circle20"
+     style="stroke-width:0.8613"
+     d="M 960.05859,615.20508 A 602.91,602.91 0 0 0 357.14844,1218.1152 602.91,602.91 0 0 0 960.05859,1821.0254 602.91,602.91 0 0 0 1562.9688,1218.1152 602.91,602.91 0 0 0 960.05859,615.20508 Z m -3.1875,58.26172 a 537.49998,537.49998 0 0 1 537.50001,537.5 537.49998,537.49998 0 0 1 -537.50001,537.5 537.49998,537.49998 0 0 1 -537.5,-537.5 537.49998,537.49998 0 0 1 537.5,-537.5 z" />
+  <path
+     id="circle20-7"
+     style="fill-rule:evenodd;stroke-width:0.707144"
+     d="M 956.87109 715.9668 A 495.00001 495.00001 0 0 0 461.87109 1210.9668 A 495.00001 495.00001 0 0 0 956.87109 1705.9668 A 495.00001 495.00001 0 0 0 1451.8711 1210.9668 A 495.00001 495.00001 0 0 0 956.87109 715.9668 z M 899.80078 899.30078 L 1041.1992 899.30078 L 1041.1992 1426 L 1172.3008 1426 L 1172.3008 1537 L 747.69922 1537 L 747.69922 1426 L 881.80078 1426 L 881.80078 1089.6992 L 747.69922 1089.6992 L 747.69922 986 C 768.16589 986 787.83255 984.86628 806.69922 982.59961 C 825.43255 980.06628 841.09922 975.80078 853.69922 969.80078 C 868.43255 962.66745 879.50039 953.4 886.90039 942 C 894.30039 930.66667 898.60078 916.43411 899.80078 899.30078 z " />
+</svg>
