@@ -48,8 +48,10 @@ watch(() => route.params, async (next, prev) => {
     console.log('already open')
     return
   }
-  await scsh.close()
-  await scsh.open(next.system as string, ...next.vendor)
+  if (next.system && next.vendor) {
+    await scsh.close()
+    await scsh.open(next.system as string, ...next.vendor)
+  }
 })
 
 const model = computed(() => {
