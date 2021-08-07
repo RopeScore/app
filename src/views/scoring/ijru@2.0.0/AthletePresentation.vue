@@ -26,6 +26,7 @@
     <score-button
       label="+"
       :value="tally('formExecutionPlus')"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'formExecutionPlus' })"
     />
 
@@ -40,6 +41,7 @@
     <score-button
       label="&#10004;"
       :value="tally('formExecutionCheck')"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'formExecutionCheck' })"
     />
 
@@ -47,6 +49,7 @@
       label="Misses"
       :value="tally('miss')"
       color="red"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'miss' })"
     />
     <score-button
@@ -56,6 +59,7 @@
     <score-button
       label="-"
       :value="tally('formExecutionMinus')"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'formExecutionMinus' })"
     />
   </main>
@@ -78,7 +82,7 @@ defineProps({
   }
 })
 
-const { addMark, tally } = useScoresheet()
+const { addMark, tally, scoresheet } = useScoresheet()
 
 const result = computed(() => {
   const plus = tally('formExecutionPlus')

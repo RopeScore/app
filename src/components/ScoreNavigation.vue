@@ -35,6 +35,7 @@ const scsh = useScoresheet()
 
 const lastMarkSequence = computed(() => (scsh.scoresheet.value?.marks.length ?? 0) - 1)
 const disableUndo = computed(() => {
+  if (scsh.scoresheet.value?.completedAt) return true
   const marks = scsh.scoresheet.value?.marks ?? []
   return marks.length === 0 || marks[marks.length - 1]?.schema === 'undo'
 })

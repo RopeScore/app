@@ -20,6 +20,7 @@
     <score-button
       label="+"
       :value="tally('entertainmentPlus')"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'entertainmentPlus' })"
     />
     <score-button
@@ -30,12 +31,14 @@
     <score-button
       label="+"
       :value="tally('musicalityPlus')"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'musicalityPlus' })"
     />
 
     <score-button
       label="&#10004;"
       :value="tally('entertainmentCheck')"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'entertainmentCheck' })"
     />
     <score-button
@@ -46,12 +49,14 @@
     <score-button
       label="&#10004;"
       :value="tally('musicalityCheck')"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'musicalityCheck' })"
     />
 
     <score-button
       label="-"
       :value="tally('entertainmentMinus')"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'entertainmentMinus' })"
     />
     <score-button
@@ -61,6 +66,7 @@
     <score-button
       label="-"
       :value="tally('musicalityMinus')"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'musicalityMinus'})"
     />
   </main>
@@ -84,7 +90,7 @@ defineProps({
   }
 })
 
-const { addMark, tally } = useScoresheet()
+const { addMark, tally, scoresheet } = useScoresheet()
 
 const entertainmentResult = computed(() => {
   const plus = tally('entertainmentPlus')

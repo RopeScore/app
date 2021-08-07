@@ -18,6 +18,7 @@
         v-else
         label="Multiples"
         :value="tally('rqMultiples')"
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'rqMultiples' })"
       />
 
@@ -25,6 +26,7 @@
         label="Space Violations"
         color="red"
         :value="tally('spaceViolation')"
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'spaceViolation' })"
       />
 
@@ -37,12 +39,14 @@
         v-else
         label="Wraps / Releases"
         :value="tally('rqWrapsReleases')"
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'rqWrapsReleases' })"
       />
 
       <score-button
         label="Gymnastics / Power"
         :value="tally('rqGymnasticsPower')"
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'rqGymnasticsPower' })"
       />
 
@@ -50,6 +54,7 @@
         label="Time Violations"
         color="red"
         :value="tally('timeViolation')"
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'timeViolation' })"
       />
 
@@ -57,6 +62,7 @@
         v-if="hasInteractions"
         label="Interactions"
         :value="tally('rqInteractions')"
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'rqInteractions' })"
       />
       <score-button
@@ -69,6 +75,7 @@
         label="Misses"
         color="red"
         :value="tally('miss')"
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'miss' })"
       />
 
@@ -84,6 +91,7 @@
         v-if="isDoubleDutch"
         label="Turner Involvement"
         :value="tally('rqTurnerInvolvement')"
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'rqTurnerInvolvement' })"
       />
       <score-button
@@ -103,8 +111,10 @@
           :label="`Level ${level[1]}`"
           :value="tally(level[0])"
           :vibration="150"
+          :disabled="!!scoresheet?.completedAt"
           @click="addRepeatedSkill(level[0])"
         />
+        <!-- TODO: close button -->
         <score-button
           v-else
           color="none"

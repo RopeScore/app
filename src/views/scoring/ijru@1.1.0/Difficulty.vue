@@ -14,6 +14,7 @@
       :color="level < 7 ? 'green' : 'indigo'"
       :label="`Level ${level}`"
       :value="tally(schema)"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema })"
     />
   </main>
@@ -36,7 +37,7 @@ defineProps({
   }
 })
 
-const { addMark, tally } = useScoresheet()
+const { addMark, tally, scoresheet } = useScoresheet()
 
 function L (level: number): number {
   if (level === 0) return 0

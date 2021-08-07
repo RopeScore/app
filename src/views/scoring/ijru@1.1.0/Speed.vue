@@ -6,6 +6,7 @@
         color="red"
         :value="tally('falseStart')"
         single-row
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'falseStart' })"
       />
       <score-button
@@ -14,6 +15,7 @@
         color="red"
         :value="tally('falseSwitch')"
         single-row
+        :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'falseSwitch' })"
       />
     </template>
@@ -32,6 +34,7 @@
       label="Steps"
       :value="tally('step')"
       class="col-span-2 row-span-3 mx-12"
+      :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'step' })"
     />
   </main>
@@ -54,7 +57,7 @@ const props = defineProps({
   }
 })
 
-const { addMark, tally } = useScoresheet()
+const { addMark, tally, scoresheet } = useScoresheet()
 
 const isHeadJudge = computed(() => props.model.judgeType === 'Shj')
 </script>
