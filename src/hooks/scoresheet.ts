@@ -232,9 +232,16 @@ export function useScoresheet (): UseScoresheetReturn {
 
       tally.value = reactive({})
 
-      for (const mark of scoresheet.value?.marks ?? []) {
-        if (mark.schema === 'undo') continue // TODO: handle undos
-        tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + 1
+      const marks = scoresheet.value?.marks ?? []
+
+      for (const mark of marks) {
+        if (mark.schema === 'undo') {
+          const target = marks[mark.target]
+          if (!target || target.schema === 'undo') continue
+          tally.value[target.schema] = (tally.value[target.schema] ?? 0) - 1
+        } else {
+          tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + 1
+        }
       }
     },
     async close () {
