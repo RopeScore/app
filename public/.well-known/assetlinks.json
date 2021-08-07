@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.ropescore.twa",
+      "sha256_cert_fingerprints": [
+        "6F:C8:30:13:AF:F0:42:87:F6:40:22:D8:85:C9:6E:C2:7B:8D:C6:99:DA:55:59:A8:A7:35:67:D0:97:A1:FE:AD"
+      ]
+    }
+  }
+]

@@ -47,7 +47,7 @@ export default defineConfig({
         director just have to sit back and relax as you watch the scores flow
         in from the judges, but other systems are supported as well with pen
         and paper. Printable templates for score collection is provided for free
-        by RopeScore.`,
+        by RopeScore.`.split('\n').map(l => l.trim()).join('\n'),
         icons: [
           {
             src: '/icons/android-icon-36x36.png',
