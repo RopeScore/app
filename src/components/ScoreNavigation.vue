@@ -1,20 +1,36 @@
 <template>
   <nav class="grid grid-cols-3 h-header">
     <score-button
-      label="Back"
-      @click="goBack()"
+      v-if="!confirmExit"
+      label="Exit"
+      :vibration="500"
+      @click="exit()"
+    />
+
+    <score-button
+      v-if="confirmExit"
+      label="Submit"
+      @click="exit('submit')"
     />
     <score-button
-      v-if="!disableUndo"
+      v-if="confirmExit"
+      label="Discard"
+      color="red"
+      @click="exit('discard')"
+    />
+
+    <score-button
+      v-if="!disableUndo && !confirmExit"
       color="orange"
       label="Undo"
       @click="scsh.addMark({ schema: 'undo', target: lastMarkSequence })"
     />
     <score-button
-      v-else
+      v-else-if="!confirmExit"
       color="none"
       label=""
     />
+
     <score-button
       ref="resetRef"
       color="red"
@@ -53,9 +69,9 @@ const { fire: reset, fireNext: resetNext } = useConfirm(async () => {
   router.replace(`/score/local/${newId}`)
 }, resetRef)
 
-async function goBack () {
-  await scsh.complete()
-  await scsh.close()
+const { fire: exit, fireNext: confirmExit } = useConfirm(async (mode?: 'submit' | 'discard') => {
+  if (mode === 'submit') await scsh.complete()
+  await scsh.close(mode === 'submit')
   router.go(-1)
-}
+})
 </script>

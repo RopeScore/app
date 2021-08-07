@@ -91,7 +91,7 @@ interface UseScoresheetReturn {
   addMark: (mark: MarkPayload) => Promise<void> | void
   complete: () => Promise<void> | void
   open: (system: string, ...vendor: string[]) => Promise<void> | void
-  close: () => Promise<void> | void
+  close: (save?: boolean) => Promise<void> | void
 }
 
 const scoresheet = ref<Scoresheet>()
@@ -244,17 +244,19 @@ export function useScoresheet (): UseScoresheetReturn {
         }
       }
     },
-    async close () {
+    async close (save: boolean = true) {
       if (!scoresheet.value) return
-      switch (system.value) {
-        case 'local':
-          await closeLocal()
-          break
-        case 'rs':
-          await closeRs()
-          break
-        default:
-          throw new TypeError('Unknown system specified, cannot open scoresheet')
+      if (save) {
+        switch (system.value) {
+          case 'local':
+            await closeLocal()
+            break
+          case 'rs':
+            await closeRs()
+            break
+          default:
+            throw new TypeError('Unknown system specified, cannot open scoresheet')
+        }
       }
       scoresheet.value = undefined
       system.value = undefined
