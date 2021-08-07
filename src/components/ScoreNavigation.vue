@@ -1,10 +1,16 @@
 <template>
   <nav class="grid grid-cols-3 h-header">
     <score-button
-      v-if="!confirmExit"
+      v-if="!confirmExit && !scsh.scoresheet.value?.completedAt"
       label="Exit"
       :vibration="500"
       @click="exit()"
+    />
+
+    <score-button
+      v-if="!!scsh.scoresheet.value?.completedAt"
+      label="Exit"
+      @click="immediateExit()"
     />
 
     <score-button
@@ -74,4 +80,9 @@ const { fire: exit, fireNext: confirmExit } = useConfirm(async (mode?: 'submit' 
   await scsh.close(mode === 'submit')
   router.go(-1)
 })
+
+async function immediateExit () {
+  await scsh.close(false)
+  router.go(-1)
+}
 </script>
