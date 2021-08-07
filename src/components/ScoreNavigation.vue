@@ -20,6 +20,7 @@
       color="red"
       :label="resetNext ? 'Click Again' : 'Reset'"
       :vibration="resetNext ? 1000 : 500"
+      :disabled="!!scsh.scoresheet.value?.submittedAt"
       @click="reset()"
     />
   </nav>

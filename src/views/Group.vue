@@ -60,6 +60,7 @@
         :key="scoresheet.id"
         :scoresheet="scoresheet"
         :group-id="group.id"
+        color="indigo"
       />
     </div>
   </details>

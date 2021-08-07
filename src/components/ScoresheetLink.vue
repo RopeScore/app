@@ -1,6 +1,13 @@
 <template>
   <router-link
-    class="block grid grid-cols-[3rem,auto] grid-rows-4 rounded bg-green-500 hover:bg-green-600 text-white p-2"
+    class="block grid grid-cols-[3rem,auto] grid-rows-4 rounded text-white p-2"
+    :class="{
+      'bg-green-500': color === 'green',
+      'hover:bg-green-600': color === 'green',
+
+      'bg-indigo-500': color === 'indigo',
+      'hover:bg-indigo-600': color === 'indigo'
+    }"
     :to="`/score/rs/${groupId}/${scoresheet.id}`"
   >
     <span class="row-span-4 flex justify-center items-center">{{ scoresheet.heat }}</span>
@@ -23,6 +30,13 @@ defineProps({
   groupId: {
     type: String,
     required: true
+  },
+  color: {
+    validator (value: unknown) {
+      return typeof value === 'string' &&
+        ['green', 'indigo'].includes(value)
+    },
+    default: 'green'
   }
 })
 </script>

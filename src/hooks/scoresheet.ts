@@ -127,7 +127,7 @@ const complete = () => {
     return
   }
   if (scoresheet.value.completedAt) {
-    console.warn('Scoresheet already completed, nor marking completed')
+    console.warn('Scoresheet already completed, not marking completed')
     return
   }
   scoresheet.value.completedAt = Date.now()
