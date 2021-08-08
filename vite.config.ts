@@ -28,8 +28,10 @@ export default defineConfig({
         shortcuts: [
           {
             name: 'Practice',
+            short_name: 'Practice',
+            description: 'Open the screen to select a judge type and rule set to practice with',
             url: '/practice',
-            icons: []
+            icons: ['/icons/monochrome-icon-129x192.png']
           }
         ],
         description: `Practice and judge rope skipping / jump rope competitions
