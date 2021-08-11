@@ -131,7 +131,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, defineProps } from 'vue'
+import { computed, ref } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { useScoresheet } from '../../../hooks/scoresheet'
 

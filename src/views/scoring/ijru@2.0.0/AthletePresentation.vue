@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps } from 'vue'
+import { computed } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { useScoresheet } from '../../../hooks/scoresheet'
 
