@@ -21,6 +21,7 @@ import { useRoute } from 'vue-router'
 import models from '../models'
 import ScoreNavigation from '../components/ScoreNavigation.vue'
 import { useScoresheet } from '../hooks/scoresheet'
+import { useWakeLock } from '../hooks/wakeLock'
 
 function preventDefualt (event: TouchEvent) {
   event.preventDefault()
@@ -28,14 +29,17 @@ function preventDefualt (event: TouchEvent) {
 
 const route = useRoute()
 const scsh = useScoresheet()
+const wakeLock = useWakeLock()
 
-onMounted(() => {
+onMounted(async () => {
   document.body.addEventListener('touchmove', preventDefualt, { passive: false })
-  scsh.open(route.params.system as string, ...route.params.vendor)
+  await wakeLock.request()
+  await scsh.open(route.params.system as string, ...route.params.vendor)
 })
 
 onUnmounted(async () => {
   await scsh.close()
+  await wakeLock.release()
   document.body.removeEventListener('touchmove', preventDefualt)
 })
 
