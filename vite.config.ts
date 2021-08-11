@@ -31,7 +31,13 @@ export default defineConfig({
             short_name: 'Practice',
             description: 'Open the screen to select a judge type and rule set to practice with',
             url: '/practice',
-            icons: ['/icons/monochrome-icon-129x192.png']
+            icons: [
+              {
+                src: '/icons/monochrome-icon-192x192.png',
+                sized: '192x192',
+                type: 'image/png'
+              } as unknown as string
+            ]
           }
         ],
         description: `Practice and judge rope skipping / jump rope competitions
