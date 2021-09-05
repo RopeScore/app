@@ -7,7 +7,10 @@
       'hover:bg-green-600': color === 'green',
 
       'bg-indigo-500': color === 'indigo',
-      'hover:bg-indigo-600': color === 'indigo'
+      'hover:bg-indigo-600': color === 'indigo',
+
+      'bg-gray-500': color === 'gray',
+      'hover:bg-gray-600': color === 'gray'
     }"
     :to="`/score/rs/${groupId}/${entry.id}/${scoresheet.id}`"
   >
@@ -17,16 +20,6 @@
     <span class="col-start-2">{{ scoresheet.rulesId }}: <span class="font-bold">{{ entry.competitionEventLookupCode }}</span></span>
     <span class="col-start-2">{{ scoresheet.judgeId }} (<span class="font-bold">{{ scoresheet.judgeType }}</span>): <span class="font-bold">{{ scoresheet.judgeName }}</span></span>
   </router-link>
-  <a
-    v-else
-    class="block grid grid-cols-[3rem,auto] grid-rows-4 rounded text-white p-2 bg-gray-500"
-  >
-    <span class="row-span-4 flex justify-center items-center">{{ entry.heat }}</span>
-    <span class="col-start-2 font-bold">{{ entry.categoryName }}</span>
-    <span class="col-start-2">{{ entry.participantId }}: <span class="font-bold">{{ entry.participantName }}</span></span>
-    <span class="col-start-2" />
-    <span class="col-start-2" />
-  </a>
 </template>
 
 <script lang="ts" setup>
@@ -49,7 +42,7 @@ defineProps({
   color: {
     validator (value: unknown) {
       return typeof value === 'string' &&
-    ['green', 'indigo'].includes(value)
+    ['green', 'indigo', 'gray'].includes(value)
     },
     default: 'green'
   }

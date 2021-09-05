@@ -62,7 +62,7 @@
         :entry="entry"
         :scoresheet="entry.deviceScoresheet"
         :group-id="group.id"
-        color="indigo"
+        :color="entry.didNotSkipAt ? 'gray' : 'indigo'"
       />
     </div>
   </details>
@@ -90,14 +90,14 @@ const enRes = useResult(result, [], res => res?.group?.entries)
 const remainingEntries = computed(() =>
   enRes.value
     ? [...enRes.value]
-        .filter(en => en.deviceScoresheet && !en.deviceScoresheet.completedAt)
+        .filter(en => en.deviceScoresheet && !en.deviceScoresheet.completedAt && !en.didNotSkipAt)
         .sort((a, b) => a.heat === b.heat ? a.participantId.localeCompare(b.participantId) : a.heat - b.heat)
     : []
 )
 const completedEntries = computed(() =>
   enRes.value
     ? [...enRes.value]
-        .filter(en => !en.deviceScoresheet || !!en.deviceScoresheet?.completedAt)
+        .filter(en => !!en.deviceScoresheet?.completedAt || !!en.didNotSkipAt)
         .sort((a, b) => a.heat === b.heat ? b.participantId.localeCompare(a.participantId) : b.heat - a.heat)
     : []
 )
