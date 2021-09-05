@@ -1,8 +1,14 @@
-query GroupScoresheet ($groupId: ID!, $scoresheetId: ID!) {
+query GroupScoresheet ($groupId: ID!, $entryId: ID!, $scoresheetId: ID!) {
   group (groupId: $groupId) {
     id
-    scoresheet (scoresheetId: $scoresheetId) {
-      ...FullScoresheet
+    entry (entryId: $entryId) {
+      ...FullEntry
+      scoresheet (scoresheetId: $scoresheetId) {
+        ...BaseScoresheet
+
+        options
+        marks
+      }
     }
   }
 }

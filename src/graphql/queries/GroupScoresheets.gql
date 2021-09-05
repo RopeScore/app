@@ -2,25 +2,11 @@ query GroupScoresheets ($groupId: ID!) {
   group (groupId: $groupId) {
     id
     name
-    scoresheets {
-      id
-      heat
-
-      competitionEventLookupCode
-      participantId
-      judgeId
-      rulesId
-      judgeType
-
-      participantName
-      judgeName
-      categoryName
-
-      updatedAt
-      openedAt
-      submittedAt
-      completedAt
-      didNotSkipAt
+    entries {
+      ...FullEntry
+      deviceScoresheet {
+        ...BaseScoresheet
+      }
     }
   }
 }

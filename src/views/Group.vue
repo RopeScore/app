@@ -28,9 +28,10 @@
 
   <div v-if="group" class="flex flex-col gap-4 px-2 mt-2">
     <scoresheet-link
-      v-for="scoresheet in remainingScoresheets"
-      :key="scoresheet.id"
-      :scoresheet="scoresheet"
+      v-for="entry in remainingEntries"
+      :key="entry.id"
+      :entry="entry"
+      :scoresheet="entry.deviceScoresheet"
       :group-id="group.id"
     />
   </div>
@@ -51,14 +52,15 @@
 
   <details class="px-2 mt-2 mb-2">
     <summary class="sticky top-0 w-full bg-white py-4 cursor-pointer">
-      Completed Scoresheets ({{ completedScoresheets.length }})
+      Completed Scoresheets ({{ completedEntries.length }})
     </summary>
 
     <div v-if="group" class="flex flex-col gap-4 mt-2">
       <scoresheet-link
-        v-for="scoresheet in completedScoresheets"
-        :key="scoresheet.id"
-        :scoresheet="scoresheet"
+        v-for="entry in completedEntries"
+        :key="entry.id"
+        :entry="entry"
+        :scoresheet="entry.deviceScoresheet"
         :group-id="group.id"
         color="indigo"
       />
@@ -83,19 +85,19 @@ const route = useRoute()
 const { result, loading, error } = useGroupScoresheetsQuery({ groupId: route.params.id as string }, () => ({ fetchPolicy: 'cache-and-network', pollInterval: 30_000, enabled: auth.isLoggedIn.value }))
 
 const group = useResult(result, null, res => res?.group)
-const scRes = useResult(result, [], res => res?.group?.scoresheets)
+const enRes = useResult(result, [], res => res?.group?.entries)
 
-const remainingScoresheets = computed(() =>
-  scRes.value
-    ? [...scRes.value]
-        .filter(sc => !sc.completedAt)
+const remainingEntries = computed(() =>
+  enRes.value
+    ? [...enRes.value]
+        .filter(en => en.deviceScoresheet && !en.deviceScoresheet.completedAt)
         .sort((a, b) => a.heat === b.heat ? a.participantId.localeCompare(b.participantId) : a.heat - b.heat)
     : []
 )
-const completedScoresheets = computed(() =>
-  scRes.value
-    ? [...scRes.value]
-        .filter(sc => !!sc.completedAt)
+const completedEntries = computed(() =>
+  enRes.value
+    ? [...enRes.value]
+        .filter(en => !en.deviceScoresheet || !!en.deviceScoresheet?.completedAt)
         .sort((a, b) => a.heat === b.heat ? b.participantId.localeCompare(a.participantId) : b.heat - a.heat)
     : []
 )

@@ -170,12 +170,13 @@ const resetLocal = async ({ complete }: Pick<UseScoresheetReturn, 'complete'>) =
   return [newId]
 }
 
-const openRs = async (groupId: string, scoresheetId: string) => {
+const openRs = async (groupId: string, entryId: string, scoresheetId: string) => {
   return new Promise((resolve, reject) => {
     provideApolloClient(apolloClient)
     const enabled = ref(true)
     const { onResult } = useGroupScoresheetQuery({
       groupId,
+      entryId,
       scoresheetId
     }, {
       fetchPolicy: 'network-only',
@@ -184,7 +185,7 @@ const openRs = async (groupId: string, scoresheetId: string) => {
     })
 
     onResult(res => {
-      let loaded = res.data.group?.scoresheet
+      let loaded = res.data.group?.entry?.scoresheet
       if (!loaded) return reject(new Error(`RopeScore scoresheet not found: ${scoresheetId}`))
       loaded = reactive(JSON.parse(JSON.stringify(loaded)))
       scoresheet.value = loaded as RemoteScoresheet
@@ -245,7 +246,7 @@ export function useScoresheet (): UseScoresheetReturn {
           await openLocal(vendor[0])
           break
         case 'rs':
-          await openRs(vendor[0], vendor[1])
+          await openRs(vendor[0], vendor[1], vendor[2])
           break
         default:
           throw new TypeError('Unknown system specified, cannot open scoresheet')

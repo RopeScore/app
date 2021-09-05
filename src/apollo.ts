@@ -1,10 +1,9 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
 import { setContext } from '@apollo/client/link/context'
-import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist'
 import { useAuth } from './hooks/auth'
 
 const httpLink = createHttpLink({
-  uri: 'https://api.ropescore.app'
+  uri: 'https://api.ropescore.com'
 })
 
 const authLink = setContext(async (_, { headers }) => {
@@ -18,11 +17,6 @@ const authLink = setContext(async (_, { headers }) => {
 })
 
 const cache = new InMemoryCache()
-
-persistCache({ // eslint-disable-line @typescript-eslint/no-floating-promises
-  cache,
-  storage: new LocalStorageWrapper(window.localStorage) as any
-})
 
 export const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),

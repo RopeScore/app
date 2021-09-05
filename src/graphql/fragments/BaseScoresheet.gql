@@ -1,0 +1,15 @@
+fragment BaseScoresheet on Scoresheet {
+  id
+
+  rulesId
+
+  judgeId
+  judgeName
+  judgeType
+
+  createdAt
+  updatedAt
+  openedAt
+  completedAt
+  submittedAt
+}
