@@ -85,7 +85,7 @@ export interface RemoteScoresheet {
 export type Scoresheet = RemoteScoresheet | LocalScoresheet
 
 interface UseScoresheetReturn {
-  readonly scoresheet: Readonly<Ref<Scoresheet | undefined | null>>
+  readonly scoresheet: Readonly<Ref<Scoresheet | undefined>>
 
   tally: (schema: Schemas) => number
   addMark: (mark: MarkPayload) => Promise<void> | void
@@ -96,7 +96,7 @@ interface UseScoresheetReturn {
   reset: () => Promise<string[] | void> | string[] | void
 }
 
-const scoresheet = ref<Scoresheet | null>()
+const scoresheet = ref<Scoresheet>()
 const system = ref<'local' | 'rs'>()
 const tally = ref<ScoreTally>(reactive({}))
 const ready = idbReady()
@@ -186,8 +186,10 @@ const openRs = async (groupId: string, entryId: string, scoresheetId: string) =>
 
     onResult(res => {
       const entry = res.data.group?.entry
-      const loaded = res.data.group?.entry?.scoresheet
+      let loaded = res.data.group?.entry?.scoresheet
       if (!entry) return reject(new Error(`RopeScore entry not found: ${scoresheetId}`))
+      if (!loaded) return reject(new Error(`RopeScore scoresheet not found: ${scoresheetId}`))
+      loaded = JSON.parse(JSON.stringify(loaded))
       if (!loaded) return reject(new Error(`RopeScore scoresheet not found: ${scoresheetId}`))
       scoresheet.value = reactive({
         categoryId: entry.categoryId,
