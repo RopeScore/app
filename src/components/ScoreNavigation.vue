@@ -51,7 +51,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useScoresheet } from '../hooks/scoresheet'
+import { useScoresheet, isUndoMark } from '../hooks/scoresheet'
 import { useConfirm } from '../hooks/confirm'
 import ScoreButton from './ScoreButton.vue'
 
@@ -63,7 +63,7 @@ const lastMarkSequence = computed(() => (scsh.scoresheet.value?.marks.length ?? 
 const disableUndo = computed(() => {
   if (scsh.scoresheet.value?.completedAt) return true
   const marks = scsh.scoresheet.value?.marks ?? []
-  return marks.length === 0 || marks[marks.length - 1]?.schema === 'undo'
+  return marks.length === 0 || isUndoMark(marks[marks.length - 1])
 })
 
 const resetRef = ref(null)
