@@ -37,7 +37,7 @@
         @change="handleClick()"
       >
       <span>{{ hints[n - 1] ?? '' }}</span>
-      <span class="flex justify-center">{{ n - 1 }}</span>
+      <span class="flex items-center justify-center">{{ n - 1 }}</span>
     </label>
 
     <label
