@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 
 import type { Model } from '../models'
 import type { PropType } from 'vue'
@@ -49,4 +49,10 @@ defineEmits<(e: 'select', model: Model, competitionEventLookupCode?: string) => 
 const competitionEventLookupCode = ref('')
 
 const rulesetList = computed(() => Array.isArray(props.model.rulesId) ? props.model.rulesId.join(', ') : props.model.rulesId)
+
+onMounted(() => {
+  if (props.model.localAlternativeCompetitionEvents) {
+    competitionEventLookupCode.value = props.model.localAlternativeCompetitionEvents[0][1]
+  }
+})
 </script>

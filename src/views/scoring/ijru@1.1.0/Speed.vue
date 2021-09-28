@@ -10,13 +10,18 @@
         @click="addMark({ schema: 'falseStart' })"
       />
       <score-button
-        v-if="isHeadJudge"
+        v-if="hasSwitches"
         label="False Switches"
         color="red"
         :value="tally('falseSwitch')"
         single-row
         :disabled="!!scoresheet?.completedAt"
         @click="addMark({ schema: 'falseSwitch' })"
+      />
+      <score-button
+        v-else
+        color="none"
+        label=""
       />
     </template>
     <template v-else>
@@ -60,4 +65,5 @@ const props = defineProps({
 const { addMark, tally, scoresheet } = useScoresheet()
 
 const isHeadJudge = computed(() => props.model.judgeType === 'Shj')
+const hasSwitches = computed(() => /\.\d+x\d+$/.test(scoresheet.value?.competitionEventLookupCode ?? ''))
 </script>

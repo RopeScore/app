@@ -20,7 +20,11 @@ const models: Model[] = [
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'svgf-rh@2020'],
     judgeType: 'Shj',
     name: 'Speed Head Judge',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue'))
+    component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue')),
+    localAlternativeCompetitionEvents: [
+      ['False Switches', 'e.ijru.sp.sr.srsr.4.4x30'],
+      ['No Switches', 'e.ijru.sp.sr.srss.1.30']
+    ]
   },
   {
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0'],
@@ -65,7 +69,7 @@ const models: Model[] = [
     allowScroll: true,
     component: defineAsyncComponent(async () => import('./views/scoring/svgf-rh@2020/Presentation.vue')),
     localAlternativeCompetitionEvents: [
-      ['SIngle Rope', 'e.ijru.fs.sr.srif.1.75'],
+      ['Single Rope', 'e.ijru.fs.sr.srif.1.75'],
       ['Double Dutch', 'e.ijru.fs.dd.ddpf.4.75']
     ]
   }
