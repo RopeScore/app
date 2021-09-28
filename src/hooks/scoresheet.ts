@@ -27,7 +27,9 @@ export interface GenericMark {
   readonly value?: number
 }
 
-export interface UndoMark extends GenericMark {
+export interface UndoMark {
+  readonly timestamp: number
+  readonly sequence: number // should always === index
   readonly schema: 'undo'
   readonly target: number
 }
@@ -111,7 +113,7 @@ const processMark = (mark: MarkPayload, marks: Mark[]) => {
       tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
     }
   } else {
-    tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + ((mark as GenericMark).value ?? 1)
+    tally.value[(mark as GenericMark).schema] = (tally.value[(mark as GenericMark).schema] ?? 0) + ((mark as GenericMark).value ?? 1)
   }
 }
 
