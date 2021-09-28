@@ -24,7 +24,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useScoresheet } from '../../../hooks/scoresheet'
+import { useScoresheet, isUndoMark } from '../../../hooks/scoresheet'
 
 import ScoreButton from '../../../components/ScoreButton.vue'
 import TenScale from '../../../components/TenScale.vue'
@@ -124,7 +124,17 @@ function handleUpdate (schema: schemas, value: number) {
   }
 
   if (prevMark) {
-    addMark({ schema: 'undo', target: prevMark.sequence })
+    let isUndone = false
+    for (let idx = marks.length - 1; idx >= 0; idx--) {
+      const mark = marks[idx]
+      if (isUndoMark(mark) && mark.target === prevMark.sequence) {
+        isUndone = true
+        break
+      }
+      if (marks[idx].sequence === prevMark.sequence) break // can't undo earlier than the mark
+    }
+
+    if (!isUndone) addMark({ schema: 'undo', target: prevMark.sequence })
   }
 
   addMark({ schema, value })

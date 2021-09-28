@@ -24,20 +24,18 @@ export interface GenericMark {
   readonly timestamp: number
   readonly sequence: number // should always === index
   readonly schema: Schemas
+  readonly value?: number
 }
 
 export interface UndoMark extends GenericMark {
   readonly schema: 'undo'
   readonly target: number
 }
+export function isUndoMark (x: any): x is UndoMark { return x && x.schema === 'undo' }
 
-export interface ValueMark extends GenericMark {
-  readonly value: number
-}
+export type Mark = GenericMark | UndoMark
 
-export type Mark = GenericMark | UndoMark | ValueMark
-
-export type MarkPayload = { schema: 'undo', target: number } | { schema: Schemas } | { schema: Schemas, value: number }
+export type MarkPayload = { schema: 'undo', target: number } | { schema: Schemas, value?: number }
 
 export type ScoreTally = Partial<Record<Schemas, number>>
 
@@ -105,6 +103,18 @@ const system = ref<'local' | 'rs'>()
 const tally = ref<ScoreTally>(reactive({}))
 const ready = idbReady()
 
+const processMark = (mark: MarkPayload, marks: Mark[]) => {
+  if (isUndoMark(mark)) {
+    const undoneMark = marks[mark.target]
+    if (!undoneMark) throw new Error('Undone mark missing')
+    if (!isUndoMark(undoneMark)) {
+      tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
+    }
+  } else {
+    tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + ((mark as GenericMark).value ?? 1)
+  }
+}
+
 const addMark = (mark: MarkPayload) => {
   const scsh = scoresheet.value
   if (!scsh) throw new Error('Scoresheet is not open')
@@ -116,15 +126,7 @@ const addMark = (mark: MarkPayload) => {
     ...mark
   })
 
-  if (mark.schema === 'undo') {
-    const undoneMark = scsh.marks[mark.target]
-    if (!undoneMark) throw new Error('Undone mark missing')
-    if (undoneMark.schema !== 'undo') {
-      tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
-    }
-  } else {
-    tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + (mark.value ?? 1)
-  }
+  processMark(mark, scsh.marks)
 }
 
 const complete = () => {
@@ -272,15 +274,7 @@ export function useScoresheet (): UseScoresheetReturn {
 
       const marks = scoresheet.value?.marks ?? []
 
-      for (const mark of marks) {
-        if (mark.schema === 'undo') {
-          const target = marks[mark.target]
-          if (!target || target.schema === 'undo') continue
-          tally.value[target.schema] = (tally.value[target.schema] ?? 0) - (undoneMark.value ?? 1)
-        } else {
-          tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + (mark.value ?? 1)
-        }
-      }
+      for (const mark of marks) processMark(mark, marks)
     },
     async close (save: boolean = true) {
       if (!scoresheet.value) return

@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { v4 as uuid } from 'uuid'
 
 import type { PropType } from 'vue'
@@ -105,8 +105,9 @@ const id = uuid().replace(/^\d+/, '')
 const addHalf = ref(false)
 const selected = ref<number>()
 
-onMounted(() => {
+function propChange () {
   if (typeof props.value === 'number') {
+    console.log(props.value)
     const checked = Math.ceil(props.value - 0.5)
 
     if (checked !== props.value) {
@@ -116,7 +117,10 @@ onMounted(() => {
       selected.value = props.value
     }
   }
-})
+}
+
+onMounted(propChange)
+watch(() => props.value, propChange)
 
 function handleClick () {
   let number = selected.value
