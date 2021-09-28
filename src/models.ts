@@ -4,6 +4,7 @@ export interface Model {
   rulesId: string | string[]
   judgeType: string | string[]
   name: string
+  allowScroll?: boolean
   component: Component
   localAlternativeCompetitionEvents?: Array<[string, string]>
 }
@@ -49,6 +50,23 @@ const models: Model[] = [
       ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75'],
       ['Double Dutch Single Freestyle', 'e.ijru.fs.dd.ddsf.3.75'],
       ['Double Dutch Other', 'e.ijru.fs.dd.ddpf.4.75']
+    ]
+  },
+  {
+    rulesId: 'svgf-rh@2020',
+    judgeType: 'D',
+    name: 'Difficulty',
+    component: defineAsyncComponent(async () => import('./views/scoring/svgf-rh@2020/Difficulty.vue'))
+  },
+  {
+    rulesId: 'svgf-rh@2020',
+    judgeType: 'P',
+    name: 'Presentation',
+    allowScroll: true,
+    component: defineAsyncComponent(async () => import('./views/scoring/svgf-rh@2020/Presentation.vue')),
+    localAlternativeCompetitionEvents: [
+      ['SIngle Rope', 'e.ijru.fs.sr.srif.1.75'],
+      ['Double Dutch', 'e.ijru.fs.dd.ddpf.4.75']
     ]
   }
 ]

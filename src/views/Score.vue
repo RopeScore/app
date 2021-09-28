@@ -16,12 +16,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
+import { computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useWakeLock } from '@vueuse/core'
 import models from '../models'
 import ScoreNavigation from '../components/ScoreNavigation.vue'
 import { useScoresheet } from '../hooks/scoresheet'
-import { useWakeLock } from '../hooks/wakeLock'
 
 function preventDefualt (event: TouchEvent) {
   event.preventDefault()
@@ -33,7 +33,7 @@ const wakeLock = useWakeLock()
 
 onMounted(async () => {
   document.body.addEventListener('touchmove', preventDefualt, { passive: false })
-  await wakeLock.request()
+  await wakeLock.request('screen')
   await scsh.open(route.params.system as string, ...route.params.vendor)
 })
 
@@ -63,6 +63,13 @@ const model = computed(() => {
   if (!sc) return null
   const model = models.find(model => model.rulesId.includes(sc.rulesId) && model.judgeType === sc.judgeType)
   if (!model) return null
+
+  if (model.allowScroll) {
+    document.body.removeEventListener('touchmove', preventDefualt)
+  } else {
+    document.body.addEventListener('touchmove', preventDefualt, { passive: false })
+  }
+
   return model
 })
 </script>

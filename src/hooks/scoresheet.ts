@@ -13,10 +13,12 @@ import type { schemas as ijru_1_1_0_speed_schemas } from '../views/scoring/ijru@
 import type { schemas as ijru_2_0_0_ath_pres_schemas } from '../views/scoring/ijru@2.0.0/AthletePresentation.vue'
 import type { schemas as ijru_2_0_0_rout_pres_schemas } from '../views/scoring/ijru@2.0.0/RoutinePresentation.vue'
 import type { schemas as ijru_2_0_0_req_el_schemas } from '../views/scoring/ijru@2.0.0/RequiredElements.vue'
+import type { schemas as svgf_rh_2020_diff_schemas } from '../views/scoring/svgf-rh@2020/Difficulty.vue'
+import type { schemas as svgf_rh_2020_pres_schemas } from '../views/scoring/svgf-rh@2020/Presentation.vue'
 
 export type Schemas = ijru_1_1_0_diff_schemas | ijru_1_1_0_speed_schemas
 | ijru_2_0_0_ath_pres_schemas | ijru_2_0_0_rout_pres_schemas
-| ijru_2_0_0_req_el_schemas
+| ijru_2_0_0_req_el_schemas | svgf_rh_2020_diff_schemas | svgf_rh_2020_pres_schemas
 
 export interface GenericMark {
   readonly timestamp: number
@@ -24,16 +26,18 @@ export interface GenericMark {
   readonly schema: Schemas
 }
 
-export interface UndoMark {
-  readonly timestamp: number
-  readonly sequence: number
+export interface UndoMark extends GenericMark {
   readonly schema: 'undo'
   readonly target: number
 }
 
-export type Mark = GenericMark | UndoMark
+export interface ValueMark extends GenericMark {
+  readonly value: number
+}
 
-export type MarkPayload = { schema: 'undo', target: number } | { schema: Schemas }
+export type Mark = GenericMark | UndoMark | ValueMark
+
+export type MarkPayload = { schema: 'undo', target: number } | { schema: Schemas } | { schema: Schemas, value: number }
 
 export type ScoreTally = Partial<Record<Schemas, number>>
 
@@ -116,10 +120,10 @@ const addMark = (mark: MarkPayload) => {
     const undoneMark = scsh.marks[mark.target]
     if (!undoneMark) throw new Error('Undone mark missing')
     if (undoneMark.schema !== 'undo') {
-      tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - 1
+      tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
     }
   } else {
-    tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + 1
+    tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + (mark.value ?? 1)
   }
 }
 
@@ -272,9 +276,9 @@ export function useScoresheet (): UseScoresheetReturn {
         if (mark.schema === 'undo') {
           const target = marks[mark.target]
           if (!target || target.schema === 'undo') continue
-          tally.value[target.schema] = (tally.value[target.schema] ?? 0) - 1
+          tally.value[target.schema] = (tally.value[target.schema] ?? 0) - (undoneMark.value ?? 1)
         } else {
-          tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + 1
+          tally.value[mark.schema] = (tally.value[mark.schema] ?? 0) + (mark.value ?? 1)
         }
       }
     },
