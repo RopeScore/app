@@ -33,9 +33,9 @@
       {{ label }}
     </template>
     <template v-else-if="!singleRow">
-      {{ label }}
+      <span class="text-2xl">{{ label }}</span>
       <br>
-      <span class="text-2xl">{{ typeof value === 'number' ? numFmt(value) : value }}</span>
+      <span>{{ typeof value === 'number' ? numFmt(value) : value }}</span>
     </template>
     <template v-else>
       {{ label }} ({{ typeof value === 'number' ? numFmt(value) : value }})
