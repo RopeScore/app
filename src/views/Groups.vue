@@ -83,7 +83,7 @@ import { useResult } from '@vue/apollo-composable'
 
 import ScoreButton from '../components/ScoreButton.vue'
 import BatteryStatus from '../components/BatteryStatus.vue'
-import TextField from '../components/TextField.vue'
+import { TextField } from '@ropescore/components'
 
 const auth = useAuth()
 const router = useRouter()
