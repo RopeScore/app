@@ -4,7 +4,7 @@ import { reactive, ref } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { apolloClient } from '../apollo'
 import { provideApolloClient } from '@vue/apollo-composable'
-import { useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
+import { useAddStreamMarkMutation, useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
 
 import type { Ref } from 'vue'
 
@@ -81,10 +81,11 @@ export interface RemoteScoresheet {
   heat: number
 
   // optional feature toggles
-  options?: Object | null
+  options?: Partial<Record<string, any>> | null
 
   marks: Mark[]
 }
+export function isRemoteScoresheet (x: any): x is RemoteScoresheet { return typeof x === 'object' && !!x.categoryId }
 
 export type Scoresheet = RemoteScoresheet | LocalScoresheet
 
@@ -121,6 +122,19 @@ const addMark = (mark: MarkPayload) => {
   const scsh = scoresheet.value
   if (!scsh) throw new Error('Scoresheet is not open')
   if (scsh.completedAt) throw Error('Can\'t change completed scoresheet')
+
+  if (isRemoteScoresheet(scsh) && scsh.options?.live === true) {
+    provideApolloClient(apolloClient)
+    const mutation = useAddStreamMarkMutation({})
+    mutation.mutate({
+      scoresheetId: scsh.id,
+      mark: {
+        timestamp: Date.now(),
+        sequence: scsh.marks.length,
+        ...mark
+      }
+    })
+  }
 
   scsh.marks.push({
     timestamp: Date.now(),
@@ -248,6 +262,19 @@ const resetRs = async ({ complete }: Pick<UseScoresheetReturn, 'complete'>) => {
     console.warn('No scoresheet open, cannot reset')
     return
   }
+
+  if (isRemoteScoresheet(scoresheet.value) && scoresheet.value.options?.live === true) {
+    const mutation = useAddStreamMarkMutation({})
+    mutation.mutate({
+      scoresheetId: scoresheet.value.id,
+      mark: {
+        timestamp: Date.now(),
+        sequence: scoresheet.value.marks.length + 1,
+        schema: 'clear'
+      }
+    })
+  }
+
   scoresheet.value.marks = []
   tally.value = reactive({})
 }
@@ -290,6 +317,12 @@ export function useScoresheet (): UseScoresheetReturn {
             break
           default:
             throw new TypeError('Unknown system specified, cannot open scoresheet')
+        }
+      } else if (!scoresheet.value.completedAt) {
+        switch (system.value) {
+          case 'rs':
+            addMark({ schema: 'clear' })
+            break
         }
       }
       scoresheet.value = undefined

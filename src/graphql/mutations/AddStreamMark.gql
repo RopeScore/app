@@ -1,0 +1,3 @@
+mutation AddStreamMark ($scoresheetId: ID!, $mark: JSONObject!) {
+  addStreamMark (scoresheetId: $scoresheetId, mark: $mark)
+}
