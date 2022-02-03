@@ -19,6 +19,7 @@ import type { schemas as svgf_rh_2020_pres_schemas } from '../views/scoring/svgf
 export type Schemas = ijru_1_1_0_diff_schemas | ijru_1_1_0_speed_schemas
 | ijru_2_0_0_ath_pres_schemas | ijru_2_0_0_rout_pres_schemas
 | ijru_2_0_0_req_el_schemas | svgf_rh_2020_diff_schemas | svgf_rh_2020_pres_schemas
+| 'clear'
 
 export interface GenericMark {
   readonly timestamp: number
