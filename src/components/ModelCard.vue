@@ -8,6 +8,7 @@
     <p class="text-center text-gray-600">
       {{ rulesetList }}
     </p>
+
     <template v-if="model.localAlternativeCompetitionEvents">
       <select
         v-model="competitionEventLookupCode"
@@ -22,9 +23,23 @@
         </option>
       </select>
     </template>
+
+    <template v-if="model.localOptions && model.localOptions.length > 0">
+      <h2>Options</h2>
+      <div v-for="option of model.localOptions" :key="option.prop">
+        <checkbox-field
+          v-if="option.type === 'boolean'"
+          :label="option.name"
+          :model-value="options[option.prop]"
+          @update:model-value="options[option.prop] = $event"
+        />
+        <div v-else>Unsupported option type</div>
+      </div>
+    </template>
+
     <button
       class="p-2 mt-4 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none focus:outline-none outline-none"
-      @click="$emit('select', model, competitionEventLookupCode)"
+      @click="$emit('select', model, getPlainOptions(options), competitionEventLookupCode)"
     >
       Open
     </button>
@@ -32,7 +47,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, reactive } from 'vue'
+
+import { CheckboxField } from '@ropescore/components'
 
 import type { Model } from '../models'
 import type { PropType } from 'vue'
@@ -44,11 +61,17 @@ const props = defineProps({
   }
 })
 
-defineEmits<(e: 'select', model: Model, competitionEventLookupCode?: string) => void>()
+defineEmits<(e: 'select', model: Model, options?: Record<string, any>, competitionEventLookupCode?: string) => void>()
 
 const competitionEventLookupCode = ref('')
+const options = reactive<Record<string, any>>({})
+
+function getPlainOptions (options: Record<string, any>) {
+  return JSON.parse(JSON.stringify(options))
+}
 
 const rulesetList = computed(() => Array.isArray(props.model.rulesId) ? props.model.rulesId.join(', ') : props.model.rulesId)
+
 
 onMounted(() => {
   if (props.model.localAlternativeCompetitionEvents) {

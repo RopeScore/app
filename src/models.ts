@@ -1,5 +1,11 @@
 import { Component, defineAsyncComponent } from 'vue'
 
+export interface Option {
+  name: string
+  prop: string
+  type: 'boolean' // TODO implement others
+}
+
 export interface Model {
   rulesId: string | string[]
   judgeType: string | string[]
@@ -7,6 +13,8 @@ export interface Model {
   allowScroll?: boolean
   component: Component
   localAlternativeCompetitionEvents?: Array<[string, string]>
+  localOptions?: Option[]
+  hidden?: boolean
 }
 
 const models: Model[] = [
@@ -71,6 +79,16 @@ const models: Model[] = [
     localAlternativeCompetitionEvents: [
       ['Single Rope', 'e.ijru.fs.sr.srif.1.75'],
       ['Double Dutch', 'e.ijru.fs.dd.ddpf.4.75']
+    ]
+  },
+  {
+    rulesId: 'experiments',
+    judgeType: 'P',
+    name: 'Simplified Presentation',
+    component: defineAsyncComponent(async () => import('./views/scoring/experiments/SimplifiedPresentation.vue')),
+    hidden: true,
+    localOptions: [
+      { prop: 'scale5', name: '5-grade scale', type: 'boolean' }
     ]
   }
 ]

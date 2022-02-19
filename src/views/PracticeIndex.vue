@@ -6,34 +6,50 @@
         single-row
         @click="goBack()"
       />
+      <score-button
+        :label="showHidden ? 'Yay' : ''"
+        :color="showHidden ? 'green' : 'none'"
+        single-row
+        @click="hiddenCount++"
+      />
     </nav>
     <main class="flex flex-col mb-2">
-      <model-card
+      <template
         v-for="(model, idx) in models"
         :key="`model-${idx}`"
-        :model="model"
-        @select="selectModel"
-      />
+      >
+        <model-card
+          v-if="!model.hidden || showHidden"
+          :model="model"
+          @select="selectModel"
+        />
+      </template>
     </main>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import models from '../models'
 import ModelCard from '../components/ModelCard.vue'
 import ScoreButton from '../components/ScoreButton.vue'
+import { createLocalScoresheet } from '../hooks/scoresheet'
 
 import type { Model } from '../models'
-import { createLocalScoresheet } from '../hooks/scoresheet'
+import { useLocalStorage } from '@vueuse/core'
 
 const router = useRouter()
 
-async function selectModel (model: Model, competitionEventLookupCode?: string) {
+const hiddenCount = useLocalStorage('show-hidden', 0)
+const showHidden = computed(() => hiddenCount.value >= 5)
+
+async function selectModel (model: Model, options?: Record<string, any>, competitionEventLookupCode?: string) {
   const id = await createLocalScoresheet({
     judgeType: Array.isArray(model.judgeType) ? model.judgeType[0] : model.judgeType,
     rulesId: Array.isArray(model.rulesId) ? model.rulesId[0] : model.rulesId,
-    competitionEventLookupCode
+    competitionEventLookupCode,
+    options
   })
 
   router.push(`/score/local/${id}`)

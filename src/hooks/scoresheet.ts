@@ -15,10 +15,12 @@ import type { schemas as ijru_2_0_0_rout_pres_schemas } from '../views/scoring/i
 import type { schemas as ijru_2_0_0_req_el_schemas } from '../views/scoring/ijru@2.0.0/RequiredElements.vue'
 import type { schemas as svgf_rh_2020_diff_schemas } from '../views/scoring/svgf-rh@2020/Difficulty.vue'
 import type { schemas as svgf_rh_2020_pres_schemas } from '../views/scoring/svgf-rh@2020/Presentation.vue'
+import type { schemas as experiments_simpl_pres_schemas } from '../views/scoring/experiments/SimplifiedPresentation.vue'
 
 export type Schemas = ijru_1_1_0_diff_schemas | ijru_1_1_0_speed_schemas
 | ijru_2_0_0_ath_pres_schemas | ijru_2_0_0_rout_pres_schemas
 | ijru_2_0_0_req_el_schemas | svgf_rh_2020_diff_schemas | svgf_rh_2020_pres_schemas
+| experiments_simpl_pres_schemas
 | 'clear'
 
 export interface GenericMark {
@@ -54,6 +56,8 @@ export interface LocalScoresheet {
   openedAt?: number
   completedAt?: number
   submittedAt?: number
+
+  options?: Partial<Record<string, any>> | null
 }
 
 export interface RemoteScoresheet {
@@ -187,9 +191,12 @@ const resetLocal = async ({ complete }: Pick<UseScoresheetReturn, 'complete'>) =
     console.warn('No scoresheet open, cannot reset')
     return
   }
-  const { id, marks, completedAt, openedAt, ...rest } = scoresheet.value
+  const { id, marks, completedAt, openedAt, options, ...rest } = scoresheet.value
   await complete()
-  const newId = await createLocalScoresheet(rest)
+  const newId = await createLocalScoresheet({
+    ...rest,
+    options: JSON.parse(JSON.stringify(options))
+  })
   return [newId]
 }
 
@@ -343,13 +350,14 @@ export function useScoresheet (): UseScoresheetReturn {
   }
 }
 
-export async function createLocalScoresheet ({ judgeType, rulesId, competitionEventLookupCode }: { judgeType: string, rulesId: string, competitionEventLookupCode?: string }) {
+export async function createLocalScoresheet ({ judgeType, rulesId, competitionEventLookupCode, options }: { judgeType: string, rulesId: string, competitionEventLookupCode?: string, options?: Record<string, any> | null }) {
   const newScoresheet: LocalScoresheet = {
     id: uuid(),
     judgeType,
     rulesId,
     competitionEventLookupCode: competitionEventLookupCode ?? '',
-    marks: []
+    marks: [],
+    options
   }
 
   await idbKeyval.set(newScoresheet.id, newScoresheet)
