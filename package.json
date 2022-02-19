@@ -23,8 +23,8 @@
     "@sentry/tracing": "^6.13.2",
     "@sentry/vue": "^6.13.2",
     "@vue/apollo-composable": "^4.0.0-alpha.15",
-    "@vueuse/core": "^6.5.3",
-    "graphql": "^15.6.0",
+    "@vueuse/core": "^7.6.2",
+    "graphql": "^16.3.0",
     "graphql-ws": "^5.5.5",
     "idb-keyval": "^6.0.2",
     "safari-14-idb-fix": "^3.0.0",
@@ -42,7 +42,7 @@
     "@types/uuid": "^8.3.1",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
-    "@vitejs/plugin-vue": "^1.9.2",
+    "@vitejs/plugin-vue": "^2.2.2",
     "@vue/compiler-sfc": "^3.2.19",
     "eslint": "^7.32.0",
     "eslint-config-standard-with-typescript": "^21.0.1",
@@ -54,6 +54,6 @@
     "vite": "^2.5.10",
     "vite-plugin-pwa": "^0.11.2",
     "vite-plugin-windicss": "^1.4.8",
-    "vue-tsc": "^0.3.0"
+    "vue-tsc": "^0.31.4"
   }
 }
