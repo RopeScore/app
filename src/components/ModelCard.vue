@@ -33,7 +33,9 @@
           :model-value="options[option.prop]"
           @update:model-value="options[option.prop] = $event"
         />
-        <div v-else>Unsupported option type</div>
+        <div v-else>
+          Unsupported option type
+        </div>
       </div>
     </template>
 
@@ -71,7 +73,6 @@ function getPlainOptions (options: Record<string, any>) {
 }
 
 const rulesetList = computed(() => Array.isArray(props.model.rulesId) ? props.model.rulesId.join(', ') : props.model.rulesId)
-
 
 onMounted(() => {
   if (props.model.localAlternativeCompetitionEvents) {
