@@ -37,11 +37,11 @@ import ScoreButton from '../components/ScoreButton.vue'
 import { createLocalScoresheet } from '../hooks/scoresheet'
 
 import type { Model } from '../models'
-import { useLocalStorage } from '@vueuse/core'
+import { useSessionStorage } from '@vueuse/core'
 
 const router = useRouter()
 
-const hiddenCount = useLocalStorage('show-hidden', 0)
+const hiddenCount = useSessionStorage('show-hidden', 0, { })
 const showHidden = computed(() => hiddenCount.value >= 5)
 
 async function selectModel (model: Model, options?: Record<string, any>, competitionEventLookupCode?: string) {
