@@ -72,11 +72,11 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../hooks/auth'
+import { isRemoteMarkScoresheet } from '../hooks/scoresheet'
 import ScoreButton from '../components/ScoreButton.vue'
 import BatteryStatus from '../components/BatteryStatus.vue'
 import ScoresheetLink from '../components/ScoresheetLink.vue'
 import { useGroupScoresheetsQuery } from '../graphql/generated'
-import { useResult } from '@vue/apollo-composable'
 
 const auth = useAuth()
 const router = useRouter()
@@ -84,21 +84,21 @@ const route = useRoute()
 
 const { result, loading, error } = useGroupScoresheetsQuery({ groupId: route.params.id as string }, () => ({ fetchPolicy: 'cache-and-network', pollInterval: 30_000, enabled: auth.isLoggedIn.value }))
 
-const group = useResult(result, null, res => res?.group)
-const enRes = useResult(result, [], res => res?.group?.entries)
+const group = computed(() => result.value?.group)
+const enRes = computed(() => result.value?.group?.entries ?? [])
 
 const remainingEntries = computed(() =>
   enRes.value
     ? [...enRes.value]
-        .filter(en => en.deviceScoresheet && !en.deviceScoresheet.completedAt && !en.didNotSkipAt)
-        .sort((a, b) => a.heat === b.heat ? a.participantId.localeCompare(b.participantId) : a.heat - b.heat)
+        .filter(en => isRemoteMarkScoresheet(en.deviceScoresheet) && !en.deviceScoresheet?.completedAt && !en.didNotSkipAt)
+        .sort((a, b) => a.heat === b.heat ? a.participant.id.localeCompare(b.participant.id) : (a.heat ?? Infinity) - (b.heat ?? Infinity))
     : []
 )
 const completedEntries = computed(() =>
   enRes.value
     ? [...enRes.value]
-        .filter(en => !!en.deviceScoresheet?.completedAt || !!en.didNotSkipAt)
-        .sort((a, b) => a.heat === b.heat ? b.participantId.localeCompare(a.participantId) : b.heat - a.heat)
+        .filter(en => !isRemoteMarkScoresheet(en.deviceScoresheet) || !!en.deviceScoresheet?.completedAt || !!en.didNotSkipAt)
+        .sort((a, b) => a.heat === b.heat ? b.participant.id.localeCompare(a.participant.id) : (b.heat ?? Infinity) - (a.heat ?? Infinity))
     : []
 )
 </script>

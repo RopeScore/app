@@ -1,0 +1,17 @@
+fragment AthleteFragment on Athlete {
+  id
+  name
+  club
+  country
+
+  ijruId
+}
+
+fragment TeamFragment on Team {
+  id
+  name
+  club
+  country
+
+  members
+}

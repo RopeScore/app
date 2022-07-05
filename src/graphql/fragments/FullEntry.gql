@@ -1,14 +1,21 @@
 fragment FullEntry on Entry {
   id
 
-  categoryId
-  categoryName
+  category {
+    id
+    name
+  }
 
-  participantId
-  participantName
+  participant {
+    ...AthleteFragment
+    ...TeamFragment
+  }
 
-  competitionEventLookupCode
+  competitionEventId
 
   didNotSkipAt
+  lockedAt
+
   heat
+  pool
 }

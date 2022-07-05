@@ -2,7 +2,7 @@ query Groups {
   groups {
     id
     name
-    # createdAt
-    # completedAt
+    createdAt
+    completedAt
   }
 }

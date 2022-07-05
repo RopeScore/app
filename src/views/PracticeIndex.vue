@@ -44,11 +44,11 @@ const router = useRouter()
 const hiddenCount = useSessionStorage('show-hidden', 0, { })
 const showHidden = computed(() => hiddenCount.value >= 5)
 
-async function selectModel (model: Model, options?: Record<string, any>, competitionEventLookupCode?: string) {
+async function selectModel (model: Model, options?: Record<string, any>, competitionEventId?: string) {
   const id = await createLocalScoresheet({
     judgeType: Array.isArray(model.judgeType) ? model.judgeType[0] : model.judgeType,
     rulesId: Array.isArray(model.rulesId) ? model.rulesId[0] : model.rulesId,
-    competitionEventLookupCode,
+    competitionEventId,
     options
   })
 

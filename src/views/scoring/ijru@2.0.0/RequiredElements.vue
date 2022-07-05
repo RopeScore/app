@@ -152,7 +152,7 @@ defineProps({
 
 const { scoresheet, addMark, tally } = useScoresheet()
 
-const lookupCodeParts = computed(() => scoresheet.value?.competitionEventLookupCode.split('.') ?? [])
+const lookupCodeParts = computed(() => scoresheet.value?.competitionEventId.split('.') ?? [])
 const diffOpen = ref(false)
 
 const levels = [

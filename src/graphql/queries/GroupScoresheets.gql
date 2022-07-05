@@ -2,10 +2,13 @@ query GroupScoresheets ($groupId: ID!) {
   group (groupId: $groupId) {
     id
     name
+
     entries {
       ...FullEntry
       deviceScoresheet {
-        ...BaseScoresheet
+        ...ScoresheetBaseFragment
+        ...MarkScoresheetFragment
+        ...TallyScoresheetFragment
       }
     }
   }
