@@ -1,4 +1,4 @@
-fragment FullEntry on Entry {
+fragment EntryFragment on Entry {
   id
 
   category {

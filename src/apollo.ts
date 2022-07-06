@@ -6,8 +6,7 @@ import { WebSocketLink } from './graphql-ws'
 import { watch } from 'vue'
 
 const wsLink = new WebSocketLink({
-  // url: 'wss://api.ropescore.com/',
-  url: 'ws://localhost:5000/graphql',
+  url: 'wss://api.ropescore.com/graphql',
   lazy: true,
   lazyCloseTimeout: 20 * 1000,
   connectionParams: () => {
@@ -23,8 +22,7 @@ const wsLink = new WebSocketLink({
 })
 
 const httpLink = createHttpLink({
-  // uri: 'https://api.ropescore.com/'
-  uri: 'http://localhost:5000/graphql'
+  uri: 'https://api.ropescore.com/graphql'
 })
 
 const authLink = setContext(async (_, { headers }) => {

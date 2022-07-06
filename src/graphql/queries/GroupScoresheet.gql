@@ -2,7 +2,7 @@ query GroupScoresheet ($groupId: ID!, $entryId: ID!, $scoresheetId: ID!) {
   group (groupId: $groupId) {
     id
     entry (entryId: $entryId) {
-      ...FullEntry
+      ...EntryFragment
       scoresheet (scoresheetId: $scoresheetId) {
         ...ScoresheetBaseFragment
         ...MarkScoresheetFragment

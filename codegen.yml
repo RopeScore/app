@@ -1,7 +1,6 @@
 overwrite: true
 schema:
-  # - https://api.ropescore.com/graphql
-  - http://host.docker.internal:5000/graphql
+  - https://api.ropescore.com/graphql
 config:
   scalars:
     JSONObject: "{ [prop: string]: any }"

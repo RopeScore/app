@@ -19,7 +19,7 @@ query GroupScoresheets ($groupId: ID!) {
     }
 
     entries {
-      ...FullEntry
+      ...EntryFragment
       scoresheets {
         ...ScoresheetBaseFragment
         ...MarkScoresheetFragment
