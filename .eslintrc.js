@@ -27,6 +27,7 @@ module.exports = {
     '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/return-await': 'off',
     '@typescript-eslint/no-floating-promises': 'off',
-    'vue/max-attributes-per-line': ['warn', { singleline: 5 }]
+    'vue/max-attributes-per-line': ['warn', { singleline: 5 }],
+    'vue/multi-word-component-names': 'off'
   }
 }

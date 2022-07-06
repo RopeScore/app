@@ -28,7 +28,7 @@ export function useAuth () {
     await apolloClient.resetStore()
   }
 
-  const user = computed(() =>  result.value?.me)
+  const user = computed(() => result.value?.me)
   const isLoggedIn = computed(() => !!result.value?.me)
 
   return {

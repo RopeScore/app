@@ -4,7 +4,7 @@ import { reactive, ref } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { apolloClient } from '../apollo'
 import { provideApolloClient } from '@vue/apollo-composable'
-import { MarkScoresheet, MarkScoresheetFragment, ScoresheetBaseFragment, TallyScoresheetFragment, useAddStreamMarkMutation, useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
+import { MarkScoresheetFragment, ScoresheetBaseFragment, TallyScoresheetFragment, useAddStreamMarkMutation, useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
 
 import type { Ref } from 'vue'
 
@@ -116,7 +116,7 @@ const addMark = (mark: MarkPayload) => {
     timestamp: Date.now(),
     sequence: scsh.marks.length,
     ...mark
-  } as Mark)
+  } as Mark) // eslint-ignore-line @typescript-eslint/consistent-type-assertions
 
   processMark(mark, scsh.marks)
 }

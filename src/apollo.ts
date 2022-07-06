@@ -37,7 +37,11 @@ const authLink = setContext(async (_, { headers }) => {
   }
 })
 
-const cache = new InMemoryCache()
+const cache = new InMemoryCache({
+  possibleTypes: {
+    Scoresheet: ['TallyScoresheet', 'MarkScoresheet']
+  }
+})
 
 const splitLink = split(
   ({ query }) => {

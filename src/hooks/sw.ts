@@ -1,4 +1,4 @@
-import { ref } from '@vue/reactivity'
+import { ref } from 'vue'
 import { registerSW } from 'virtual:pwa-register'
 
 const needRefresh = ref(false)

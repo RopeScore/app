@@ -1,0 +1,6 @@
+mutation CreateMarkScoresheet ($entryId: ID!, $judgeId: ID!, $data: CreateMarkScoresheetInput!) {
+  createMarkScoresheet (entryId: $entryId, judgeId: $judgeId, data: $data) {
+    ...ScoresheetBaseFragment
+    ...MarkScoresheetFragment
+  }
+}

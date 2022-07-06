@@ -4,6 +4,7 @@ fragment FullEntry on Entry {
   category {
     id
     name
+    rulesId
   }
 
   participant {
