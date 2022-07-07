@@ -1,6 +1,6 @@
-import { provideApolloClient, useResult } from '@vue/apollo-composable'
+import { provideApolloClient } from '@vue/apollo-composable'
 import { useLocalStorage } from '@vueuse/core'
-import { watch } from 'vue'
+import { watch, computed } from 'vue'
 import { apolloClient } from '../apollo'
 import { RegisterDeviceMutationVariables, useMeQuery, useRegisterDeviceMutation } from '../graphql/generated'
 
@@ -28,8 +28,8 @@ export function useAuth () {
     await apolloClient.resetStore()
   }
 
-  const user = useResult(result, null, res => res?.me)
-  const isLoggedIn = useResult(result, false, res => !!res?.me)
+  const user = computed(() => result.value?.me)
+  const isLoggedIn = computed(() => !!result.value?.me)
 
   return {
     token,

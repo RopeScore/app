@@ -2,10 +2,28 @@ query GroupScoresheets ($groupId: ID!) {
   group (groupId: $groupId) {
     id
     name
+
+    currentHeat
+
+    deviceJudge {
+      ...JudgeFragment
+
+      assignments {
+        id
+        competitionEventId
+        judgeType
+        category {
+          id
+        }
+      }
+    }
+
     entries {
-      ...FullEntry
-      deviceScoresheet {
-        ...BaseScoresheet
+      ...EntryFragment
+      scoresheets {
+        ...ScoresheetBaseFragment
+        ...MarkScoresheetFragment
+        ...TallyScoresheetFragment
       }
     }
   }

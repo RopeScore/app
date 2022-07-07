@@ -65,5 +65,5 @@ const props = defineProps({
 const { addMark, tally, scoresheet } = useScoresheet()
 
 const isHeadJudge = computed(() => props.model.judgeType === 'Shj')
-const hasSwitches = computed(() => /\.\d+x\d+$/.test(scoresheet.value?.competitionEventLookupCode ?? ''))
+const hasSwitches = computed(() => /\.\d+x\d+$/.test(scoresheet.value?.competitionEventId ?? ''))
 </script>

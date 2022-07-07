@@ -15,24 +15,24 @@
     :to="`/score/rs/${groupId}/${entry.id}/${scoresheet.id}`"
   >
     <span class="row-span-4 flex justify-center items-center">{{ entry.heat }}</span>
-    <span class="col-start-2 font-bold">{{ entry.categoryName }}</span>
-    <span class="col-start-2">{{ entry.participantId }}: <span class="font-bold">{{ entry.participantName }}</span></span>
-    <span class="col-start-2">{{ scoresheet.rulesId }}: <span class="font-bold">{{ entry.competitionEventLookupCode }}</span></span>
-    <span class="col-start-2">{{ scoresheet.judgeId }} (<span class="font-bold">{{ scoresheet.judgeType }}</span>): <span class="font-bold">{{ scoresheet.judgeName }}</span></span>
+    <span class="col-start-2 font-bold">{{ entry.category.name }}</span>
+    <span class="col-start-2">{{ entry.participant.id }}: <span class="font-bold">{{ entry.participant.name }}</span></span>
+    <span class="col-start-2">{{ scoresheet.rulesId }}: <span class="font-bold">{{ entry.competitionEventId }}</span></span>
+    <span class="col-start-2">{{ scoresheet.judge.id }} (<span class="font-bold">{{ scoresheet.judgeType }}</span>): <span class="font-bold">{{ scoresheet.judge.name }}</span></span>
   </router-link>
 </template>
 
 <script lang="ts" setup>
-import type { Scoresheet, Entry } from '../graphql/generated'
+import type { ScoresheetBaseFragment, MarkScoresheetFragment, Entry } from '../graphql/generated'
 import type { PropType } from 'vue'
 
 defineProps({
   entry: {
-    type: Object as PropType<Pick<Entry, 'id' | 'heat' | 'categoryName' | 'participantId' | 'participantName' | 'competitionEventLookupCode'>>,
+    type: Object as PropType<Pick<Entry, 'id' | 'heat' | 'category' | 'participant' | 'competitionEventId'>>,
     required: true
   },
   scoresheet: {
-    type: Object as PropType<Pick<Scoresheet, 'id' | 'rulesId' | 'judgeId' | 'judgeType' | 'judgeName'> | undefined | null>,
+    type: Object as PropType<Pick<ScoresheetBaseFragment & MarkScoresheetFragment, 'id' | 'rulesId' | 'judge' | 'judgeType'> | undefined | null>,
     default: undefined
   },
   groupId: {

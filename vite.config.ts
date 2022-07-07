@@ -36,7 +36,7 @@ export default defineConfig({
                 src: '/icons/monochrome-icon-192x192.png',
                 sized: '192x192',
                 type: 'image/png'
-              } as unknown as string
+              }
             ]
           }
         ],

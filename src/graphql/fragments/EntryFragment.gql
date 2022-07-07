@@ -1,0 +1,22 @@
+fragment EntryFragment on Entry {
+  id
+
+  category {
+    id
+    name
+    rulesId
+  }
+
+  participant {
+    ...AthleteFragment
+    ...TeamFragment
+  }
+
+  competitionEventId
+
+  didNotSkipAt
+  lockedAt
+
+  heat
+  pool
+}

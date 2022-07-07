@@ -1,6 +1,6 @@
 overwrite: true
 schema:
-  - https://api.ropescore.app
+  - https://api.ropescore.com/graphql
 config:
   scalars:
     JSONObject: "{ [prop: string]: any }"
@@ -17,6 +17,7 @@ generates:
     config:
       exportFragmentSpreadSubTypes: true
       vueCompositionApiImportFrom: vue
+      dedupeOperationSuffix: true
     documents:
       - './src/**/*.{gql,graphql}'
       - './src/**/!(*.d).{ts,vue}'

@@ -75,11 +75,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../hooks/auth'
 import { useGroupsQuery } from '../graphql/generated'
-import { useResult } from '@vue/apollo-composable'
 
 import ScoreButton from '../components/ScoreButton.vue'
 import BatteryStatus from '../components/BatteryStatus.vue'
@@ -92,5 +91,5 @@ const newName = ref('')
 
 const { result, loading, error } = useGroupsQuery(() => ({ fetchPolicy: 'cache-and-network', pollInterval: 30_000, enabled: auth.isLoggedIn.value }))
 
-const groups = useResult(result, [], res => res?.groups)
+const groups = computed(() => result.value?.groups)
 </script>
