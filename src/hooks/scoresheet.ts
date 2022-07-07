@@ -112,11 +112,12 @@ const addMark = (mark: MarkPayload) => {
     })
   }
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   scsh.marks.push({
     timestamp: Date.now(),
     sequence: scsh.marks.length,
     ...mark
-  } as Mark) // eslint-ignore-line @typescript-eslint/consistent-type-assertions
+  } as Mark)
 
   processMark(mark, scsh.marks)
 }
