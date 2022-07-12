@@ -7,7 +7,7 @@ export default createRouter({
     { path: '/practice', component: async () => import('./views/PracticeIndex.vue') },
     { path: '/groups', component: async () => import('./views/Groups.vue') },
     { path: '/groups/:id', component: async () => import('./views/Group.vue') },
-    { path: '/device-share', component: async () => import('./views/DeviceShare.vue') },
+    { path: '/device-shares', component: async () => import('./views/DeviceShare.vue') },
     { path: '/score/:system/:vendor+', component: async () => import('./views/Score.vue') }
   ]
 })
