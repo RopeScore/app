@@ -22,8 +22,6 @@ query GroupScoresheets ($groupId: ID!) {
       ...EntryFragment
       scoresheets {
         ...ScoresheetBaseFragment
-        ...MarkScoresheetFragment
-        ...TallyScoresheetFragment
       }
     }
   }

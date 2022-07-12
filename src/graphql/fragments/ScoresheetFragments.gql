@@ -11,6 +11,9 @@ fragment ScoresheetBaseFragment on Scoresheet {
   deletedAt
 
   options
+
+  ...MarkScoresheetFragment
+  ...TallyScoresheetFragment
 }
 
 fragment MarkScoresheetFragment on MarkScoresheet {

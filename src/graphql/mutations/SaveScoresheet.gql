@@ -1,6 +1,5 @@
 mutation SaveScoresheet ($scoresheetId: ID!, $completedAt: Timestamp, $marks: [JSONObject!]!) {
   fillMarkScoresheet (scoresheetId: $scoresheetId, completedAt: $completedAt, marks: $marks) {
     ...ScoresheetBaseFragment
-    ...MarkScoresheetFragment
   }
 }

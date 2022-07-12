@@ -31,7 +31,7 @@
       v-for="entry in remainingEntries"
       :key="entry.id"
       :entry="entry"
-      :scoresheets="entry.scoresheets"
+      :scoresheets="(entry.scoresheets as Array<MarkScoresheetFragment & ScoresheetBaseFragment>)"
       :judge="judge!"
       :assignments="judge?.assignments!"
       :group-id="group.id"
@@ -62,7 +62,7 @@
         v-for="entry in completedEntries"
         :key="entry.id"
         :entry="entry"
-        :scoresheets="entry.scoresheets"
+        :scoresheets="(entry.scoresheets as Array<MarkScoresheetFragment & ScoresheetBaseFragment>)"
         :judge="judge!"
         :assignments="judge?.assignments!"
         :group-id="group.id"
@@ -79,7 +79,7 @@ import { useAuth } from '../hooks/auth'
 import ScoreButton from '../components/ScoreButton.vue'
 import BatteryStatus from '../components/BatteryStatus.vue'
 import EntryLink from '../components/EntryLink.vue'
-import { MarkScoresheetFragment, useGroupScoresheetsQuery } from '../graphql/generated'
+import { MarkScoresheetFragment, ScoresheetBaseFragment, useGroupScoresheetsQuery } from '../graphql/generated'
 import { isRemoteMarkScoresheet } from '../hooks/scoresheet'
 
 const auth = useAuth()

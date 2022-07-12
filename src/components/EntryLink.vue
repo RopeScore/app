@@ -91,7 +91,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ScoresheetBaseFragment, MarkScoresheetFragment, Entry, useCreateMarkScoresheetMutation, AthleteFragment, TeamFragment, Category, JudgeFragment, JudgeAssignment } from '../graphql/generated'
+import { ScoresheetBaseFragment, MarkScoresheetFragment, Entry, useCreateMarkScoresheetMutation, AthleteFragment, TeamFragment, TallyScoresheetFragment, Category, JudgeFragment, JudgeAssignment } from '../graphql/generated'
 import { useRouter } from 'vue-router'
 import { PropType, toRef, ref, computed } from 'vue'
 import { formatDate } from '../helpers'
