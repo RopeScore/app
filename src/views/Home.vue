@@ -24,13 +24,12 @@
       >
         Judge a RopeScore Competition
       </router-link>
-
-      <!-- <button
-        class="block p-2 my-8 text-center text-lg text-white bg-red-500 hover:bg-red-700 rounded tap-transparent hover:outline-none focus:outline-none outline-none"
-        @click="reset"
+      <router-link
+        class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
+        to="/device-shares"
       >
-        {{ resetNext ? 'Click Again' : `Remove all stored scoresheets (${numScoresheets})` }}
-      </button> -->
+        Connect to a RopeScore Live Screen
+      </router-link>
     </nav>
 
     <div v-if="needRefresh" class="mb-8">
@@ -48,7 +47,7 @@
       <!-- TODO: instructions -->
     </p>
     <p>
-      &copy; Swantzter 2021 &mdash;
+      &copy; Swantzter 2021-2022 &mdash;
       {{ version }} &mdash;
       <a
         class="text-indigo-700 hover:text-indigo-900"

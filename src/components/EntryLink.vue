@@ -102,7 +102,7 @@ const props = defineProps({
     required: true
   },
   scoresheets: {
-    type: Object as PropType<Array<Pick<ScoresheetBaseFragment & MarkScoresheetFragment, 'id' | 'rulesId' | 'createdAt' | 'completedAt' | '__typename'>> | undefined | null>,
+    type: Array as PropType<Array<Pick<ScoresheetBaseFragment & MarkScoresheetFragment, 'id' | 'rulesId' | 'createdAt' | 'completedAt' | '__typename'>> | undefined | null>,
     required: true
   },
   judge: {

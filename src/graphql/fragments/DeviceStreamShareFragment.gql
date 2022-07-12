@@ -1,0 +1,9 @@
+fragment DeviceStreamShareFragment on DeviceStreamShare {
+  id
+  user {
+    id
+    name
+  }
+  status
+  expiresAt
+}

@@ -69,10 +69,7 @@ const disableUndo = computed(() => {
 const resetRef = ref(null)
 const { fire: reset, fireNext: resetNext } = useConfirm(async () => {
   if (!scsh.scoresheet.value) return
-  const vendor = await scsh.reset()
-  if (vendor) {
-    router.replace(`/score/${route.params.system}/${vendor.join('/')}`)
-  }
+  await scsh.addMark({ schema: 'clear' })
 }, resetRef)
 
 const { fire: exit, fireNext: confirmExit } = useConfirm(async (mode?: 'submit' | 'discard') => {

@@ -1,0 +1,5 @@
+mutation DeleteDeviceStreamShare ($userId: ID!) {
+  deleteDeviceStreamShare (userId: $userId) {
+    ...DeviceStreamShareFragment
+  }
+}

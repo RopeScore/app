@@ -1,0 +1,3 @@
+mutation AddDeviceStreamMark ($mark: JSONObject!) {
+  addDeviceStreamMark (mark: $mark)
+}

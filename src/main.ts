@@ -14,15 +14,17 @@ app.provide(DefaultApolloClient, apolloClient)
   .use(router)
   .mount('#app')
 
-Sentry.init({
-  app,
-  dsn: 'https://91d516fcee2348da93854140a4a8cdcc@o127465.ingest.sentry.io/5654198',
-  release: import.meta.env.VITE_COMMIT_REF?.toString(),
-  environment: import.meta.env.VITE_CONTEXT?.toString(),
-  logErrors: true,
-  integrations: [new Integrations.BrowserTracing({
-    tracingOrigins: ['ropescore.app'],
-    routingInstrumentation: Sentry.vueRouterInstrumentation(router)
-  })],
-  tracesSampleRate: 1.0
-})
+if (import.meta.env.PROD) {
+  Sentry.init({
+    app,
+    dsn: 'https://91d516fcee2348da93854140a4a8cdcc@o127465.ingest.sentry.io/5654198',
+    release: import.meta.env.VITE_COMMIT_REF?.toString(),
+    environment: import.meta.env.VITE_CONTEXT?.toString(),
+    logErrors: true,
+    integrations: [new Integrations.BrowserTracing({
+      tracingOrigins: ['ropescore.app'],
+      routingInstrumentation: Sentry.vueRouterInstrumentation(router)
+    })],
+    tracesSampleRate: 1.0
+  })
+}

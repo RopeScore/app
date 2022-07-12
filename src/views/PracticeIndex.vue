@@ -12,6 +12,11 @@
         single-row
         @click="hiddenCount++"
       />
+      <score-button
+        :label="loading ? 'Loading' : (isSharing ? 'Will Stream' : '')"
+        color="none"
+        single-row
+      />
     </nav>
     <main class="flex flex-col mb-2">
       <template
@@ -21,6 +26,7 @@
         <model-card
           v-if="!model.hidden || showHidden"
           :model="model"
+          :loading="loading"
           @select="selectModel"
         />
       </template>
@@ -38,7 +44,10 @@ import { createLocalScoresheet } from '../hooks/scoresheet'
 
 import type { Model } from '../models'
 import { useSessionStorage } from '@vueuse/core'
+import { DeviceStreamShareStatus, useDeviceStreamSharesQuery } from '../graphql/generated'
+import { useAuth } from '../hooks/auth'
 
+const auth = useAuth()
 const router = useRouter()
 
 const hiddenCount = useSessionStorage('show-hidden', 0, { })
@@ -49,11 +58,23 @@ async function selectModel (model: Model, options?: Record<string, any>, competi
     judgeType: Array.isArray(model.judgeType) ? model.judgeType[0] : model.judgeType,
     rulesId: Array.isArray(model.rulesId) ? model.rulesId[0] : model.rulesId,
     competitionEventId,
-    options
+    options: {
+      ...(options ?? {}),
+      deviceStream: isSharing.value
+    }
   })
 
   router.push(`/score/local/${id}`)
 }
+
+const { result, loading } = useDeviceStreamSharesQuery({
+  fetchPolicy: 'cache-and-network',
+  pollInterval: 30_000,
+  enabled: auth.isLoggedIn as unknown as boolean
+})
+
+const shares = computed(() => result.value?.me?.__typename === 'Device' ? result.value.me.streamShares : [])
+const isSharing = computed(() => shares.value.filter(sh => sh.status === DeviceStreamShareStatus.Accepted).length > 0)
 
 function goBack () {
   router.go(-1)

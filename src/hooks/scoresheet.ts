@@ -4,7 +4,7 @@ import { reactive, ref } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { apolloClient } from '../apollo'
 import { provideApolloClient } from '@vue/apollo-composable'
-import { MarkScoresheetFragment, ScoresheetBaseFragment, TallyScoresheetFragment, useAddStreamMarkMutation, useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
+import { MarkScoresheetFragment, ScoresheetBaseFragment, TallyScoresheetFragment, useAddDeviceStreamMarkMutation, useAddStreamMarkMutation, useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
 
 import type { Ref } from 'vue'
 
@@ -40,7 +40,7 @@ export function isUndoMark (x: any): x is UndoMark { return x && x.schema === 'u
 
 export type Mark = GenericMark | UndoMark
 
-export type MarkPayload = { schema: 'undo', target: number } | { schema: Schemas, value?: number }
+export type MarkPayload = { schema: 'undo', target: number } | { schema: 'clear' } | { schema: Schemas, value?: number }
 
 export type ScoreTally = Partial<Record<Schemas, number>>
 
@@ -73,8 +73,6 @@ interface UseScoresheetReturn {
   complete: () => Promise<void> | void
   open: (system: string, ...vendor: string[]) => Promise<void> | void
   close: (save?: boolean) => Promise<void> | void
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  reset: () => Promise<string[] | void> | string[] | void
 }
 
 const scoresheet = ref<Scoresheet>()
@@ -89,6 +87,9 @@ const processMark = (mark: MarkPayload, marks: Mark[]) => {
     if (!isUndoMark(undoneMark)) {
       tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
     }
+  } else if (mark.schema === 'clear') {
+    marks.splice(0, marks.length)
+    tally.value = reactive({})
   } else {
     tally.value[(mark as GenericMark).schema] = (tally.value[(mark as GenericMark).schema] ?? 0) + ((mark as GenericMark).value ?? 1)
   }
@@ -99,11 +100,25 @@ const addMark = (mark: MarkPayload) => {
   if (!scsh) throw new Error('Scoresheet is not open')
   if (scsh.completedAt) throw Error('Can\'t change completed scoresheet')
 
-  if (isRemoteMarkScoresheet(scsh) && scsh.options?.live === true) {
+  if (scsh.options?.live === true || scsh.options?.deviceStream === true) {
     provideApolloClient(apolloClient)
+  }
+
+  if (scsh.options?.live === true) {
     const mutation = useAddStreamMarkMutation({})
     mutation.mutate({
       scoresheetId: scsh.id,
+      mark: {
+        timestamp: Date.now(),
+        sequence: scsh.marks.length,
+        ...mark
+      }
+    })
+  }
+
+  if (scsh.options?.deviceStream === true) {
+    const mutation = useAddDeviceStreamMarkMutation({})
+    mutation.mutate({
       mark: {
         timestamp: Date.now(),
         sequence: scsh.marks.length,
@@ -142,6 +157,8 @@ const openLocal = async (id: string) => {
 
   scoresheet.value = loaded
   system.value = 'local'
+
+  addMark({ schema: 'clear' })
 }
 
 const closeLocal = async () => {
@@ -156,20 +173,6 @@ const closeLocal = async () => {
   if (scoresheet.value.completedAt) scoresheet.value.submittedAt = Date.now()
   await ready
   await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
-}
-
-const resetLocal = async ({ complete }: Pick<UseScoresheetReturn, 'complete'>) => {
-  if (!scoresheet.value) {
-    console.warn('No scoresheet open, cannot reset')
-    return
-  }
-  const { id, marks, completedAt, openedAt, options, ...rest } = scoresheet.value
-  await complete()
-  const newId = await createLocalScoresheet({
-    ...rest,
-    options: JSON.parse(JSON.stringify(options))
-  })
-  return [newId]
 }
 
 const openRs = async (groupId: string, entryId: string, scoresheetId: string) => {
@@ -232,28 +235,6 @@ const closeRs = async () => {
   })
 }
 
-const resetRs = async ({ complete }: Pick<UseScoresheetReturn, 'complete'>) => {
-  if (!scoresheet.value) {
-    console.warn('No scoresheet open, cannot reset')
-    return
-  }
-
-  if (isRemoteMarkScoresheet(scoresheet.value) && scoresheet.value.options?.live === true) {
-    const mutation = useAddStreamMarkMutation({})
-    mutation.mutate({
-      scoresheetId: scoresheet.value.id,
-      mark: {
-        timestamp: Date.now(),
-        sequence: scoresheet.value.marks.length + 1,
-        schema: 'clear'
-      }
-    })
-  }
-
-  scoresheet.value.marks = []
-  tally.value = reactive({})
-}
-
 export function useScoresheet (): UseScoresheetReturn {
   return {
     scoresheet,
@@ -295,6 +276,7 @@ export function useScoresheet (): UseScoresheetReturn {
         }
       } else if (!scoresheet.value.completedAt) {
         switch (system.value) {
+          case 'local':
           case 'rs':
             addMark({ schema: 'clear' })
             break
@@ -303,16 +285,6 @@ export function useScoresheet (): UseScoresheetReturn {
       scoresheet.value = undefined
       system.value = undefined
       tally.value = reactive({})
-    },
-    async reset () {
-      switch (system.value) {
-        case 'local':
-          return await resetLocal({ complete })
-        case 'rs':
-          return await resetRs({ complete })
-        default:
-          throw new TypeError('Unknown system specified, cannot open scoresheet')
-      }
     }
   }
 }

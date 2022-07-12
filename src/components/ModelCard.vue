@@ -40,7 +40,8 @@
     </template>
 
     <button
-      class="p-2 mt-4 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none focus:outline-none outline-none"
+      class="p-2 mt-4 text-center text-lg text-white bg-green-500 hover:bg-green-600 disabled:bg-gray-500 rounded hover:outline-none focus:outline-none outline-none"
+      :disabled="loading"
       @click="$emit('select', model, getPlainOptions(options), competitionEventLookupCode)"
     >
       Open
@@ -60,6 +61,10 @@ const props = defineProps({
   model: {
     type: Object as PropType<Model>,
     required: true
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 
