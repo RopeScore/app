@@ -24,6 +24,9 @@
     <h1 class="text-2xl">
       {{ group?.name }}
     </h1>
+    <p class="text-gray-600">
+      {{ localDomain ?? '' }}
+    </p>
   </div>
 
   <div v-if="group" class="flex flex-col gap-4 px-2 mt-2">
@@ -75,6 +78,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { localDomain } from '../apollo'
 import { useAuth } from '../hooks/auth'
 import ScoreButton from '../components/ScoreButton.vue'
 import BatteryStatus from '../components/BatteryStatus.vue'

@@ -75,11 +75,11 @@ export class WebSocketLink extends ApolloLink {
             }
 
             return sink.error(
-              new Error(
-                (err as GraphQLError[])
+              Array.isArray(err)
+                ? new Error((err as GraphQLError[])
                   .map(({ message }) => message)
-                  .join(', ')
-              )
+                  .join(', '))
+                : (err as GraphQLError)
             )
           }
         }

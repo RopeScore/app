@@ -3,10 +3,21 @@ import { getMainDefinition } from '@apollo/client/utilities'
 import { setContext } from '@apollo/client/link/context'
 import { useAuth } from './hooks/auth'
 import { WebSocketLink } from './graphql-ws'
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
+import { useFetch, useIntervalFn } from '@vueuse/core'
+
+const localResolve = useFetch('http://ropescore.local').get().text()
+export const localDomain = computed(() =>
+  typeof localResolve.data.value === 'string' && /\.local\.ropescore\.com(:\d+)?$/.test(localResolve.data.value)
+    ? localResolve.data.value.trim()
+    : 'api.ropescore.com'
+)
+useIntervalFn(() => {
+  localResolve.execute()
+}, 60_000)
 
 const wsLink = new WebSocketLink({
-  url: import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? 'wss://api.ropescore.com/graphql',
+  url: () => import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? `wss://${localDomain.value}/graphql`,
   lazy: true,
   lazyCloseTimeout: 20 * 1000,
   connectionParams: () => {
@@ -22,7 +33,7 @@ const wsLink = new WebSocketLink({
 })
 
 const httpLink = createHttpLink({
-  uri: import.meta.env.VITE_GRAPHQL_ENDPOINT ?? 'https://api.ropescore.com/graphql'
+  uri: () => import.meta.env.VITE_GRAPHQL_ENDPOINT ?? `https://${localDomain.value}/graphql`
 })
 
 const authLink = setContext(async (_, { headers }) => {
@@ -61,7 +72,10 @@ const splitLink = split(
       definition.kind === 'OperationDefinition' &&
       definition.operation === 'mutation' &&
       definition.name?.kind === 'Name' &&
-      definition.name?.value === 'AddStreamMark'
+      (
+        definition.name?.value === 'AddStreamMark' ||
+        definition.name?.value === 'AddDeviceStreamMark'
+      )
     )
   },
   wsLink,

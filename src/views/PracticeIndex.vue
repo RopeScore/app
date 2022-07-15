@@ -19,6 +19,12 @@
       />
     </nav>
     <main class="flex flex-col mb-2">
+      <p v-if="localDomain && isSharing" class="text-gray-600 px-2">
+        {{ localDomain }}
+      </p>
+      <p v-else class="text-white">
+        -
+      </p>
       <template
         v-for="(model, idx) in models"
         :key="`model-${idx}`"
@@ -37,6 +43,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { localDomain } from '../apollo'
 import models from '../models'
 import ModelCard from '../components/ModelCard.vue'
 import ScoreButton from '../components/ScoreButton.vue'

@@ -47,6 +47,9 @@
       <!-- TODO: instructions -->
     </p>
     <p>
+      Server: {{ localDomain }}
+    </p>
+    <p>
       &copy; Swantzter 2021-2022 &mdash;
       {{ version }} &mdash;
       <a
@@ -63,6 +66,7 @@
 import { ref, watchEffect } from 'vue'
 import logo from '../assets/logo.svg'
 import { useSW } from '../hooks/sw'
+import { localDomain } from '../apollo'
 
 const standalone = ref(false)
 
