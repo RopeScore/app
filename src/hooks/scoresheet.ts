@@ -88,7 +88,6 @@ const processMark = (mark: MarkPayload, marks: Mark[]) => {
       tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
     }
   } else if (mark.schema === 'clear') {
-    marks.splice(0, marks.length)
     tally.value = reactive({})
   } else {
     tally.value[(mark as GenericMark).schema] = (tally.value[(mark as GenericMark).schema] ?? 0) + ((mark as GenericMark).value ?? 1)
