@@ -25,7 +25,7 @@
       {{ group?.name }}
     </h1>
     <p class="text-gray-600">
-      {{ localDomain ?? '' }}
+      {{ apiDomain ?? '' }}
     </p>
   </div>
 
@@ -78,7 +78,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { localDomain } from '../apollo'
+import { apiDomain } from '../apollo'
 import { useAuth } from '../hooks/auth'
 import ScoreButton from '../components/ScoreButton.vue'
 import BatteryStatus from '../components/BatteryStatus.vue'

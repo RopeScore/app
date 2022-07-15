@@ -42,12 +42,18 @@
       </button>
     </div>
 
+    <div class="mb-8">
+      <p>Server: {{ apiDomain }}</p>
+      <select-field
+        v-model="localManual"
+        label="Preferred Server"
+        :data-list="localApis"
+      />
+    </div>
+
     <p v-if="!standalone">
       For best experience, add this web-app to your homescreen
       <!-- TODO: instructions -->
-    </p>
-    <p>
-      Server: {{ localDomain }}
     </p>
     <p>
       &copy; Swantzter 2021-2022 &mdash;
@@ -66,7 +72,9 @@
 import { ref, watchEffect } from 'vue'
 import logo from '../assets/logo.svg'
 import { useSW } from '../hooks/sw'
-import { localDomain } from '../apollo'
+import { apiDomain, localManual, localApis } from '../apollo'
+
+import { SelectField } from '@ropescore/components'
 
 const standalone = ref(false)
 
