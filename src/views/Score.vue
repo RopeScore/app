@@ -1,5 +1,6 @@
 <template>
   <score-navigation />
+  <battery-status :hidden="true" />
 
   <div v-if="!scsh.scoresheet.value">
     No active Scoresheet
@@ -21,6 +22,7 @@ import { useRoute } from 'vue-router'
 import { useWakeLock } from '@vueuse/core'
 import models from '../models'
 import ScoreNavigation from '../components/ScoreNavigation.vue'
+import BatteryStatus from '../components/BatteryStatus.vue'
 import { useScoresheet } from '../hooks/scoresheet'
 
 function preventDefualt (event: TouchEvent) {

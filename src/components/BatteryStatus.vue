@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="!hidden"
     class="relative m-2 rounded border border-green-500"
     :class="{ 'border-red-500': lowBattery, 'animate-pulse': !battery.isSupported && needUpdate }"
   >
@@ -41,6 +42,13 @@ import { watch, computed, ref } from 'vue'
 import { useBattery, watchWithFilter, debounceFilter, pausableFilter, useIntervalFn } from '@vueuse/core'
 import { useUpdateBatteryMutation } from '../graphql/generated'
 import { useAuth } from '../hooks/auth'
+
+defineProps({
+  hidden: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const auth = useAuth()
 const battery = useBattery()
