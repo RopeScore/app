@@ -10,12 +10,13 @@
       class="
         grid grid-cols-[1fr,2rem] w-full p-1
         select-none touch-manipulation tap-transparent cursor-pointer
-        bg-green-500 border border-green-600
+        border border-green-600
         hover:outline-none focus:outline-none
         text-white
       "
       :class="{
         'bg-green-600': n - 1 === selected,
+        'bg-green-500': n - 1 !== selected,
 
         'filter': disabled,
         'saturate-50': disabled,
