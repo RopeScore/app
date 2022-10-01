@@ -19,13 +19,13 @@ export interface Model {
 
 const models: Model[] = [
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'svgf-rh@2020'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0'],
     judgeType: 'S',
     name: 'Speed',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue'))
   },
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'svgf-rh@2020'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0'],
     judgeType: 'Shj',
     name: 'Speed Head Judge',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue')),
@@ -34,26 +34,48 @@ const models: Model[] = [
       ['No Switches', 'e.ijru.sp.sr.srss.1.30']
     ]
   },
+
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'svgf-par@2.0.0'],
     judgeType: 'D',
     name: 'Difficulty',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Difficulty.vue'))
   },
   {
-    rulesId: 'ijru@2.0.0',
+    rulesId: 'ijru@3.0.0',
+    judgeType: 'D',
+    name: 'Difficulty',
+    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/Difficulty.vue'))
+  },
+
+  {
+    rulesId: ['ijru@2.0.0', 'svgf-par@2.0.0'],
     judgeType: 'Pa',
     name: 'Athlete Presentation',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/AthletePresentation.vue'))
   },
   {
-    rulesId: 'ijru@2.0.0',
+    rulesId: 'ijru@3.0.0',
+    judgeType: 'Pa',
+    name: 'Athlete Presentation',
+    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/AthletePresentation.vue'))
+  },
+
+  {
+    rulesId: ['ijru@2.0.0', 'svgf-par@2.0.0'],
     judgeType: 'Pr',
     name: 'Routine Presentation',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/RoutinePresentation.vue'))
   },
   {
-    rulesId: 'ijru@2.0.0',
+    rulesId: 'ijru@3.0.0',
+    judgeType: 'Pr',
+    name: 'Routine Presentation',
+    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue'))
+  },
+
+  {
+    rulesId: ['ijru@2.0.0', 'svgf-par@2.0.0'],
     judgeType: 'R',
     name: 'Required Elements',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/RequiredElements.vue')),
@@ -64,6 +86,19 @@ const models: Model[] = [
       ['Double Dutch Other', 'e.ijru.fs.dd.ddpf.4.75']
     ]
   },
+  {
+    rulesId: 'ijru@3.0.0',
+    judgeType: 'R',
+    name: 'Required Elements',
+    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RequiredElements.vue')),
+    localAlternativeCompetitionEvents: [
+      ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75'],
+      ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75'],
+      ['Double Dutch Single Freestyle', 'e.ijru.fs.dd.ddsf.3.75'],
+      ['Double Dutch Other', 'e.ijru.fs.dd.ddpf.4.75']
+    ]
+  },
+
   {
     rulesId: 'svgf-rh@2020',
     judgeType: 'D',
@@ -81,6 +116,7 @@ const models: Model[] = [
       ['Double Dutch', 'e.ijru.fs.dd.ddpf.4.75']
     ]
   },
+
   {
     rulesId: 'experiments',
     judgeType: 'P',

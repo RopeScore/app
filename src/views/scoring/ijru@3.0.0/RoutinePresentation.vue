@@ -97,7 +97,7 @@ const entertainmentResult = computed(() => {
   const check = tally('entertainmentCheck')
   const minus = tally('entertainmentMinus')
   if (plus + check + minus === 0) return 1
-  const average = (plus - minus) / (plus + check + minus)
+  const average = (3 * (plus - minus)) / (plus + check + minus)
   const percentage = average * (0.60 / 4)
   return (1 + percentage)
 })
@@ -107,7 +107,7 @@ const musicalityResult = computed(() => {
   const check = tally('musicalityCheck')
   const minus = tally('musicalityMinus')
   if (plus + check + minus === 0) return 1
-  const average = (plus - minus) / (plus + check + minus)
+  const average = (3 * (plus - minus)) / (plus + check + minus)
   const percentage = average * (0.60 / 4)
   return (1 + percentage)
 })

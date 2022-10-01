@@ -53,7 +53,7 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 
-export type schemas = 'step' | 'falseStart' | 'falseSwitch'
+type Schema = 'step' | 'falseStart' | 'falseSwitch'
 
 const props = defineProps({
   model: {
@@ -62,7 +62,7 @@ const props = defineProps({
   }
 })
 
-const { addMark, tally, scoresheet } = useScoresheet()
+const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 
 const isHeadJudge = computed(() => props.model.judgeType === 'Shj')
 const hasSwitches = computed(() => /\.\d+x\d+$/.test(scoresheet.value?.competitionEventId ?? ''))

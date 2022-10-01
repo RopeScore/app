@@ -32,7 +32,7 @@ import TenScale from '../../../components/TenScale.vue'
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
-export type schemas = 'musicOnBeat' | 'interactions' | 'usingMusic' | 'movement'
+type Schema = 'musicOnBeat' | 'interactions' | 'usingMusic' | 'movement'
   | 'formExecution' | 'impression' | 'miss'
 
 defineProps({
@@ -42,9 +42,9 @@ defineProps({
   }
 })
 
-const { addMark, tally, scoresheet } = useScoresheet()
+const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 
-type Definition = [schemas, string, string[]]
+type Definition = [Schema, string, string[]]
 
 const musicOnBeat: Definition = ['musicOnBeat', 'Hoppar i takt till musiken', []]
 musicOnBeat[2][0] = 'Helt i otakt, hela tiden.'
@@ -113,7 +113,7 @@ const result = computed(() => {
   return res
 })
 
-function handleUpdate (schema: schemas, value: number) {
+function handleUpdate (schema: Schema, value: number) {
   const marks = scoresheet.value?.marks ?? []
   let prevMark
   for (let idx = marks.length - 1; idx >= 0; idx--) {

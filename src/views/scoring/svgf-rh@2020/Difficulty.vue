@@ -37,7 +37,7 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
-export type schemas = `diffL${'0.5' | 1 | 2 | 3 | 4 | 5}`
+type Schema = `diffL${'0.5' | 1 | 2 | 3 | 4 | 5}`
 
 defineProps({
   model: {
@@ -46,14 +46,14 @@ defineProps({
   }
 })
 
-const { addMark, tally, scoresheet } = useScoresheet()
+const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 
 function L (l: number): number {
   if (l === 0) return 0
   return l === 0.5 ? 0.5 : (0.5 * l) + 0.5
 }
 
-const levels = computed((): Array<[schemas, number] | null> => [
+const levels = computed((): Array<[Schema, number] | null> => [
   ['diffL1', 1],
   ['diffL0.5', 0.5],
   ['diffL4', 4],

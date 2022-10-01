@@ -89,7 +89,7 @@ const result = computed(() => {
   const check = tally('formExecutionCheck')
   const minus = tally('formExecutionMinus')
   if (plus + check + minus === 0) return 1
-  const average = (plus - minus) / (plus + check + minus)
+  const average = (3 * (plus - minus)) / (plus + check + minus)
   const percentage = average * (0.60 / 2)
   return (1 + percentage)
 })

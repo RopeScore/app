@@ -8,27 +8,19 @@ import { MarkScoresheetFragment, ScoresheetBaseFragment, TallyScoresheetFragment
 
 import type { Ref } from 'vue'
 
-import type { schemas as ijru_1_1_0_diff_schemas } from '../views/scoring/ijru@1.1.0/Difficulty.vue'
-import type { schemas as ijru_1_1_0_speed_schemas } from '../views/scoring/ijru@1.1.0/Speed.vue'
-import type { schemas as ijru_2_0_0_ath_pres_schemas } from '../views/scoring/ijru@2.0.0/AthletePresentation.vue'
-import type { schemas as ijru_2_0_0_rout_pres_schemas } from '../views/scoring/ijru@2.0.0/RoutinePresentation.vue'
-import type { schemas as ijru_2_0_0_req_el_schemas } from '../views/scoring/ijru@2.0.0/RequiredElements.vue'
-import type { schemas as svgf_rh_2020_diff_schemas } from '../views/scoring/svgf-rh@2020/Difficulty.vue'
-import type { schemas as svgf_rh_2020_pres_schemas } from '../views/scoring/svgf-rh@2020/Presentation.vue'
-import type { schemas as experiments_simpl_pres_schemas } from '../views/scoring/experiments/SimplifiedPresentation.vue'
-
-export type Schemas = ijru_1_1_0_diff_schemas | ijru_1_1_0_speed_schemas
-| ijru_2_0_0_ath_pres_schemas | ijru_2_0_0_rout_pres_schemas
-| ijru_2_0_0_req_el_schemas | svgf_rh_2020_diff_schemas | svgf_rh_2020_pres_schemas
-| experiments_simpl_pres_schemas
-| 'clear'
-
-export interface GenericMark {
+export interface GenericMark<Schema extends string> {
   readonly timestamp: number
   readonly sequence: number // should always === index
-  readonly schema: Schemas
+  readonly schema: Schema
   readonly value?: number
 }
+
+export interface ClearMark {
+  readonly timestamp: number
+  readonly sequence: number // should always === index
+  readonly schema: 'clear'
+}
+export function isClearMark (x: any): x is ClearMark { return x && x.schema === 'clear' }
 
 export interface UndoMark {
   readonly timestamp: number
@@ -38,20 +30,20 @@ export interface UndoMark {
 }
 export function isUndoMark (x: any): x is UndoMark { return x && x.schema === 'undo' }
 
-export type Mark = GenericMark | UndoMark
+export type Mark<Schema extends string> = GenericMark<Schema> | UndoMark | ClearMark
 
-export type MarkPayload = { schema: 'undo', target: number } | { schema: 'clear' } | { schema: Schemas, value?: number }
+export type MarkPayload<Schema extends string> = { schema: 'undo', target: number } | { schema: 'clear' } | { schema: Schema, value?: number }
 
-export type ScoreTally = Partial<Record<Schemas, number>>
+export type ScoreTally<Schema extends string> = Partial<Record<Schema, number>>
 
-export interface LocalScoresheet {
+export interface LocalScoresheet<T extends string> {
   id: string
 
   rulesId: string
   judgeType: string
   competitionEventId: string
 
-  marks: Mark[]
+  marks: Array<Mark<T>>
 
   openedAt?: number
   completedAt?: number
@@ -63,38 +55,38 @@ export interface LocalScoresheet {
 export function isRemoteMarkScoresheet (x: any): x is ScoresheetBaseFragment & MarkScoresheetFragment { return x != null && typeof x === 'object' && !!x?.createdAt && 'marks' in x }
 export function isRemoteTallyScoresheet (x: any): x is ScoresheetBaseFragment & TallyScoresheetFragment { return x != null && typeof x === 'object' && !!x?.createdAt && 'tally' in x }
 
-export type Scoresheet = (ScoresheetBaseFragment & MarkScoresheetFragment & { marks: Mark[] }) | LocalScoresheet
+export type Scoresheet<Schema extends string> = (ScoresheetBaseFragment & MarkScoresheetFragment & { marks: Array<Mark<Schema>> }) | LocalScoresheet<Schema>
 
-interface UseScoresheetReturn {
-  readonly scoresheet: Readonly<Ref<Scoresheet | undefined>>
+interface UseScoresheetReturn<Schema extends string> {
+  readonly scoresheet: Readonly<Ref<Scoresheet<Schema> | undefined>>
 
-  tally: (schema: Schemas) => number
-  addMark: (mark: MarkPayload) => Promise<void> | void
+  tally: (schema: Schema) => number
+  addMark: (mark: MarkPayload<Schema | 'undo' | 'clear'>) => Promise<void> | void
   complete: () => Promise<void> | void
   open: (system: string, ...vendor: string[]) => Promise<void> | void
   close: (save?: boolean) => Promise<void> | void
 }
 
-const scoresheet = ref<Scoresheet>()
+const scoresheet = ref<Scoresheet<string>>()
 const system = ref<'local' | 'rs'>()
-const tally = ref<ScoreTally>(reactive({}))
+const tally = ref<ScoreTally<string>>(reactive({}))
 const ready = idbReady()
 
-const processMark = (mark: MarkPayload, marks: Mark[]) => {
+function processMark <Schema extends string> (mark: MarkPayload<Schema>, marks: Array<Mark<Schema>>) {
   if (isUndoMark(mark)) {
     const undoneMark = marks[mark.target]
     if (!undoneMark) throw new Error('Undone mark missing')
-    if (!isUndoMark(undoneMark)) {
+    if (!isUndoMark(undoneMark) && !isClearMark(undoneMark)) {
       tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
     }
-  } else if (mark.schema === 'clear') {
+  } else if (isClearMark(mark)) {
     tally.value = reactive({})
   } else {
-    tally.value[(mark as GenericMark).schema] = (tally.value[(mark as GenericMark).schema] ?? 0) + ((mark as GenericMark).value ?? 1)
+    tally.value[(mark as GenericMark<Schema>).schema] = (tally.value[(mark as GenericMark<Schema>).schema] ?? 0) + ((mark as GenericMark<Schema>).value ?? 1)
   }
 }
 
-const addMark = (mark: MarkPayload) => {
+function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
   const scsh = scoresheet.value
   if (!scsh) throw new Error('Scoresheet is not open')
   if (scsh.completedAt) throw Error('Can\'t change completed scoresheet')
@@ -131,7 +123,7 @@ const addMark = (mark: MarkPayload) => {
     timestamp: Date.now(),
     sequence: scsh.marks.length,
     ...mark
-  } as Mark)
+  } as Mark<Schema>)
 
   processMark(mark, scsh.marks)
 }
@@ -198,7 +190,7 @@ const openRs = async (groupId: string, entryId: string, scoresheetId: string) =>
       if (!isRemoteMarkScoresheet(loaded)) return reject(new Error(`RopeScore scoresheet is not a mark scoresheet: ${scoresheetId}`))
       scoresheet.value = reactive({
         ...loaded,
-        marks: loaded.marks as Mark[]
+        marks: loaded.marks as Array<Mark<string>>
       })
       system.value = 'rs'
       enabled.value = false
@@ -234,9 +226,9 @@ const closeRs = async () => {
   })
 }
 
-export function useScoresheet (): UseScoresheetReturn {
+export function useScoresheet <Schema extends string> (): UseScoresheetReturn<Schema> {
   return {
-    scoresheet,
+    scoresheet: scoresheet as Ref<Scoresheet<Schema>>,
     tally: (schema) => tally.value[schema] ?? 0,
 
     addMark,
@@ -289,7 +281,7 @@ export function useScoresheet (): UseScoresheetReturn {
 }
 
 export async function createLocalScoresheet ({ judgeType, rulesId, competitionEventId, options }: { judgeType: string, rulesId: string, competitionEventId?: string, options?: Record<string, any> | null }) {
-  const newScoresheet: LocalScoresheet = {
+  const newScoresheet: LocalScoresheet<string> = {
     id: uuid(),
     judgeType,
     rulesId,

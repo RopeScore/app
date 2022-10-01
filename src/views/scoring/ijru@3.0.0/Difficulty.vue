@@ -1,11 +1,26 @@
 <template>
   <main class="grid grid-cols-3 grid-rows-score">
     <score-button
+      color="orange"
+      label="Rep. Skill"
+      :value="tally('rep')"
+      :disabled="!!scoresheet?.completedAt"
+      single-row
+      @click="addMark({ schema: 'rep' })"
+    />
+    <score-button
       color="none"
       label="Score"
       :value="result"
-      class="col-span-3"
       single-row
+    />
+    <score-button
+      color="orange"
+      label="Rep. Skill"
+      :value="tally('rep')"
+      :disabled="!!scoresheet?.completedAt"
+      single-row
+      @click="addMark({ schema: 'rep' })"
     />
 
     <score-button
@@ -28,7 +43,7 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
-type Schema = `diffL${'0.5' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}`
+type Schema = `diffL${'0.5' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}` | 'rep'
 
 defineProps({
   model: {
@@ -41,7 +56,7 @@ const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 
 function L (level: number): number {
   if (level === 0) return 0
-  return Math.round(Math.pow(1.8, level) * 10) / 100
+  return Math.round(Math.pow(1.5, level) * 10) / 100
 }
 
 const levels = computed((): Array<[Schema, number]> => [

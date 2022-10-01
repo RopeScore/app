@@ -138,7 +138,7 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 
-export type schemas = 'rqMultiples' | 'rqWrapsReleases' | 'rqGymnasticsPower'
+type Schema = 'rqMultiples' | 'rqWrapsReleases' | 'rqGymnasticsPower'
   | 'rqInteractions' | 'rqTurnerInvolvement'
   | `repL${3 | 4 | 5 | 6 | 7 | 8}`
   | 'miss' | 'timeViolation' | 'spaceViolation'
@@ -150,7 +150,7 @@ defineProps({
   }
 })
 
-const { scoresheet, addMark, tally } = useScoresheet()
+const { scoresheet, addMark, tally } = useScoresheet<Schema>()
 
 const lookupCodeParts = computed(() => scoresheet.value?.competitionEventId.split('.') ?? [])
 const diffOpen = ref(false)
@@ -214,7 +214,7 @@ const result = computed(() => {
   return 1 - (((elements * 4) - completed) * 0.025)
 })
 
-function addRepeatedSkill (schema: schemas) {
+function addRepeatedSkill (schema: Schema) {
   addMark({ schema })
   diffOpen.value = false
 }
