@@ -1,3 +1,5 @@
-mutation AddStreamMark ($scoresheetId: ID!, $mark: JSONObject!) {
-  addStreamMark (scoresheetId: $scoresheetId, mark: $mark)
+mutation AddStreamMark ($scoresheetId: ID!, $mark: JSONObject!, $tally: JSONObject!) {
+  addStreamMark (scoresheetId: $scoresheetId, mark: $mark, tally: $tally) {
+    sequence
+  }
 }

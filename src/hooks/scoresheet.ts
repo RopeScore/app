@@ -95,29 +95,6 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
     provideApolloClient(apolloClient)
   }
 
-  if (scsh.options?.live === true) {
-    const mutation = useAddStreamMarkMutation({})
-    mutation.mutate({
-      scoresheetId: scsh.id,
-      mark: {
-        timestamp: Date.now(),
-        sequence: scsh.marks.length,
-        ...mark
-      }
-    })
-  }
-
-  if (scsh.options?.deviceStream === true) {
-    const mutation = useAddDeviceStreamMarkMutation({})
-    mutation.mutate({
-      mark: {
-        timestamp: Date.now(),
-        sequence: scsh.marks.length,
-        ...mark
-      }
-    })
-  }
-
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   scsh.marks.push({
     timestamp: Date.now(),
@@ -126,6 +103,31 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
   } as Mark<Schema>)
 
   processMark(mark, scsh.marks)
+
+  if (scsh.options?.live === true) {
+    const mutation = useAddStreamMarkMutation({})
+    mutation.mutate({
+      scoresheetId: scsh.id,
+      mark: {
+        timestamp: Date.now(),
+        sequence: scsh.marks.length - 1,
+        ...mark
+      },
+      tally: tally.value
+    })
+  }
+
+  if (scsh.options?.deviceStream === true) {
+    const mutation = useAddDeviceStreamMarkMutation({})
+    mutation.mutate({
+      mark: {
+        timestamp: Date.now(),
+        sequence: scsh.marks.length - 1,
+        ...mark
+      },
+      tally: tally.value
+    })
+  }
 }
 
 const complete = () => {
