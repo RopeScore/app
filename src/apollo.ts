@@ -46,10 +46,11 @@ const wsLink = new WebSocketLink({
   url: () => { return import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? `wss://${apiDomain.value}/graphql` },
   lazy: true,
   lazyCloseTimeout: 20 * 1000,
+  numConnections: 3,
   connectionParams: () => {
     const auth = useAuth()
     watch(auth.token, () => {
-      wsLink.client.restart()
+      for (const client of wsLink.clients) client.restart()
     })
 
     return {

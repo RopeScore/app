@@ -21,6 +21,13 @@
   </nav>
 
   <template v-if="auth.token.value">
+    <div class="grid grid-cols-1 grid-rows-[5rem]">
+      <score-button
+        :label="loading ? 'Loading...' : 'Refresh'"
+        :disabled="loading"
+        @click="refetch()"
+      />
+    </div>
     <h2 class="font-semibold text-2xl mt-4 px-2">
       Pending Requests
     </h2>
@@ -111,7 +118,7 @@ const router = useRouter()
 
 const newName = ref('')
 
-const { result, loading, error } = useDeviceStreamSharesQuery({
+const { result, loading, error, refetch } = useDeviceStreamSharesQuery({
   fetchPolicy: 'cache-and-network',
   pollInterval: 30_000,
   enabled: auth.isLoggedIn as unknown as boolean

@@ -46,16 +46,21 @@ function createRestartableClient (options: ClientOptions): RestartableClient {
 }
 
 export class WebSocketLink extends ApolloLink {
-  readonly client: RestartableClient
+  readonly clients: RestartableClient[]
+  private currentClientIdx = 0
 
-  constructor (options: ClientOptions) {
+  constructor (options: ClientOptions & { numConnections?: number }) {
     super()
-    this.client = createRestartableClient(options)
+    this.clients = new Array(options.numConnections ?? 1)
+      .fill(undefined)
+      .map(() => createRestartableClient(options))
   }
 
   public request (operation: Operation): Observable<FetchResult> {
     return new Observable((sink) => {
-      return this.client.subscribe<FetchResult>(
+      const client = this.clients[this.currentClientIdx]
+      this.currentClientIdx = (this.currentClientIdx + 1) % this.clients.length
+      return client.subscribe<FetchResult>(
         { ...operation, query: print(operation.query) },
         {
           next: sink.next.bind(sink),
