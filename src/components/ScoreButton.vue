@@ -2,17 +2,21 @@
   <button
     class="rounded select-none p-1 touch-manipulation hover:outline-none focus:outline-none outline-none tap-transparent disabled:cursor-default disabled:filter disabled:saturate-50"
     :class="{
-      'bg-green-500': color === 'green',
+      'bg-green-500': color === 'green' && !selected,
       'hover:bg-green-600': color === 'green' && focus,
+      'bg-green-600': color === 'green' && selected,
 
-      'bg-orange-500': color === 'orange',
+      'bg-orange-500': color === 'orange' && !selected,
       'hover:bg-orange-600': color === 'orange' && focus,
+      'bg-orange-600': color === 'orange' && selected,
 
       'bg-red-500': color === 'red',
       'hover:bg-red-600': color === 'red' && focus,
+      'bg-red-600': color === 'red' && selected,
 
-      'bg-indigo-500': color === 'indigo',
+      'bg-indigo-500': color === 'indigo' && !selected,
       'hover:bg-indigo-600': color === 'indigo' && focus,
+      'bg-indigo-600': color === 'indigo' && selected,
 
       'bg-white': color === 'none',
 
@@ -67,6 +71,7 @@ const props = defineProps({
     type: Number,
     default: 75
   },
+  selected: Boolean,
   disabled: Boolean,
   singleRow: Boolean
 })

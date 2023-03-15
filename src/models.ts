@@ -118,6 +118,29 @@ const models: Model[] = [
   },
 
   {
+    rulesId: 'svgf-vh@2023',
+    judgeType: 'D',
+    name: 'Difficulty',
+    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Difficulty.vue'))
+  },
+  {
+    rulesId: 'svgf-vh@2023',
+    judgeType: 'O',
+    name: 'Obligatoriska',
+    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Obligatoriska.vue'))
+  },
+  {
+    rulesId: 'svgf-vh@2023',
+    judgeType: 'P',
+    name: 'Presentation',
+    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Presentation.vue')),
+    localAlternativeCompetitionEvents: [
+      ['Single Rope', 'e.ijru.fs.sr.srif.1.75'],
+      ['Double Dutch', 'e.ijru.fs.dd.ddpf.4.75']
+    ]
+  },
+
+  {
     rulesId: 'experiments',
     judgeType: 'P',
     name: 'Simplified Presentation',

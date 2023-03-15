@@ -18,10 +18,12 @@ useIntervalFn(() => {
   localDiscover.execute()
 }, 60_000)
 
-export const localApis = ['', 'local-001']
+export const localApis = ['', 'local-001', 'dev']
 export const localManual = useLocalStorage<string>('rs-local-api', null)
 const manualReachable = useFetch(
-  computed(() => `https://${localManual.value}.local.ropescore.com/.well-known/apollo/server-health`),
+  computed(() => localManual.value === 'dev'
+    ? 'http://localhost:5000/.well-known/apollo/server-health'
+    : `https://${localManual.value}.local.ropescore.com/.well-known/apollo/server-health`),
   {
     refetch: computed(() => !!localManual.value),
     immediate: !!localManual.value
@@ -32,6 +34,7 @@ useIntervalFn(() => {
 }, 60_000)
 
 export const apiDomain = computed(() => {
+  if (localManual.value === 'dev' && manualReachable.data.value?.status === 'pass') return 'localhost:5000'
   if (localManual.value && manualReachable.data.value?.status === 'pass') return `${localManual.value}.local.ropescore.com`
   else if (
     typeof localDiscover.data.value === 'string' &&
@@ -43,7 +46,7 @@ export const apiDomain = computed(() => {
 })
 
 const wsLink = new WebSocketLink({
-  url: () => { return import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? `wss://${apiDomain.value}/graphql` },
+  url: () => { return import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? `${apiDomain.value.startsWith('localhost') ? 'ws' : 'wss'}://${apiDomain.value}/graphql` },
   lazy: true,
   lazyCloseTimeout: 20 * 1000,
   numConnections: 3,
@@ -60,7 +63,7 @@ const wsLink = new WebSocketLink({
 })
 
 const httpLink = createHttpLink({
-  uri: () => { return import.meta.env.VITE_GRAPHQL_ENDPOINT ?? `https://${apiDomain.value}/graphql` }
+  uri: () => { return import.meta.env.VITE_GRAPHQL_ENDPOINT ?? `${apiDomain.value.startsWith('localhost') ? 'http' : 'https'}://${apiDomain.value}/graphql` }
 })
 
 const authLink = setContext(async (_, { headers }) => {
