@@ -143,7 +143,7 @@ const models: Model[] = [
     rulesId: 'svgf-vh@2023',
     judgeType: 'T',
     name: 'Timing',
-    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Timing.vue')),
+    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Timing.vue'))
   },
 
   {

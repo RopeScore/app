@@ -54,6 +54,7 @@ const interval = useIntervalFn(() => {
   const marks = scoresheet.value?.marks ?? []
   let prevMark
   for (let idx = marks.length - 1; idx >= 0; idx--) {
+    if (marks[idx].schema === 'clear') break
     if (marks[idx].schema === 'seconds') {
       prevMark = marks[idx]
       break
@@ -61,8 +62,10 @@ const interval = useIntervalFn(() => {
   }
 
   const time = Math.round((Date.now() - startTime.value) / 1000)
-  if (prevMark) addMark({ schema: 'undo', target: prevMark.sequence })
-  addMark({ schema: 'seconds', value: time })
+  if (time !== tally('seconds')) {
+    if (prevMark) addMark({ schema: 'undo', target: prevMark.sequence })
+    addMark({ schema: 'seconds', value: time })
+  }
 }, 100, { immediate: false })
 
 function startTimer () {
