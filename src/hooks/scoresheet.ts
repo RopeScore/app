@@ -125,6 +125,11 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
         sequence: scsh.marks.length - 1,
         ...mark
       },
+      info: {
+        competitionEventId: scsh.competitionEventId,
+        rulesId: scsh.rulesId,
+        judgeType: scsh.judgeType
+      },
       tally: tally.value
     })
   }

@@ -19,7 +19,7 @@ export interface Model {
 
 const models: Model[] = [
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023'],
     judgeType: 'S',
     name: 'Speed',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue'))
@@ -138,6 +138,12 @@ const models: Model[] = [
       ['Single Rope', 'e.ijru.fs.sr.srif.1.75'],
       ['Double Dutch', 'e.ijru.fs.dd.ddpf.4.75']
     ]
+  },
+  {
+    rulesId: 'svgf-vh@2023',
+    judgeType: 'T',
+    name: 'Timing',
+    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Timing.vue')),
   },
 
   {

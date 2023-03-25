@@ -93,7 +93,6 @@ const filled = computed(() => ![1, 2, 3].includes(selected.value as number))
 
 function propChange () {
   if (typeof props.value === 'number') {
-    console.log(props.value)
     const checked = Math.ceil(props.value - 0.5)
 
     if (checked !== props.value) {

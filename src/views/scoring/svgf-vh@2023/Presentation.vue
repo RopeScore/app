@@ -8,7 +8,7 @@
     />
 
     <div v-for="field of fields" :key="field[0]" class="mx-2">
-      <toggle-button
+      <three-scale
         :label="field[1]"
         :hints="field[2]"
         :value="tally(field[0])"
