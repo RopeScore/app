@@ -2,21 +2,17 @@
   <button
     class="rounded select-none p-1 touch-manipulation hover:outline-none focus:outline-none outline-none tap-transparent disabled:cursor-default disabled:filter disabled:saturate-50"
     :class="{
-      'bg-green-500': color === 'green' && !selected,
-      'hover:bg-green-600': color === 'green' && focus,
-      'bg-green-600': color === 'green' && selected,
+      'bg-green-500': color === 'green' && !(selected || focus),
+      'bg-green-600': color === 'green' && (selected || focus),
 
-      'bg-orange-500': color === 'orange' && !selected,
-      'hover:bg-orange-600': color === 'orange' && focus,
-      'bg-orange-600': color === 'orange' && selected,
+      'bg-orange-500': color === 'orange' && !(selected || focus),
+      'bg-orange-600': color === 'orange' && (selected || focus),
 
-      'bg-red-500': color === 'red',
-      'hover:bg-red-600': color === 'red' && focus,
-      'bg-red-600': color === 'red' && selected,
+      'bg-red-500': color === 'red' && !(selected || focus),
+      'bg-red-600': color === 'red' && (selected || focus),
 
-      'bg-indigo-500': color === 'indigo' && !selected,
-      'hover:bg-indigo-600': color === 'indigo' && focus,
-      'bg-indigo-600': color === 'indigo' && selected,
+      'bg-indigo-500': color === 'indigo' && !(selected || focus),
+      'bg-indigo-600': color === 'indigo' && (selected || focus),
 
       'bg-white': color === 'none',
 
@@ -28,10 +24,12 @@
       'text-black': color === 'none'
     }"
     :disabled="disabled"
+    @click.prevent.stop
     @mousedown="focus = true"
     @mouseup="focus = false"
     @touchstart="handleClick()"
     @touchend="focus = false"
+    @touchmove.prevent
   >
     <template v-if="value === null || value === undefined">
       {{ label }}
@@ -76,8 +74,15 @@ const props = defineProps({
   singleRow: Boolean
 })
 
+const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/prefer-function-type
+  (event: 'click'): void
+}>()
+
 const focus = ref(false)
 function handleClick () {
+  emit('click')
+  focus.value = true
   if (props.color === 'none') return
   navigator.vibrate?.(props.vibration)
 }
