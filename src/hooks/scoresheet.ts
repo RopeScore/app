@@ -4,7 +4,7 @@ import { reactive, ref } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { apolloClient } from '../apollo'
 import { provideApolloClient } from '@vue/apollo-composable'
-import { MarkScoresheetFragment, ScoresheetBaseFragment, TallyScoresheetFragment, useAddDeviceStreamMarkMutation, useAddStreamMarkMutation, useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
+import { type MarkScoresheetFragment, type ScoresheetBaseFragment, type TallyScoresheetFragment, useAddDeviceStreamMarkMutation, useAddStreamMarkMutation, useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
 
 import type { Ref } from 'vue'
 
@@ -190,11 +190,11 @@ const openRs = async (groupId: string, entryId: string, scoresheetId: string) =>
     onResult(res => {
       const entry = res.data.group?.entry
       let loaded = res.data.group?.entry?.scoresheet
-      if (!entry) return reject(new Error(`RopeScore entry not found: ${scoresheetId}`))
-      if (!loaded) return reject(new Error(`RopeScore scoresheet not found: ${scoresheetId}`))
+      if (!entry) { reject(new Error(`RopeScore entry not found: ${scoresheetId}`)); return }
+      if (!loaded) { reject(new Error(`RopeScore scoresheet not found: ${scoresheetId}`)); return }
       loaded = JSON.parse(JSON.stringify(loaded))
-      if (!loaded) return reject(new Error(`RopeScore scoresheet not found: ${scoresheetId}`))
-      if (!isRemoteMarkScoresheet(loaded)) return reject(new Error(`RopeScore scoresheet is not a mark scoresheet: ${scoresheetId}`))
+      if (!loaded) { reject(new Error(`RopeScore scoresheet not found: ${scoresheetId}`)); return }
+      if (!isRemoteMarkScoresheet(loaded)) { reject(new Error(`RopeScore scoresheet is not a mark scoresheet: ${scoresheetId}`)); return }
       scoresheet.value = reactive({
         ...loaded,
         marks: loaded.marks as Array<Mark<string>>
@@ -217,11 +217,11 @@ const closeRs = async () => {
     provideApolloClient(apolloClient)
     if (!scoresheet.value) {
       console.error(new Error('Scoresheet is not open'))
-      return resolve(undefined)
+      resolve(undefined); return
     }
     if (scoresheet.value.submittedAt) {
       console.warn('Scoresheet already completed, no need to save')
-      return resolve(undefined)
+      resolve(undefined); return
     }
     const { mutate, onDone } = useSaveScoresheetMutation({})
     mutate({ scoresheetId: scoresheet.value.id, marks: scoresheet.value.marks, completedAt: scoresheet.value.completedAt })
