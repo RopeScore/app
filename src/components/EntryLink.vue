@@ -12,9 +12,9 @@
       class="w-full relative grid grid-cols-[3rem,auto,3rem] grid-rows-4 p-2"
       :disabled="createScoresheetMutation.loading.value"
       :class="{
-        'hover:bg-green-600': color === 'green' && (!entry.didNotSkipAt || (entry.didNotSkipAt && scoresheets.length > 0)),
-        'hover:bg-indigo-600': color === 'indigo' && (!entry.didNotSkipAt || (entry.didNotSkipAt && scoresheets.length > 0)),
-        'hover:bg-gray-600': color === 'gray' && (!entry.didNotSkipAt || (entry.didNotSkipAt && scoresheets.length > 0))
+        'hover:bg-green-600': color === 'green' && (!entry.didNotSkipAt || (entry.didNotSkipAt && markScoresheets.length > 0)),
+        'hover:bg-indigo-600': color === 'indigo' && (!entry.didNotSkipAt || (entry.didNotSkipAt && markScoresheets.length > 0)),
+        'hover:bg-gray-600': color === 'gray' && (!entry.didNotSkipAt || (entry.didNotSkipAt && markScoresheets.length > 0))
       }"
       role="button"
       @click="openUncompletedOrCreate()"
@@ -34,14 +34,14 @@
       <div class="col-start-2 col-end-2">
         <span class="font-bold">{{ assignment?.judgeType }}</span>: {{ judge.name }}
       </div>
-      <div v-if="!entry.didNotSkipAt || (entry.lockedAt && scoresheets.length > 0)" class="row-span-4 row-start-1 col-start-3 flex justify-center items-center">
+      <div v-if="!entry.didNotSkipAt || (entry.lockedAt && markScoresheets.length > 0)" class="row-span-4 row-start-1 col-start-3 flex justify-center items-center">
         <span v-if="!createScoresheetMutation.loading.value">Open</span>
         <span v-else>Loading</span>
       </div>
     </div>
     <div class="grid grid-cols-2 grid-rows-1">
       <button
-        v-if="scoresheets.length > 0"
+        v-if="markScoresheets.length > 0"
         class="block flex justify-center align-middle border-t border-r p-2"
         :class="{
           'hover:bg-green-600': color === 'green',
@@ -61,7 +61,7 @@
           'hover:bg-green-600': color === 'green',
           'hover:bg-indigo-600': color === 'indigo',
           'hover:bg-gray-600': color === 'gray',
-          'col-span-2': scoresheets.length === 0
+          'col-span-2': markScoresheets.length === 0
         }"
         :disabled="createScoresheetMutation.loading.value"
         @click="createScoresheet()"
@@ -73,7 +73,7 @@
 
     <div v-if="showPrevious">
       <router-link
-        v-for="scoresheet of scoresheets"
+        v-for="scoresheet of markScoresheets"
         :key="scoresheet.id"
         class="p-2 border-t grid grid-rows-2 grid-cols-[min-content,auto] gap-x-2"
         :class="{
@@ -91,9 +91,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ScoresheetBaseFragment, MarkScoresheetFragment, Entry, useCreateMarkScoresheetMutation, AthleteFragment, TeamFragment, TallyScoresheetFragment, Category, JudgeFragment, JudgeAssignment } from '../graphql/generated'
+import { type ScoresheetBaseFragment, type MarkScoresheetFragment, type Entry, useCreateMarkScoresheetMutation, type AthleteFragment, type TeamFragment, TallyScoresheetFragment, type Category, type JudgeFragment, type JudgeAssignment } from '../graphql/generated'
 import { useRouter } from 'vue-router'
-import { PropType, toRef, ref, computed } from 'vue'
+import { type PropType, toRef, ref, computed } from 'vue'
 import { formatDate } from '../helpers'
 
 const props = defineProps({
@@ -128,7 +128,7 @@ const props = defineProps({
 
 const entry = toRef(props, 'entry')
 const _scoresheets = toRef(props, 'scoresheets')
-const scoresheets = computed(() => _scoresheets.value?.filter(scsh => scsh.__typename === 'MarkScoresheet') ?? [])
+const markScoresheets = computed(() => _scoresheets.value?.filter(scsh => scsh.__typename === 'MarkScoresheet') ?? [])
 const judge = toRef(props, 'judge')
 const router = useRouter()
 
@@ -155,8 +155,8 @@ async function createScoresheet () {
 
 async function openUncompletedOrCreate () {
   if (createScoresheetMutation.loading.value) return
-  const scoresheet = (scoresheets.value ?? []).reverse().find(scsh => scsh.completedAt) ??
-    (scoresheets.value ?? [])
+  const scoresheet = (markScoresheets.value ?? []).reverse().find(scsh => scsh.completedAt) ??
+    (markScoresheets.value ?? [])
       .filter(scsh => !scsh.completedAt)
       .at(-1)
 

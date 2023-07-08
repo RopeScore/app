@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 import { onClickOutside, useTimeoutFn } from '@vueuse/core'
 
-import type { MaybeElementRef, FunctionArgs } from '@vueuse/core'
+import type { MaybeElementRef } from '@vueuse/core'
 import type { Ref } from 'vue'
 
-export function useConfirm<T extends FunctionArgs> (func: T, target?: MaybeElementRef): { fire: T | ((...args: any[]) => void), fireNext: Ref<boolean> } {
+export function useConfirm<T extends (...args: any[]) => void | Promise<void>> (func: T, target?: MaybeElementRef): { fire: (...args: Parameters<T>) => void, fireNext: Ref<boolean> } {
   const fireNext = ref(false)
   const { start, stop } = useTimeoutFn(() => { fireNext.value = false }, 3000, { immediate: false })
 

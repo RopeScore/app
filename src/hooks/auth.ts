@@ -2,7 +2,7 @@ import { provideApolloClient } from '@vue/apollo-composable'
 import { useLocalStorage } from '@vueuse/core'
 import { watch, computed } from 'vue'
 import { apolloClient } from '../apollo'
-import { RegisterDeviceMutationVariables, useMeQuery, useRegisterDeviceMutation } from '../graphql/generated'
+import { type RegisterDeviceMutationVariables, useMeQuery, useRegisterDeviceMutation } from '../graphql/generated'
 
 export function useAuth () {
   provideApolloClient(apolloClient)
@@ -12,7 +12,9 @@ export function useAuth () {
 
   watch(token, (nT, pT) => {
     console.log('token', nT)
-    if (pT === null && nT !== null) return refetch()
+    if (pT === null && nT !== null) {
+      refetch()
+    }
   })
 
   async function register (vars: RegisterDeviceMutationVariables) {

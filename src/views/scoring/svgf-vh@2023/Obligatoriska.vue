@@ -30,8 +30,8 @@ import ScoreButton from '../../../components/ScoreButton.vue'
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
-type Schema = 'rqHighKnee' | 'rqSki' | 'rqTurn' | 'rqPair' | 'rqTool' |
-  'rqHighKnee' | 'rqBack' | 'rqCross' | 'rqSideJump' | 'rqOutTogether'
+type Schema = 'rqHighKnee' | 'rqSki' | 'rqTurn' | 'rqPair' | 'rqTool'
+| 'rqHighKnee' | 'rqBack' | 'rqCross' | 'rqSideJump' | 'rqOutTogether'
 
 defineProps({
   model: {

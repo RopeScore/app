@@ -33,7 +33,7 @@ import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
 type Schema = 'musicOnBeat' | 'interactions' | 'usingMusic' | 'movement'
-  | 'formExecution' | 'impression' | 'miss'
+| 'formExecution' | 'impression' | 'miss'
 
 defineProps({
   model: {

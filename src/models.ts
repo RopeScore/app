@@ -1,4 +1,4 @@
-import { Component, defineAsyncComponent } from 'vue'
+import { type Component, defineAsyncComponent } from 'vue'
 
 export interface Option {
   name: string

@@ -9,8 +9,16 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "types": ["vite/client", "vite-plugin-pwa/client", "@types/dom-screen-wake-lock"],
+    "types": ["vite/client", "vite-plugin-pwa/client"],
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "vite.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "*.config.js",
+    "*.config.ts",
+    "**/.*.js"
+  ]
 }

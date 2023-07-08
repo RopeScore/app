@@ -1,6 +1,6 @@
-import { ApolloLink, Operation, FetchResult, Observable } from '@apollo/client/core'
-import { print, GraphQLError } from 'graphql'
-import { createClient, ClientOptions, Client } from 'graphql-ws'
+import { ApolloLink, type Operation, type FetchResult, Observable } from '@apollo/client/core'
+import { print, type GraphQLError } from 'graphql'
+import { createClient, type ClientOptions, type Client } from 'graphql-ws'
 
 interface RestartableClient extends Client {
   restart: () => void
@@ -41,7 +41,7 @@ function createRestartableClient (options: ClientOptions): RestartableClient {
 
   return {
     ...client,
-    restart: () => restart()
+    restart: () => { restart() }
   }
 }
 
@@ -67,19 +67,21 @@ export class WebSocketLink extends ApolloLink {
           complete: sink.complete.bind(sink),
           error: (err) => {
             if (err instanceof Error) {
-              return sink.error(err)
+              sink.error(err)
+              return
             }
 
             if (err instanceof CloseEvent) {
-              return sink.error(
+              sink.error(
                 // reason will be available on clean closes
                 new Error(
                   `Socket closed with event ${err.code} ${err.reason || ''}`
                 )
               )
+              return
             }
 
-            return sink.error(
+            sink.error(
               Array.isArray(err)
                 ? new Error((err as GraphQLError[])
                   .map(({ message }) => message)

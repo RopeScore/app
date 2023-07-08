@@ -66,8 +66,8 @@
 </template>
 
 <script lang="ts" setup>
-import { DeviceStreamShareFragment, DeviceStreamShareStatus, useCreateDeviceStreamShareMutation, useDeleteDeviceStreamShareMutation } from '../graphql/generated'
-import { PropType } from 'vue'
+import { type DeviceStreamShareFragment, DeviceStreamShareStatus, useCreateDeviceStreamShareMutation, useDeleteDeviceStreamShareMutation } from '../graphql/generated'
+import { type PropType } from 'vue'
 import { formatDate } from '../helpers'
 
 defineProps({

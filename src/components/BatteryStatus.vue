@@ -96,7 +96,7 @@ watchWithFilter(manualLevel, level => {
 })
 
 const percentage = computed(() => {
-  return (battery.isSupported ? Math.round(battery.level.value * 100) : manualLevel.value ?? '0') + '%'
+  return `${(battery.isSupported ? Math.round(battery.level.value * 100) : manualLevel.value ?? '0')}%`
 })
 
 const lowBattery = computed(() => battery.isSupported ? battery.level.value < 0.2 : parseInt(manualLevel.value ?? '0', 10) < 20)

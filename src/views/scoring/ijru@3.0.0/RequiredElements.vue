@@ -102,9 +102,9 @@ import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 
 type Schema = 'rqMultiples' | 'rqWrapsReleases' | 'rqGymnasticsPower'
-  | 'rqInteractions' | 'rqTurnerInvolvement'
-  | `repL${3 | 4 | 5 | 6 | 7 | 8}`
-  | 'miss' | 'timeViolation' | 'spaceViolation'
+| 'rqInteractions' | 'rqTurnerInvolvement'
+| `repL${3 | 4 | 5 | 6 | 7 | 8}`
+| 'miss' | 'timeViolation' | 'spaceViolation'
 
 defineProps({
   model: {

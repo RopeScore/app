@@ -83,7 +83,7 @@ import { useAuth } from '../hooks/auth'
 import ScoreButton from '../components/ScoreButton.vue'
 import BatteryStatus from '../components/BatteryStatus.vue'
 import EntryLink from '../components/EntryLink.vue'
-import { MarkScoresheetFragment, ScoresheetBaseFragment, useGroupScoresheetsQuery } from '../graphql/generated'
+import { type MarkScoresheetFragment, type ScoresheetBaseFragment, useGroupScoresheetsQuery } from '../graphql/generated'
 import { isRemoteMarkScoresheet } from '../hooks/scoresheet'
 
 const auth = useAuth()
