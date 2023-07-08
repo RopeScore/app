@@ -25,9 +25,9 @@
     }"
     :disabled="disabled"
     @click.prevent.stop
-    @mousedown="focus = true"
+    @mousedown.prevent="handleClick()"
     @mouseup="focus = false"
-    @touchstart="handleClick()"
+    @touchstart.prevent="handleClick()"
     @touchend="focus = false"
     @touchmove.prevent
   >
