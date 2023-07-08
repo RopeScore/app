@@ -19,13 +19,13 @@ export interface Model {
 
 const models: Model[] = [
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
     judgeType: 'S',
     name: 'Speed',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue'))
   },
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'ijru.speed.2020'],
     judgeType: 'Shj',
     name: 'Speed Head Judge',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue')),
@@ -42,7 +42,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Difficulty.vue'))
   },
   {
-    rulesId: 'ijru@3.0.0',
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023'],
     judgeType: 'D',
     name: 'Difficulty',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/Difficulty.vue'))
@@ -55,7 +55,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/AthletePresentation.vue'))
   },
   {
-    rulesId: 'ijru@3.0.0',
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023'],
     judgeType: 'Pa',
     name: 'Athlete Presentation',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/AthletePresentation.vue'))
@@ -68,7 +68,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/RoutinePresentation.vue'))
   },
   {
-    rulesId: 'ijru@3.0.0',
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023'],
     judgeType: 'Pr',
     name: 'Routine Presentation',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue'))
@@ -87,7 +87,7 @@ const models: Model[] = [
     ]
   },
   {
-    rulesId: 'ijru@3.0.0',
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023'],
     judgeType: 'R',
     name: 'Required Elements',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RequiredElements.vue')),

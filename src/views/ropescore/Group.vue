@@ -78,13 +78,13 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { apiDomain } from '../apollo'
-import { useAuth } from '../hooks/auth'
-import ScoreButton from '../components/ScoreButton.vue'
-import BatteryStatus from '../components/BatteryStatus.vue'
-import EntryLink from '../components/EntryLink.vue'
-import { type MarkScoresheetFragment, type ScoresheetBaseFragment, useGroupScoresheetsQuery } from '../graphql/generated'
-import { isRemoteMarkScoresheet } from '../hooks/scoresheet'
+import { apiDomain } from '../../apollo'
+import { useAuth } from '../../hooks/auth'
+import ScoreButton from '../../components/ScoreButton.vue'
+import BatteryStatus from '../../components/BatteryStatus.vue'
+import EntryLink from '../../components/EntryLink.vue'
+import { type MarkScoresheetFragment, type ScoresheetBaseFragment, useGroupScoresheetsQuery } from '../../graphql/generated'
+import { isRemoteMarkScoresheet } from '../../hooks/scoresheet'
 
 const auth = useAuth()
 const router = useRouter()

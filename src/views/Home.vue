@@ -20,15 +20,21 @@
       </router-link>
       <router-link
         class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
-        to="/groups"
+        to="/rs/groups"
       >
         Judge a RopeScore Competition
       </router-link>
       <router-link
         class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
-        to="/device-shares"
+        to="/rs/device-shares"
       >
         Connect to a RopeScore Live Screen
+      </router-link>
+      <router-link
+        class="block p-2 my-8 text-center text-lg text-white bg-white rounded"
+        to="/ijru/connect"
+      >
+        Judge an IJRU Scoring Competition
       </router-link>
     </nav>
 
@@ -73,6 +79,7 @@ import { ref, watchEffect } from 'vue'
 import logo from '../assets/logo.svg'
 import { useSW } from '../hooks/sw'
 import { apiDomain, localManual, localApis } from '../apollo'
+import { version } from '../helpers'
 
 import { SelectField } from '@ropescore/components'
 
@@ -81,8 +88,6 @@ const standalone = ref(false)
 watchEffect(() => {
   standalone.value = window.matchMedia('(display-mode: standalone)').matches
 })
-
-const version = (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
 
 const { needRefresh, updateSW } = useSW()
 </script>

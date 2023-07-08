@@ -15,3 +15,10 @@ const dateFormatter = Intl.DateTimeFormat(locales, {
 export function formatDate (timestamp: number | Date): string {
   return dateFormatter.format(timestamp)
 }
+
+const listFormatter = new Intl.ListFormat(locales)
+export function formatList (list: string[]): string {
+  return listFormatter.format(list)
+}
+
+export const version = (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)

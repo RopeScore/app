@@ -59,15 +59,13 @@
     </div>
   </template>
 
-  <div v-if="!auth.token.value" class="px-2">
+  <form v-else class="px-2">
     <h1 class="font-semibold text-2xl mt-4 px-2">
       Register
     </h1>
     <text-field v-model="newName" label="Device name" />
 
-    <div
-      class="border-l border-l-4 py-2 px-4 mt-2 bg-blue-100 border-l-blue-300"
-    >
+    <note-card>
       Note that app scoring will send and store data in the cloud,
       Swantzter is the data controller for this and can be reached on
       <a
@@ -82,10 +80,10 @@
         href="https://ropescore.com/privacy"
         target="_blank"
       >https://ropescore.com/privacy</a>
-    </div>
+    </note-card>
 
     <score-button label="Register" single-row class="w-full mx-0 h-20" @click="auth.register({ name: newName })" />
-  </div>
+  </form>
 
   <div
     v-if="loading"
@@ -105,13 +103,13 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '../hooks/auth'
-import { DeviceStreamShareStatus, useDeviceStreamSharesQuery } from '../graphql/generated'
+import { useAuth } from '../../hooks/auth'
+import { DeviceStreamShareStatus, useDeviceStreamSharesQuery } from '../../graphql/generated'
 
-import ScoreButton from '../components/ScoreButton.vue'
-import BatteryStatus from '../components/BatteryStatus.vue'
-import DeviceShare from '../components/DeviceShare.vue'
-import { TextField } from '@ropescore/components'
+import ScoreButton from '../../components/ScoreButton.vue'
+import BatteryStatus from '../../components/BatteryStatus.vue'
+import DeviceShare from '../../components/DeviceShare.vue'
+import { TextField, NoteCard } from '@ropescore/components'
 
 const auth = useAuth()
 const router = useRouter()

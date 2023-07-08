@@ -1,13 +1,35 @@
 import { createWebHistory, createRouter } from 'vue-router'
+import { useServoAuth } from './hooks/servo-auth'
+import { useAuth } from './hooks/auth'
 
 export default createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: async () => import('./views/Home.vue') },
     { path: '/practice', component: async () => import('./views/PracticeIndex.vue') },
-    { path: '/groups', component: async () => import('./views/Groups.vue') },
-    { path: '/groups/:id', component: async () => import('./views/Group.vue') },
-    { path: '/device-shares', component: async () => import('./views/DeviceShare.vue') },
-    { path: '/score/:system/:vendor+', component: async () => import('./views/Score.vue') }
+    { path: '/score/:system/:vendor+', component: async () => import('./views/Score.vue') },
+
+    // RopeScore
+    { path: '/rs/groups', component: async () => import('./views/ropescore/Groups.vue') },
+    {
+      path: '/rs/groups/:id',
+      component: async () => import('./views/ropescore/Group.vue'),
+      beforeEnter: (to, fron) => {
+        const { token } = useAuth()
+        if (token.value == null) return { path: '/rs/groups' }
+      }
+    },
+    { path: '/rs/device-shares', component: async () => import('./views/ropescore/DeviceShare.vue') },
+
+    // IJRU
+    { path: '/ijru/connect', component: async () => import('./views/ijru/Connect.vue') },
+    {
+      path: '/ijru/entries',
+      component: async () => import('./views/ijru/Entries.vue'),
+      beforeEnter: (to, fron) => {
+        const { token } = useServoAuth()
+        if (token.value == null) return { path: '/ijru/connect' }
+      }
+    }
   ]
 })
