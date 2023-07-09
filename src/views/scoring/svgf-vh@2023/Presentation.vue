@@ -29,7 +29,7 @@ import ThreeScale from '../../../components/ThreeScale.vue'
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
-type Schema = 'musicOnBeat' | 'formExecution' | 'impression' | 'miss'
+export type Schema = 'musicOnBeat' | 'formExecution' | 'impression' | 'miss'
 
 defineProps({
   model: {

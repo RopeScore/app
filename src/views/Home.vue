@@ -32,7 +32,7 @@
       </router-link>
       <router-link
         class="block p-2 my-8 text-center text-lg text-white bg-white rounded"
-        to="/ijru/connect"
+        to="/servo/connect"
       >
         Judge an IJRU Scoring Competition
       </router-link>

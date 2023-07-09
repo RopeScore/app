@@ -37,7 +37,7 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
-type Schema = `diffL${'0.5' | 1 | 2 | 3 | 4 | 5}`
+export type Schema = `diffL${'0.5' | 1 | 2 | 3 | 4 | 5}`
 
 defineProps({
   model: {

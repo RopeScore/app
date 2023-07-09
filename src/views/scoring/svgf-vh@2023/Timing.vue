@@ -35,7 +35,7 @@ import { useIntervalFn } from '@vueuse/shared'
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 
-type Schema = 'seconds'
+export type Schema = 'seconds'
 
 const props = defineProps({
   model: {

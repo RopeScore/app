@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 import { type Component, defineAsyncComponent } from 'vue'
+import { convertMarksToServoIntermediate, type ServoIntermediateScoresheet } from './hooks/scoresheet'
 
 export interface Option {
   name: string
@@ -15,6 +17,11 @@ export interface Model {
   localAlternativeCompetitionEvents?: Array<[string, string]>
   localOptions?: Option[]
   hidden?: boolean
+
+  // I would kind alike this broken out somehow, but this will do for now
+  converters?: {
+    servo?: (scoresheet: ServoIntermediateScoresheet<any>) => Record<string, unknown>
+  }
 }
 
 const models: Model[] = [
@@ -22,7 +29,26 @@ const models: Model[] = [
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
     judgeType: 'S',
     name: 'Speed',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue'))
+    component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue')),
+    converters: {
+      servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@1.1.0/Speed.vue').Schema>) {
+        const scores = {
+          Clicks: 0,
+          ClickTimes: [] as number[]
+        }
+        const marks = convertMarksToServoIntermediate(scoresheet.marks, scoresheet)
+        for (const mark of marks) {
+          switch (mark.schema) {
+            case 'step': {
+              scores.Clicks++
+              scores.ClickTimes.push(mark.timestamp)
+              break
+            }
+          }
+        }
+        return scores
+      }
+    }
   },
   {
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'ijru.speed.2020'],
@@ -32,7 +58,36 @@ const models: Model[] = [
     localAlternativeCompetitionEvents: [
       ['False Switches', 'e.ijru.sp.sr.srsr.4.4x30'],
       ['No Switches', 'e.ijru.sp.sr.srss.1.30']
-    ]
+    ],
+    converters: {
+      servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@1.1.0/Speed.vue').Schema>) {
+        const scores = {
+          Clicks: 0,
+          ClickTimes: [] as number[],
+          FalseStarts: 0,
+          FalseSwitches: 0
+        }
+        const marks = convertMarksToServoIntermediate(scoresheet.marks, scoresheet)
+        for (const mark of marks) {
+          switch (mark.schema) {
+            case 'step': {
+              scores.Clicks++
+              scores.ClickTimes.push(mark.timestamp)
+              break
+            }
+            case 'falseStart': {
+              scores.FalseStarts++
+              break
+            }
+            case 'falseSwitch': {
+              scores.FalseSwitches++
+              break
+            }
+          }
+        }
+        return scores
+      }
+    }
   },
 
   {
@@ -45,7 +100,41 @@ const models: Model[] = [
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023'],
     judgeType: 'D',
     name: 'Difficulty',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/Difficulty.vue'))
+    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/Difficulty.vue')),
+    converters: {
+      servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@3.0.0/Difficulty.vue').Schema>) {
+        const scores = {
+          Level05: 0,
+          Level1: 0,
+          Level2: 0,
+          Level3: 0,
+          Level4: 0,
+          Level5: 0,
+          Level6: 0,
+          Level7: 0,
+          Level8: 0,
+          NumRepeated: 0,
+          SkillLevels: [] as number[],
+          SkillTimes: [] as number[],
+          RepeatedSkillTimes: [] as number[]
+        }
+        const marks = convertMarksToServoIntermediate(scoresheet.marks, scoresheet)
+        for (const mark of marks) {
+          if (mark.schema.startsWith('diffL')) {
+            const level = mark.schema === 'diffL0.5' ? 0.5 : parseInt(mark.schema.substring(5), 10)
+            const levelName = mark.schema.substring(5).replaceAll('.', '') as unknown as '05' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8'
+
+            scores[`Level${levelName}`]++
+            scores.SkillLevels.push(level)
+            scores.SkillTimes.push(mark.timestamp)
+          } else if (mark.schema === 'rep') {
+            scores.NumRepeated++
+            scores.SkillTimes.push(mark.timestamp)
+          }
+        }
+        return scores
+      }
+    }
   },
 
   {
@@ -58,7 +147,48 @@ const models: Model[] = [
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023'],
     judgeType: 'Pa',
     name: 'Athlete Presentation',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/AthletePresentation.vue'))
+    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/AthletePresentation.vue')),
+    converters: {
+      servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@3.0.0/AthletePresentation.vue').Schema>) {
+        const scores = {
+          FormMinus: 0,
+          FormCheck: 0,
+          FormPlus: 0,
+          Misses: 0,
+          FormScores: [] as number[],
+          FormTimes: [] as number[],
+          MissTimes: [] as number[]
+        }
+        const marks = convertMarksToServoIntermediate(scoresheet.marks, scoresheet)
+        for (const mark of marks) {
+          switch (mark.schema) {
+            case 'formExecutionMinus': {
+              scores.FormMinus++
+              scores.FormScores.push(-1)
+              scores.FormTimes.push(mark.timestamp)
+              break
+            }
+            case 'formExecutionCheck': {
+              scores.FormCheck++
+              scores.FormScores.push(0)
+              scores.FormTimes.push(mark.timestamp)
+              break
+            }
+            case 'formExecutionPlus': {
+              scores.FormPlus++
+              scores.FormScores.push(1)
+              scores.FormTimes.push(mark.timestamp)
+              break
+            }
+            case 'miss': {
+              scores.Misses++
+              scores.MissTimes.push(mark.timestamp)
+            }
+          }
+        }
+        return scores
+      }
+    }
   },
 
   {
@@ -71,7 +201,65 @@ const models: Model[] = [
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023'],
     judgeType: 'Pr',
     name: 'Routine Presentation',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue'))
+    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue')),
+    converters: {
+      servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue').Schema>) {
+        const scores = {
+          EntMinus: 0,
+          EntCheck: 0,
+          EntPlus: 0,
+          MusicMinus: 0,
+          MusicCheck: 0,
+          MusicPlus: 0,
+          EntScores: [] as number[],
+          EntTimes: [] as number[],
+          MusicScores: [] as number[],
+          MusicTimes: [] as number[]
+        }
+        const marks = convertMarksToServoIntermediate(scoresheet.marks, scoresheet)
+        for (const mark of marks) {
+          switch (mark.schema) {
+            case 'entertainmentMinus': {
+              scores.EntMinus++
+              scores.EntScores.push(-1)
+              scores.EntTimes.push(mark.timestamp)
+              break
+            }
+            case 'entertainmentCheck': {
+              scores.EntCheck++
+              scores.EntScores.push(0)
+              scores.EntTimes.push(mark.timestamp)
+              break
+            }
+            case 'entertainmentPlus': {
+              scores.EntPlus++
+              scores.EntScores.push(1)
+              scores.EntTimes.push(mark.timestamp)
+              break
+            }
+            case 'musicalityMinus': {
+              scores.MusicMinus++
+              scores.MusicScores.push(-1)
+              scores.MusicTimes.push(mark.timestamp)
+              break
+            }
+            case 'musicalityCheck': {
+              scores.MusicCheck++
+              scores.MusicScores.push(0)
+              scores.MusicTimes.push(mark.timestamp)
+              break
+            }
+            case 'musicalityPlus': {
+              scores.MusicPlus++
+              scores.MusicScores.push(1)
+              scores.MusicTimes.push(mark.timestamp)
+              break
+            }
+          }
+        }
+        return scores
+      }
+    }
   },
 
   {
@@ -96,7 +284,78 @@ const models: Model[] = [
       ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75'],
       ['Double Dutch Single Freestyle', 'e.ijru.fs.dd.ddsf.3.75'],
       ['Double Dutch Other', 'e.ijru.fs.dd.ddpf.4.75']
-    ]
+    ],
+    converters: {
+      servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@3.0.0/RequiredElements.vue').Schema>) {
+        const scores = {
+          Misses: 0,
+          SpaceV: 0,
+          TimeV: 0,
+          MissTimes: [] as number[],
+          SpaceVTimes: [] as number[],
+          TimeVTimes: [] as number[],
+
+          GymPower: 0,
+          Interactions: 0,
+          Multiples: 0,
+          WrapsReleases: 0,
+          TurnerInv: 0,
+
+          GymPowerTimes: [] as number[],
+          InteractionTimes: [] as number[],
+          MultiplesTimes: [] as number[],
+          WrapsReleasesTimes: [] as number[],
+          TurnerInvolvementTimes: [] as number[]
+        }
+        const marks = convertMarksToServoIntermediate(scoresheet.marks, scoresheet)
+        for (const mark of marks) {
+          switch (mark.schema) {
+            case 'miss': {
+              scores.Misses++
+              scores.MissTimes.push(mark.timestamp)
+              break
+            }
+            case 'timeViolation': {
+              scores.TimeV++
+              scores.TimeVTimes.push(mark.timestamp)
+              break
+            }
+            case 'spaceViolation': {
+              scores.SpaceV++
+              scores.SpaceVTimes.push(mark.timestamp)
+              break
+            }
+
+            case 'rqGymnasticsPower': {
+              scores.GymPower++
+              scores.GymPowerTimes.push(mark.timestamp)
+              break
+            }
+            case 'rqInteractions': {
+              scores.Interactions++
+              scores.InteractionTimes.push(mark.timestamp)
+              break
+            }
+            case 'rqMultiples': {
+              scores.Multiples++
+              scores.MultiplesTimes.push(mark.timestamp)
+              break
+            }
+            case 'rqWrapsReleases': {
+              scores.WrapsReleases++
+              scores.WrapsReleasesTimes.push(mark.timestamp)
+              break
+            }
+            case 'rqTurnerInvolvement': {
+              scores.TurnerInv++
+              scores.TurnerInvolvementTimes.push(mark.timestamp)
+              break
+            }
+          }
+        }
+        return scores
+      }
+    }
   },
 
   {

@@ -6,7 +6,7 @@ import { useServoAuth } from '../../hooks/servo-auth'
 import { useRouter } from 'vue-router'
 
 // const accessCode = ref<string>('https://scoring.ijru.sport/a/')
-const accessCode = ref<string>('https://8e94-81-234-52-247.ngrok-free.app/a/2282-1')
+const accessCode = ref<string>('https://eb0b-70-34-195-250.ngrok-free.app/a/306-1')
 
 const router = useRouter()
 const { assignment, prompt, loading, error, initialize, logOut } = useServoAuth()
@@ -35,7 +35,7 @@ const { assignment, prompt, loading, error, initialize, logOut } = useServoAuth(
       label="Go to entries"
       single-row
       class="w-full mx-0 h-20"
-      @click="router.push(`/ijru/entries`)"
+      @click="router.push(`/servo/entries`)"
     />
 
     <score-button

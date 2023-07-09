@@ -73,7 +73,7 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 
-type Schema = `formExecution${'Plus' | 'Check' | 'Minus'}` | 'miss'
+export type Schema = `formExecution${'Plus' | 'Check' | 'Minus'}` | 'miss'
 
 defineProps({
   model: {

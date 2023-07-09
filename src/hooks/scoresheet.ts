@@ -11,6 +11,7 @@ import { useServoAuth } from './servo-auth'
 import router from '../router'
 import { isObject, useBattery } from '@vueuse/core'
 import { version } from '../helpers'
+import models from '../models'
 
 export interface GenericMark<Schema extends string> {
   readonly timestamp: number
@@ -216,6 +217,40 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
   }
 }
 
+/**
+ * @param scoresheet Providing this value will adjust the timestamps on the
+ *                   marks to be relative to scoresheet openedAt ?? createdAt
+ */
+export function convertMarksToServoIntermediate <Schema extends string> (_marks: Readonly<Array<Mark<Schema>>>, scoresheet?: ServoIntermediateScoresheet<Schema>) {
+  // First we slice from the last clear mark removing the clear mark itself
+  let marks = [..._marks]
+  const lastClearIdx = _marks.findLastIndex(m => m.schema === 'clear')
+  if (lastClearIdx > -1) {
+    marks = marks.slice(lastClearIdx + 1)
+  }
+
+  // Then we process all the undo marks removing the undo target and the undo mark
+  for (let idx = 0; idx < marks.length; idx++) {
+    const mark = { ...marks[idx] }
+    if (scoresheet != null) mark.timestamp = mark.timestamp - (scoresheet.openedAt ?? scoresheet.createdAt)
+    if (isUndoMark(mark)) {
+      const undoneMarkIdx = marks.findIndex(m => m.sequence === mark.target)
+      if (undoneMarkIdx === -1) throw new Error('Undone mark missing')
+      const undoneMark = marks[undoneMarkIdx]
+      if (!isUndoMark(undoneMark) && !isClearMark(undoneMark)) {
+        marks.splice(undoneMarkIdx, 1)
+        idx--
+      }
+      marks.splice(idx, 1)
+      idx--
+    } else {
+      marks.splice(idx, 1, mark)
+    }
+  }
+
+  return marks
+}
+
 const complete = () => {
   if (!scoresheet.value) {
     console.error(new Error('Scoresheet is not open'))
@@ -330,7 +365,7 @@ const openServo = async (competitionId: number, entryId: number, judgeSequence: 
   system.value = 'servo'
   scoresheet.value.openedAt = Date.now()
 
-  addMark({ schema: 'clear' })
+  if (!scoresheet.value.completedAt) addMark({ schema: 'clear' })
 
   const url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}/scoresheet-opened`, baseUrl.value)
   const response = await fetch(url, {
@@ -362,6 +397,17 @@ const closeServo = async () => {
     console.error(new Error('Trying to save something that isn\'t a servo scoresheet'))
     return
   }
+  const rulesId = scoresheet.value.rulesId
+  const judgeType = scoresheet.value.judgeType
+  const model = models.find(model => model.rulesId.includes(rulesId) && model.judgeType === judgeType)
+  if (!model) {
+    console.error(new Error('Could not find model for scoresheet'))
+    return
+  }
+  if (model.converters?.servo == null) {
+    console.error(new Error('Model does not have a converter for servo scoring'))
+    return
+  }
   const [,competitionId, entryId, judgeSequence] = scoresheet.value.id.split('::')
 
   // Store the local copy
@@ -379,6 +425,8 @@ const closeServo = async () => {
     method = 'POST'
   }
 
+  const scores = model.converters.servo(scoresheet.value)
+
   // store the remote copy
   const response = await fetch(url, {
     method,
@@ -393,9 +441,9 @@ const closeServo = async () => {
       JudgeScoreData: {
         Version: version,
         DeviceID: deviceId.value,
-        RoutineStartTime: scoresheet.value.openedAt,
-        BatteryLevel: battery.isSupported ? Math.round(battery.level.value * 100) : undefined
-        // TODO add scores
+        RoutineStartTime: scoresheet.value.openedAt ?? scoresheet.value.createdAt,
+        BatteryLevel: battery.isSupported ? Math.round(battery.level.value * 100) : undefined,
+        ...scores
       }
     })
   })

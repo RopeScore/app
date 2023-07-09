@@ -22,13 +22,13 @@ export default createRouter({
     { path: '/rs/device-shares', component: async () => import('./views/ropescore/DeviceShare.vue') },
 
     // IJRU
-    { path: '/ijru/connect', component: async () => import('./views/ijru/Connect.vue') },
+    { path: '/servo/connect', component: async () => import('./views/servo/Connect.vue') },
     {
-      path: '/ijru/entries',
-      component: async () => import('./views/ijru/Entries.vue'),
+      path: '/servo/entries',
+      component: async () => import('./views/servo/Entries.vue'),
       beforeEnter: (to, fron) => {
         const { token } = useServoAuth()
-        if (token.value == null) return { path: '/ijru/connect' }
+        if (token.value == null) return { path: '/servo/connect' }
       }
     }
   ]

@@ -32,7 +32,7 @@ import TenScale from '../../../components/TenScale.vue'
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
-type Schema = 'musicOnBeat' | 'interactions' | 'usingMusic' | 'movement'
+export type Schema = 'musicOnBeat' | 'interactions' | 'usingMusic' | 'movement'
 | 'formExecution' | 'impression' | 'miss'
 
 defineProps({

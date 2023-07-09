@@ -53,7 +53,7 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 
-type Schema = 'step' | 'falseStart' | 'falseSwitch'
+export type Schema = 'step' | 'falseStart' | 'falseSwitch'
 
 const props = defineProps({
   model: {

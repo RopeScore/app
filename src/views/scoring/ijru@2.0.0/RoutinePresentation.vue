@@ -80,7 +80,7 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 
-type Schema = `entertainment${'Plus' | 'Check' | 'Minus'}`
+export type Schema = `entertainment${'Plus' | 'Check' | 'Minus'}`
   | `musicality${'Plus' | 'Check' | 'Minus'}`
 
 defineProps({

@@ -137,6 +137,17 @@ export function useServoAuth () {
     error.value = undefined
   }
 
+  if (token.value) {
+    try {
+      const claims = JSON.parse(atob(token.value.split('.')[1]))
+      if (Number.isSafeInteger(claims.exp) && claims.exp < (Date.now() / 1000)) {
+        logOut()
+      }
+    } catch (err) {
+      console.error('Failed to determine token expiry', err)
+    }
+  }
+
   return {
     token,
     baseUrl,
