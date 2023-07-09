@@ -1,4 +1,9 @@
+<script setup lang="ts">
+import NotificationCards from './components/NotificationCards.vue'
+</script>
+
 <template>
+  <notification-cards />
   <div class="container mx-auto box-border">
     <router-view />
   </div>

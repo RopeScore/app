@@ -17,7 +17,7 @@ const { assignment, prompt, loading, error, initialize, logOut } = useServoAuth(
     <score-button
       label="Back"
       single-row
-      @click="router.go(-1)"
+      @click="router.push('/')"
     />
     <div
       v-if="assignment"

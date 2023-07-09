@@ -1,6 +1,7 @@
 import { StorageSerializers, isObject, useLocalStorage, useTimeoutPoll } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import { v4 as uuid } from 'uuid'
+import useNotifications from './notifications'
 
 interface TokenRequest {
   token_request_uri: string
@@ -42,6 +43,7 @@ function isTokenResponse (x: unknown): x is TokenResponse {
 }
 
 export function useServoAuth () {
+  const { push: pushNotification } = useNotifications()
   const deviceId = useLocalStorage<string>('servo-device-id', uuid())
   const tokenInfo = useLocalStorage<TokenResponse | null>('servo-auth', null, { serializer: StorageSerializers.object })
   const token = computed(() => tokenInfo.value?.access_token)
@@ -94,6 +96,7 @@ export function useServoAuth () {
       })
       if (!response.ok) {
         const body = await response.text()
+        pushNotification({ message: body, type: 'server' })
         throw new Error(`Request to ${url.href} failed with status code ${response.status} and body ${body}`)
       }
       const body = await response.json()
@@ -116,6 +119,7 @@ export function useServoAuth () {
     })
     if (!response.ok) {
       const body = await response.text()
+      pushNotification({ message: body, type: 'server' })
       throw new Error(`Request to ${tokenRequestUri.value.href} failed with status code ${response.status} and body ${body}`)
     }
     const body = await response.json()

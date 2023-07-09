@@ -1,10 +1,12 @@
-import { ApolloClient, createHttpLink, InMemoryCache, split } from '@apollo/client/core'
+import { ApolloClient, createHttpLink, InMemoryCache, split, from } from '@apollo/client/core'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { setContext } from '@apollo/client/link/context'
+import { onError } from '@apollo/client/link/error'
 import { useAuth } from './hooks/auth'
 import { WebSocketLink } from './graphql-ws'
 import { computed, watch } from 'vue'
 import { useFetch, useIntervalFn, useLocalStorage } from '@vueuse/core'
+import useNotifications from './hooks/notifications'
 
 const localDiscover = useFetch('http://ropescore.local').get().text()
 const resolvedReachable = useFetch(
@@ -18,7 +20,7 @@ useIntervalFn(() => {
   localDiscover.execute()
 }, 60_000)
 
-export const localApis = ['', 'local-001', 'dev']
+export const localApis = ['', 'local-001', 'local-002', 'dev']
 export const localManual = useLocalStorage<string>('rs-local-api', null)
 const manualReachable = useFetch(
   computed(() => localManual.value === 'dev'
@@ -76,6 +78,28 @@ const authLink = setContext(async (_, { headers }) => {
   }
 })
 
+const { push: pushError } = useNotifications()
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    console.log('gqlErr', graphQLErrors)
+    for (const err of graphQLErrors) {
+      console.log({ ...err })
+      pushError({
+        message: err.message,
+        type: 'server',
+        code: typeof err.extensions.code === 'string' ? err.extensions.code : undefined
+      })
+    }
+  }
+  if (networkError) {
+    console.log('netERror', networkError)
+    pushError({
+      message: networkError.message,
+      type: 'network'
+    })
+  }
+})
+
 const cache = new InMemoryCache({
   typePolicies: {
     Device: {
@@ -109,7 +133,7 @@ const splitLink = split(
     )
   },
   wsLink,
-  authLink.concat(httpLink)
+  from([errorLink, authLink, httpLink])
 )
 
 export const apolloClient = new ApolloClient({

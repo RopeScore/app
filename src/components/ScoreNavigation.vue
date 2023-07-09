@@ -8,7 +8,7 @@
     />
 
     <score-button
-      v-if="!!scsh.scoresheet.value?.completedAt"
+      v-if="!confirmExit && !!scsh.scoresheet.value?.completedAt"
       label="Exit"
       @click="immediateExit()"
     />

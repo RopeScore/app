@@ -43,8 +43,12 @@ import { useBattery, watchWithFilter, debounceFilter, pausableFilter, useInterva
 import { useUpdateBatteryMutation } from '../graphql/generated'
 import { useAuth } from '../hooks/auth'
 
-defineProps({
+const props = defineProps({
   hidden: {
+    type: Boolean,
+    default: false
+  },
+  noPush: {
     type: Boolean,
     default: false
   }
@@ -69,6 +73,7 @@ watch(auth.user, user => {
 })
 
 watch(battery.level, () => {
+  if (props.noPush) return
   if (!auth.isLoggedIn.value || !battery.isSupported) return
   mutate({
     batteryStatus: {
@@ -82,6 +87,7 @@ watch(battery.level, () => {
 })
 
 watchWithFilter(manualLevel, level => {
+  if (props.noPush) return
   if (!auth.isLoggedIn.value || !level) return
   mutate({
     batteryStatus: {
@@ -104,6 +110,7 @@ const lowBattery = computed(() => battery.isSupported ? battery.level.value < 0.
 const needUpdate = ref(false)
 
 useIntervalFn(() => {
+  if (props.noPush) return
   if (auth.user.value?.__typename !== 'Device') return
   if (!auth.user.value.battery?.updatedAt || auth.user.value.battery?.updatedAt < Date.now() - minWait) {
     needUpdate.value = true

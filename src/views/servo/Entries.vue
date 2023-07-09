@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import ScoreButton from '../../components/ScoreButton.vue'
 import ServoEntryLink from '../../components/ServoEntryLink.vue'
+import BatteryStatus from '../../components/BatteryStatus.vue'
 import { useFetch } from '@vueuse/core'
 import { useServoAuth } from '../../hooks/servo-auth'
 import { computed } from 'vue'
@@ -87,11 +88,7 @@ const completedEntries = computed(() =>
       {{ assignment.assignmentCode }}
     </div>
     <div v-else />
-    <score-button
-      label="Refresh"
-      single-row
-      @click="refetch()"
-    />
+    <battery-status no-push />
   </nav>
 
   <div class="m-2 mt-0">
@@ -107,6 +104,14 @@ const completedEntries = computed(() =>
   </div>
 
   <div v-if="data" class="flex flex-col gap-4 px-2 mt-2">
+    <score-button
+      label="Refresh"
+      single-row
+      class="mx-0 py-4"
+      color="orange"
+      @click="refetch()"
+    />
+
     <servo-entry-link
       v-for="entry in remainingEntries"
       :key="entry.CompEventEntryID"

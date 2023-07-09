@@ -12,6 +12,7 @@ import router from '../router'
 import { isObject, useBattery } from '@vueuse/core'
 import { version } from '../helpers'
 import models from '../models'
+import useNotifications from './notifications'
 
 export interface GenericMark<Schema extends string> {
   readonly timestamp: number
@@ -153,67 +154,78 @@ const scoresheet = ref<Scoresheet<string>>()
 const system = ref<'local' | 'rs' | 'servo'>()
 const tally = ref<ScoreTally<string>>(reactive({}))
 const ready = idbReady()
+const { push: pushNotification } = useNotifications()
 
 function processMark <Schema extends string> (mark: MarkPayload<Schema>, marks: Array<Mark<Schema>>) {
-  if (isUndoMark(mark)) {
-    const undoneMark = marks[mark.target]
-    if (!undoneMark) throw new Error('Undone mark missing')
-    if (!isUndoMark(undoneMark) && !isClearMark(undoneMark)) {
-      tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
+  try {
+    if (isUndoMark(mark)) {
+      const undoneMark = marks[mark.target]
+      if (!undoneMark) throw new Error('Undone mark missing')
+      if (!isUndoMark(undoneMark) && !isClearMark(undoneMark)) {
+        tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
+      }
+    } else if (isClearMark(mark)) {
+      tally.value = reactive({})
+    } else {
+      tally.value[(mark as GenericMark<Schema>).schema] = (tally.value[(mark as GenericMark<Schema>).schema] ?? 0) + ((mark as GenericMark<Schema>).value ?? 1)
     }
-  } else if (isClearMark(mark)) {
-    tally.value = reactive({})
-  } else {
-    tally.value[(mark as GenericMark<Schema>).schema] = (tally.value[(mark as GenericMark<Schema>).schema] ?? 0) + ((mark as GenericMark<Schema>).value ?? 1)
+  } catch (err) {
+    if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+    throw err
   }
 }
 
 function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
-  const scsh = scoresheet.value
-  if (!scsh) throw new Error('Scoresheet is not open')
-  if (scsh.completedAt) throw Error('Can\'t change completed scoresheet')
+  try {
+    const scsh = scoresheet.value
+    if (!scsh) throw new Error('Scoresheet is not open')
+    if (scsh.completedAt) throw new Error('Can\'t change completed scoresheet')
 
-  if (scsh.options?.live === true || scsh.options?.deviceStream === true) {
-    provideApolloClient(apolloClient)
-  }
+    if (scsh.options?.live === true || scsh.options?.deviceStream === true) {
+      provideApolloClient(apolloClient)
+    }
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  scsh.marks.push({
-    timestamp: Date.now(),
-    sequence: scsh.marks.length,
-    ...mark
-  } as Mark<Schema>)
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    scsh.marks.push({
+      timestamp: Date.now(),
+      sequence: scsh.marks.length,
+      ...mark
+    } as Mark<Schema>)
 
-  processMark(mark, scsh.marks)
+    processMark(mark, scsh.marks)
 
-  if (scsh.options?.live === true) {
-    const mutation = useAddStreamMarkMutation({})
-    mutation.mutate({
-      scoresheetId: scsh.id,
-      mark: {
-        timestamp: Date.now(),
-        sequence: scsh.marks.length - 1,
-        ...mark
-      },
-      tally: tally.value
-    })
-  }
+    if (scsh.options?.live === true) {
+      const mutation = useAddStreamMarkMutation({})
+      mutation.mutate({
+        scoresheetId: scsh.id,
+        mark: {
+          timestamp: Date.now(),
+          sequence: scsh.marks.length - 1,
+          ...mark
+        },
+        tally: tally.value
+      })
+    }
 
-  if (scsh.options?.deviceStream === true) {
-    const mutation = useAddDeviceStreamMarkMutation({})
-    mutation.mutate({
-      mark: {
-        timestamp: Date.now(),
-        sequence: scsh.marks.length - 1,
-        ...mark
-      },
-      info: {
-        competitionEventId: scsh.competitionEventId,
-        rulesId: scsh.rulesId,
-        judgeType: scsh.judgeType
-      },
-      tally: tally.value
-    })
+    if (scsh.options?.deviceStream === true) {
+      const mutation = useAddDeviceStreamMarkMutation({})
+      mutation.mutate({
+        mark: {
+          timestamp: Date.now(),
+          sequence: scsh.marks.length - 1,
+          ...mark
+        },
+        info: {
+          competitionEventId: scsh.competitionEventId,
+          rulesId: scsh.rulesId,
+          judgeType: scsh.judgeType
+        },
+        tally: tally.value
+      })
+    }
+  } catch (err) {
+    if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+    throw err
   }
 }
 
@@ -253,10 +265,12 @@ export function convertMarksToServoIntermediate <Schema extends string> (_marks:
 
 const complete = () => {
   if (!scoresheet.value) {
-    console.error(new Error('Scoresheet is not open'))
+    const err = new Error('Scoresheet is not open')
+    console.error(err)
+    pushNotification({ message: err.message, color: 'red' })
     return
   }
-  if (scoresheet.value.completedAt) {
+  if (scoresheet.value.completedAt != null) {
     console.warn('Scoresheet already completed, not marking completed')
     return
   }
@@ -264,33 +278,46 @@ const complete = () => {
 }
 
 const openLocal = async (id: string) => {
-  await ready
-  let loaded = await idbKeyval.get(id)
-  if (!loaded) throw new Error('Local scoresheet not found')
-  loaded = reactive(loaded)
+  try {
+    await ready
+    let loaded = await idbKeyval.get(id)
+    if (!loaded) throw new Error('Local scoresheet not found')
+    loaded = reactive(loaded)
 
-  scoresheet.value = loaded
-  system.value = 'local'
+    scoresheet.value = loaded
+    system.value = 'local'
 
-  addMark({ schema: 'clear' })
+    addMark({ schema: 'clear' })
+  } catch (err) {
+    if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+    throw err
+  }
 }
 
 const closeLocal = async () => {
-  if (!scoresheet.value) {
-    console.error(new Error('Scoresheet is not open'))
-    return
+  try {
+    if (!scoresheet.value) {
+      const err = new Error('Scoresheet is not open')
+      console.error(err)
+      pushNotification({ message: err.message, color: 'orange' })
+      return
+    }
+
+    if (scoresheet.value.submittedAt) {
+      console.warn('Scoresheet already completed, no need to save')
+      return
+    }
+    if (scoresheet.value.completedAt) scoresheet.value.submittedAt = Date.now()
+    await ready
+    await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
+  } catch (err) {
+    if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+    throw err
   }
-  if (scoresheet.value.submittedAt) {
-    console.warn('Scoresheet already completed, no need to save')
-    return
-  }
-  if (scoresheet.value.completedAt) scoresheet.value.submittedAt = Date.now()
-  await ready
-  await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
 }
 
 const openRs = async (groupId: string, entryId: string, scoresheetId: string) => {
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     provideApolloClient(apolloClient)
     const enabled = ref(true)
     const { onResult } = useGroupScoresheetQuery({
@@ -329,11 +356,14 @@ const openRs = async (groupId: string, entryId: string, scoresheetId: string) =>
 }
 
 const closeRs = async () => {
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     provideApolloClient(apolloClient)
     if (!scoresheet.value) {
-      console.error(new Error('Scoresheet is not open'))
-      resolve(undefined); return
+      const err = new Error('Scoresheet is not open')
+      console.error(err)
+      pushNotification({ message: err.message, color: 'orange' })
+      resolve(undefined)
+      return
     }
     if (scoresheet.value.submittedAt) {
       console.warn('Scoresheet already completed, no need to save')
@@ -350,111 +380,125 @@ const closeRs = async () => {
 }
 
 const openServo = async (competitionId: number, entryId: number, judgeSequence: number, scoresheetId: string) => {
-  const { baseUrl, token } = useServoAuth()
-  if (baseUrl.value == null || token.value == null) {
-    console.error(new Error('Not logged int'))
-    router.push({ path: '/servo/connect' })
-    return
-  }
-
-  let loaded = await idbKeyval.get(`servo::${competitionId}::${entryId}::${judgeSequence}::${scoresheetId}`)
-  if (!loaded) throw new Error('Servo scoresheet not found')
-  loaded = reactive(loaded)
-
-  scoresheet.value = loaded as ServoIntermediateScoresheet<string>
-  system.value = 'servo'
-  scoresheet.value.openedAt = Date.now()
-
-  if (!scoresheet.value.completedAt) addMark({ schema: 'clear' })
-
-  const url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}/scoresheet-opened`, baseUrl.value)
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      authorization: `Bearer ${token.value}`
+  try {
+    const { baseUrl, token } = useServoAuth()
+    if (baseUrl.value == null || token.value == null) {
+      const err = new Error('Not logged in')
+      console.error(err)
+      pushNotification({ message: err.message, color: 'red' })
+      router.push({ path: '/servo/connect' })
+      return
     }
-  })
-  if (!response.ok) {
-    const body = await response.text()
-    console.error(new Error(`Request to ${url.href} failed with status code ${response.status} and body ${body}`))
+
+    let loaded = await idbKeyval.get(`servo::${competitionId}::${entryId}::${judgeSequence}::${scoresheetId}`)
+    if (!loaded) throw new Error('Servo scoresheet not found')
+    loaded = reactive(loaded)
+
+    scoresheet.value = loaded as ServoIntermediateScoresheet<string>
+    system.value = 'servo'
+    scoresheet.value.openedAt = Date.now()
+
+    if (!scoresheet.value.completedAt) addMark({ schema: 'clear' })
+
+    const url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}/scoresheet-opened`, baseUrl.value)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        authorization: `Bearer ${token.value}`
+      }
+    })
+    if (!response.ok) {
+      const body = await response.text()
+      console.error(new Error(`Request to ${url.href} failed with status code ${response.status} and body ${body}`))
+      pushNotification({ message: body, color: 'orange' })
+    }
+  } catch (err) {
+    if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+    throw err
   }
 }
 
 const closeServo = async () => {
-  const { baseUrl, token, deviceId } = useServoAuth()
-  if (baseUrl.value == null || token.value == null) {
-    console.error(new Error('Not logged int'))
-    router.push({ path: '/servo/connect' })
-    return
-  }
+  try {
+    const { baseUrl, token, deviceId } = useServoAuth()
+    if (baseUrl.value == null || token.value == null) {
+      const err = new Error('Not logged in')
+      console.error(err)
+      pushNotification({ message: err.message, color: 'red' })
+      router.push({ path: '/servo/connect' })
+      return
+    }
 
-  if (!scoresheet.value) {
-    console.error(new Error('Scoresheet is not open'))
-    return
-  }
-  if (!isServoIntermediateScoresheet(scoresheet.value)) {
-    console.error(new Error('Trying to save something that isn\'t a servo scoresheet'))
-    return
-  }
-  const rulesId = scoresheet.value.rulesId
-  const judgeType = scoresheet.value.judgeType
-  const model = models.find(model => model.rulesId.includes(rulesId) && model.judgeType === judgeType)
-  if (!model) {
-    console.error(new Error('Could not find model for scoresheet'))
-    return
-  }
-  if (model.converters?.servo == null) {
-    console.error(new Error('Model does not have a converter for servo scoring'))
-    return
-  }
-  const [,competitionId, entryId, judgeSequence] = scoresheet.value.id.split('::')
+    if (!scoresheet.value) {
+      const err = new Error('Scoresheet is not open')
+      console.error(err)
+      pushNotification({ message: err.message, color: 'orange' })
+      return
+    }
+    if (!isServoIntermediateScoresheet(scoresheet.value)) {
+      throw new Error('Trying to save something that isn\'t a servo scoresheet')
+    }
+    const rulesId = scoresheet.value.rulesId
+    const judgeType = scoresheet.value.judgeType
+    const model = models.find(model => model.rulesId.includes(rulesId) && model.judgeType === judgeType)
+    if (!model) {
+      throw new Error('Could not find model for scoresheet')
+    }
+    if (model.converters?.servo == null) {
+      throw new Error('Model does not have a converter for servo scoring')
+    }
+    const [,competitionId, entryId, judgeSequence] = scoresheet.value.id.split('::')
 
-  // Store the local copy
-  await ready
-  await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
+    // Store the local copy
+    await ready
+    await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
 
-  const battery = useBattery()
+    const battery = useBattery()
 
-  let url: URL, method: string
-  if (scoresheet.value.rejump) {
-    url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}`, baseUrl.value)
-    method = 'PUT'
-  } else {
-    url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores`, baseUrl.value)
-    method = 'POST'
-  }
+    let url: URL, method: string
+    if (scoresheet.value.rejump) {
+      url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}`, baseUrl.value)
+      method = 'PUT'
+    } else {
+      url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores`, baseUrl.value)
+      method = 'POST'
+    }
 
-  const scores = model.converters.servo(scoresheet.value)
+    const scores = model.converters.servo(scoresheet.value)
 
-  // store the remote copy
-  const response = await fetch(url, {
-    method,
-    headers: {
-      accept: 'application/json',
-      'content-type': 'application/json',
-      authorization: `Bearer ${token.value}`
-    },
-    body: JSON.stringify({
-      ScoreSequence: parseInt(judgeSequence, 10),
-      IsScored: false,
-      JudgeScoreData: {
-        Version: version,
-        DeviceID: deviceId.value,
-        RoutineStartTime: scoresheet.value.openedAt ?? scoresheet.value.createdAt,
-        BatteryLevel: battery.isSupported ? Math.round(battery.level.value * 100) : undefined,
-        ...scores
-      }
+    // store the remote copy
+    const response = await fetch(url, {
+      method,
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        authorization: `Bearer ${token.value}`
+      },
+      body: JSON.stringify({
+        ScoreSequence: parseInt(judgeSequence, 10),
+        IsScored: false,
+        JudgeScoreData: {
+          Version: version,
+          DeviceID: deviceId.value,
+          RoutineStartTime: scoresheet.value.openedAt ?? scoresheet.value.createdAt,
+          BatteryLevel: battery.isSupported ? Math.round(battery.level.value * 100) : undefined,
+          ...scores
+        }
+      })
     })
-  })
 
-  if (!response.ok) {
-    const body = await response.text()
-    throw new Error(`Request to ${method} ${url.href} failed with status code ${response.status} and body ${body}`)
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`Request to ${method} ${url.href} failed with status code ${response.status} and body ${body}`)
+    }
+
+    scoresheet.value.submittedAt = Date.now()
+    await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
+  } catch (err) {
+    if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+    throw err
   }
-
-  scoresheet.value.submittedAt = Date.now()
-  await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
 }
 
 export function useScoresheet <Schema extends string> (): UseScoresheetReturn<Schema> {
@@ -465,54 +509,64 @@ export function useScoresheet <Schema extends string> (): UseScoresheetReturn<Sc
     addMark,
     complete,
     async open (system, ...vendor) {
-      console.log('open called with system', system, 'and vendor parameters', vendor)
-      switch (system) {
-        case 'local':
-          await openLocal(vendor[0])
-          break
-        case 'rs':
-          await openRs(vendor[0], vendor[1], vendor[2])
-          break
-        case 'servo':
-          await openServo(parseInt(vendor[0], 10), parseInt(vendor[1], 10), parseInt(vendor[2], 10), vendor[3])
-          break
-        default:
-          throw new TypeError('Unknown system specified, cannot open scoresheet')
-      }
-
-      tally.value = reactive({})
-
-      const marks = scoresheet.value?.marks ?? []
-
-      for (const mark of marks) processMark(mark, marks)
-    },
-    async close (save: boolean = true) {
-      if (!scoresheet.value) return
-      if (save) {
-        switch (system.value) {
+      try {
+        console.log('open called with system', system, 'and vendor parameters', vendor)
+        switch (system) {
           case 'local':
-            await closeLocal()
+            await openLocal(vendor[0])
             break
           case 'rs':
-            await closeRs()
+            await openRs(vendor[0], vendor[1], vendor[2])
             break
           case 'servo':
-            await closeServo()
+            await openServo(parseInt(vendor[0], 10), parseInt(vendor[1], 10), parseInt(vendor[2], 10), vendor[3])
             break
           default:
             throw new TypeError('Unknown system specified, cannot open scoresheet')
         }
-      } else if (!scoresheet.value.completedAt) {
-        switch (system.value) {
-          case 'local':
-          case 'rs':
-            addMark({ schema: 'clear' })
-            break
-        }
+
+        tally.value = reactive({})
+
+        const marks = scoresheet.value?.marks ?? []
+
+        for (const mark of marks) processMark(mark, marks)
+      } catch (err) {
+        if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+        throw err
       }
-      scoresheet.value = undefined
-      system.value = undefined
-      tally.value = reactive({})
+    },
+    async close (save: boolean = true) {
+      try {
+        if (!scoresheet.value) return
+        if (save) {
+          switch (system.value) {
+            case 'local':
+              await closeLocal()
+              break
+            case 'rs':
+              await closeRs()
+              break
+            case 'servo':
+              await closeServo()
+              break
+            default:
+              throw new TypeError('Unknown system specified, cannot open scoresheet')
+          }
+        } else if (!scoresheet.value.completedAt) {
+          switch (system.value) {
+            case 'local':
+            case 'rs':
+              addMark({ schema: 'clear' })
+              break
+          }
+        }
+        scoresheet.value = undefined
+        system.value = undefined
+        tally.value = reactive({})
+      } catch (err) {
+        if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+        throw err
+      }
     }
   }
 }
@@ -541,37 +595,42 @@ export interface CreateServoScoresheetArgs {
   options?: Record<string, any> | null
 }
 export async function createServoScoresheet ({ competitionId, entryId, judgeSequence, scoringModel, competitionEventId, options }: CreateServoScoresheetArgs) {
-  const eventType = competitionEventId.split('.')[2]
-  let judgeType: string
-  if (eventType === 'fs') {
-    if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'Pa'
-    else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'Pr'
-    else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'R'
-    else if (judgeSequence >= 31 && judgeSequence <= 39) judgeType = 'D'
-    else throw new TypeError(`Invalid judge sequence ${judgeSequence} for competition event ${competitionEventId}`)
-  } else if (eventType === 'sp') {
-    if (judgeSequence === 1) judgeType = 'Shj'
-    else judgeType = 'S'
-  } else {
-    throw new TypeError(`competition event ${competitionEventId} not supported`)
+  try {
+    const eventType = competitionEventId.split('.')[2]
+    let judgeType: string
+    if (eventType === 'fs') {
+      if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'Pa'
+      else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'Pr'
+      else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'R'
+      else if (judgeSequence >= 31 && judgeSequence <= 39) judgeType = 'D'
+      else throw new TypeError(`Invalid judge sequence ${judgeSequence} for competition event ${competitionEventId}`)
+    } else if (eventType === 'sp') {
+      if (judgeSequence === 1) judgeType = 'Shj'
+      else judgeType = 'S'
+    } else {
+      throw new TypeError(`competition event ${competitionEventId} not supported`)
+    }
+
+    const prevScoresheets = await getServoScoresheetsForEntry({ competitionId, entryId, judgeSequence })
+    const rejump = prevScoresheets.length > 0 && prevScoresheets.some(scsh => scsh.submittedAt != null)
+
+    const newScoresheet: ServoIntermediateScoresheet<string> = {
+      id: `servo::${competitionId}::${entryId}::${judgeSequence}::${uuid()}`,
+      marks: [],
+      rulesId: scoringModel,
+      judgeType,
+      competitionEventId,
+      rejump,
+      options,
+      createdAt: Date.now()
+    }
+
+    await idbKeyval.set(newScoresheet.id, newScoresheet)
+    return newScoresheet.id
+  } catch (err) {
+    if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+    throw err
   }
-
-  const prevScoresheets = await getServoScoresheetsForEntry({ competitionId, entryId, judgeSequence })
-  const rejump = prevScoresheets.length > 0 && prevScoresheets.some(scsh => scsh.submittedAt != null)
-
-  const newScoresheet: ServoIntermediateScoresheet<string> = {
-    id: `servo::${competitionId}::${entryId}::${judgeSequence}::${uuid()}`,
-    marks: [],
-    rulesId: scoringModel,
-    judgeType,
-    competitionEventId,
-    rejump,
-    options,
-    createdAt: Date.now()
-  }
-
-  await idbKeyval.set(newScoresheet.id, newScoresheet)
-  return newScoresheet.id
 }
 
 export interface GetServoScoresheetsForEntry {
