@@ -5,8 +5,7 @@ import ScoreButton from '../../components/ScoreButton.vue'
 import { useServoAuth } from '../../hooks/servo-auth'
 import { useRouter } from 'vue-router'
 
-// const accessCode = ref<string>('https://scoring.ijru.sport/a/')
-const accessCode = ref<string>('https://eb0b-70-34-195-250.ngrok-free.app/a/306-1')
+const accessCode = ref<string>('https://scoring.ijru.sport/a/')
 
 const router = useRouter()
 const { assignment, prompt, loading, error, initialize, logOut } = useServoAuth()
