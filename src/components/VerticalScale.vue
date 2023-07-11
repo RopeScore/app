@@ -5,7 +5,7 @@
     </legend>
 
     <label
-      v-for="n in 11"
+      v-for="n, idx in range"
       :key="n"
       class="
         grid grid-cols-[1fr,2rem] w-full p-1
@@ -15,8 +15,8 @@
         text-white
       "
       :class="{
-        'bg-green-600': n - 1 === selected,
-        'bg-green-500': n - 1 !== selected,
+        'bg-green-600': n === selected,
+        'bg-green-500': n !== selected,
 
         'filter': disabled,
         'saturate-50': disabled,
@@ -24,24 +24,28 @@
 
         'hover:bg-green-600': !disabled,
 
-        'rounded-t': n - 1 === 0,
-        'border-t-0': n - 1 !== 0
+        'rounded-t': n === 0,
+        'border-t-0': n !== 0,
+
+        'rounded-b': n === props.max && noHalfPoint,
+        'border-b-0': n !== props.max && noHalfPoint
       }"
     >
       <input
         v-model.number="selected"
         type="radio"
         :name="id"
-        :value="n - 1"
+        :value="n"
         :disabled="disabled"
         class="hidden"
         @change="handleClick()"
       >
-      <span>{{ hints[n - 1] ?? '' }}</span>
-      <span class="flex items-center justify-center">{{ n - 1 }}</span>
+      <span>{{ hints[idx] ?? '' }}</span>
+      <span class="flex items-center justify-center">{{ n }}</span>
     </label>
 
     <label
+      v-if="!noHalfPoint"
       class="
         grid grid-cols-[1fr,2rem] w-full p-1
         select-none touch-manipulation tap-transparent cursor-pointer
@@ -60,7 +64,7 @@
         'hover:bg-indigo-600': !disabled
       }"
     >
-      <span>Lägg till 0,5 poäng</span>
+      <span>Add 0.5 points</span>
       <span class="flex items-center justify-center">
         <input
           v-model="addHalf"
@@ -74,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { v4 as uuid } from 'uuid'
 
 import type { PropType } from 'vue'
@@ -92,11 +96,20 @@ const props = defineProps({
     type: Number,
     default: 75
   },
+  min: {
+    type: Number,
+    default: 0
+  },
+  max: {
+    type: Number,
+    default: 10
+  },
   hints: {
     type: Array as PropType<Array<string | undefined>>,
     default: () => []
   },
-  disabled: Boolean
+  disabled: Boolean,
+  noHalfPoint: Boolean
 })
 
 const emit = defineEmits(['update:value'])
@@ -105,6 +118,8 @@ const id = uuid().replace(/^\d+/, '')
 
 const addHalf = ref(false)
 const selected = ref<number>()
+
+const range = computed(() => new Array(props.max - props.min + 1).fill(props.min).map((v: number, idx) => v + idx))
 
 function propChange () {
   if (typeof props.value === 'number') {
@@ -130,7 +145,7 @@ function handleClick () {
     navigator.vibrate?.(props.vibration)
     return
   }
-  if (addHalf.value && number !== 10) number += 0.5
+  if (addHalf.value && number !== props.max) number += 0.5
   emit('update:value', number)
   navigator.vibrate?.(props.vibration)
 }

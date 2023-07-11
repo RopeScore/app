@@ -596,19 +596,41 @@ export interface CreateServoScoresheetArgs {
 }
 export async function createServoScoresheet ({ competitionId, entryId, judgeSequence, scoringModel, competitionEventId, options }: CreateServoScoresheetArgs) {
   try {
-    const eventType = competitionEventId.split('.')[2]
     let judgeType: string
-    if (eventType === 'fs') {
+    if (scoringModel.startsWith('ijru.freestyle.')) {
       if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'Pa'
       else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'Pr'
       else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'R'
       else if (judgeSequence >= 31 && judgeSequence <= 39) judgeType = 'D'
-      else throw new TypeError(`Invalid judge sequence ${judgeSequence} for competition event ${competitionEventId}`)
-    } else if (eventType === 'sp') {
+      else throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
+    } else if (scoringModel.startsWith('ijru.speed.')) {
       if (judgeSequence === 1) judgeType = 'Shj'
       else judgeType = 'S'
+    } else if (scoringModel.startsWith('ijru.ddc.')) {
+      switch (judgeSequence) {
+        case 1:
+        case 2:
+          judgeType = 'J'
+          break
+        case 3:
+        case 4:
+          judgeType = 'T'
+          break
+        case 5:
+        case 6:
+        case 7:
+          judgeType = 'E'
+          break
+        case 8:
+        case 9:
+        case 10:
+          judgeType = 'S'
+          break
+        default:
+          throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
+      }
     } else {
-      throw new TypeError(`competition event ${competitionEventId} not supported`)
+      throw new TypeError(`scoring model ${scoringModel} not supported`)
     }
 
     const prevScoresheets = await getServoScoresheetsForEntry({ competitionId, entryId, judgeSequence })

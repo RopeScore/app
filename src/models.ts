@@ -24,6 +24,32 @@ export interface Model {
   }
 }
 
+function servoDdc2023Converter (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ddc@2023/Judge.vue').Schema>) {
+  const scores = {
+    Score: 0,
+    Bonus: 0,
+    Misses: 0
+  }
+  const marks = convertMarksToServoIntermediate(scoresheet.marks, scoresheet)
+  for (const mark of marks) {
+    switch (mark.schema) {
+      case 'miss': {
+        scores.Misses += mark.value ?? 1
+        break
+      }
+      case 'score': {
+        scores.Score += mark.value ?? 1
+        break
+      }
+      case 'bonus': {
+        scores.Bonus += mark.value ?? 1
+        break
+      }
+    }
+  }
+  return scores
+}
+
 const models: Model[] = [
   {
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
@@ -40,7 +66,7 @@ const models: Model[] = [
         for (const mark of marks) {
           switch (mark.schema) {
             case 'step': {
-              scores.Clicks++
+              scores.Clicks += mark.value ?? 1
               scores.ClickTimes.push(mark.timestamp)
               break
             }
@@ -71,16 +97,16 @@ const models: Model[] = [
         for (const mark of marks) {
           switch (mark.schema) {
             case 'step': {
-              scores.Clicks++
+              scores.Clicks += mark.value ?? 1
               scores.ClickTimes.push(mark.timestamp)
               break
             }
             case 'falseStart': {
-              scores.FalseStarts++
+              scores.FalseStarts += mark.value ?? 1
               break
             }
             case 'falseSwitch': {
-              scores.FalseSwitches++
+              scores.FalseSwitches += mark.value ?? 1
               break
             }
           }
@@ -124,11 +150,11 @@ const models: Model[] = [
             const level = mark.schema === 'diffL0.5' ? 0.5 : parseInt(mark.schema.substring(5), 10)
             const levelName = mark.schema.substring(5).replaceAll('.', '') as unknown as '05' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8'
 
-            scores[`Level${levelName}`]++
+            scores[`Level${levelName}`] += mark.value ?? 1
             scores.SkillLevels.push(level)
             scores.SkillTimes.push(mark.timestamp)
           } else if (mark.schema === 'rep') {
-            scores.NumRepeated++
+            scores.NumRepeated += mark.value ?? 1
             scores.SkillTimes.push(mark.timestamp)
           }
         }
@@ -163,25 +189,25 @@ const models: Model[] = [
         for (const mark of marks) {
           switch (mark.schema) {
             case 'formExecutionMinus': {
-              scores.FormMinus++
+              scores.FormMinus += mark.value ?? 1
               scores.FormScores.push(-1)
               scores.FormTimes.push(mark.timestamp)
               break
             }
             case 'formExecutionCheck': {
-              scores.FormCheck++
+              scores.FormCheck += mark.value ?? 1
               scores.FormScores.push(0)
               scores.FormTimes.push(mark.timestamp)
               break
             }
             case 'formExecutionPlus': {
-              scores.FormPlus++
+              scores.FormPlus += mark.value ?? 1
               scores.FormScores.push(1)
               scores.FormTimes.push(mark.timestamp)
               break
             }
             case 'miss': {
-              scores.Misses++
+              scores.Misses += mark.value ?? 1
               scores.MissTimes.push(mark.timestamp)
             }
           }
@@ -220,37 +246,37 @@ const models: Model[] = [
         for (const mark of marks) {
           switch (mark.schema) {
             case 'entertainmentMinus': {
-              scores.EntMinus++
+              scores.EntMinus += mark.value ?? 1
               scores.EntScores.push(-1)
               scores.EntTimes.push(mark.timestamp)
               break
             }
             case 'entertainmentCheck': {
-              scores.EntCheck++
+              scores.EntCheck += mark.value ?? 1
               scores.EntScores.push(0)
               scores.EntTimes.push(mark.timestamp)
               break
             }
             case 'entertainmentPlus': {
-              scores.EntPlus++
+              scores.EntPlus += mark.value ?? 1
               scores.EntScores.push(1)
               scores.EntTimes.push(mark.timestamp)
               break
             }
             case 'musicalityMinus': {
-              scores.MusicMinus++
+              scores.MusicMinus += mark.value ?? 1
               scores.MusicScores.push(-1)
               scores.MusicTimes.push(mark.timestamp)
               break
             }
             case 'musicalityCheck': {
-              scores.MusicCheck++
+              scores.MusicCheck += mark.value ?? 1
               scores.MusicScores.push(0)
               scores.MusicTimes.push(mark.timestamp)
               break
             }
             case 'musicalityPlus': {
-              scores.MusicPlus++
+              scores.MusicPlus += mark.value ?? 1
               scores.MusicScores.push(1)
               scores.MusicTimes.push(mark.timestamp)
               break
@@ -311,43 +337,43 @@ const models: Model[] = [
         for (const mark of marks) {
           switch (mark.schema) {
             case 'miss': {
-              scores.Misses++
+              scores.Misses += mark.value ?? 1
               scores.MissTimes.push(mark.timestamp)
               break
             }
             case 'timeViolation': {
-              scores.TimeV++
+              scores.TimeV += mark.value ?? 1
               scores.TimeVTimes.push(mark.timestamp)
               break
             }
             case 'spaceViolation': {
-              scores.SpaceV++
+              scores.SpaceV += mark.value ?? 1
               scores.SpaceVTimes.push(mark.timestamp)
               break
             }
 
             case 'rqGymnasticsPower': {
-              scores.GymPower++
+              scores.GymPower += mark.value ?? 1
               scores.GymPowerTimes.push(mark.timestamp)
               break
             }
             case 'rqInteractions': {
-              scores.Interactions++
+              scores.Interactions += mark.value ?? 1
               scores.InteractionTimes.push(mark.timestamp)
               break
             }
             case 'rqMultiples': {
-              scores.Multiples++
+              scores.Multiples += mark.value ?? 1
               scores.MultiplesTimes.push(mark.timestamp)
               break
             }
             case 'rqWrapsReleases': {
-              scores.WrapsReleases++
+              scores.WrapsReleases += mark.value ?? 1
               scores.WrapsReleasesTimes.push(mark.timestamp)
               break
             }
             case 'rqTurnerInvolvement': {
-              scores.TurnerInv++
+              scores.TurnerInv += mark.value ?? 1
               scores.TurnerInvolvementTimes.push(mark.timestamp)
               break
             }
@@ -414,6 +440,43 @@ const models: Model[] = [
     localOptions: [
       { prop: 'scale5', name: '5-grade scale', type: 'boolean' }
     ]
+  },
+
+  {
+    rulesId: ['ijru.ddc.2023'],
+    judgeType: 'J',
+    name: 'Jumper',
+    component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
+    converters: {
+      servo: servoDdc2023Converter
+    }
+  },
+  {
+    rulesId: ['ijru.ddc.2023'],
+    judgeType: 'T',
+    name: 'Turner',
+    component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
+    converters: {
+      servo: servoDdc2023Converter
+    }
+  },
+  {
+    rulesId: ['ijru.ddc.2023'],
+    judgeType: 'E',
+    name: 'Expression',
+    component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
+    converters: {
+      servo: servoDdc2023Converter
+    }
+  },
+  {
+    rulesId: ['ijru.ddc.2023'],
+    judgeType: 'S',
+    name: 'Styling',
+    component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
+    converters: {
+      servo: servoDdc2023Converter
+    }
   }
 ]
 

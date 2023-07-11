@@ -8,10 +8,12 @@
     />
 
     <div v-for="field of fields" :key="field[0]" class="mx-2">
-      <three-scale
+      <horizontal-scale
         :label="field[1]"
         :hints="field[2]"
         :value="tally(field[0])"
+        :min="1"
+        :max="3"
         :disabled="!!scoresheet?.completedAt"
         @update:value="handleUpdate(field[0], $event)"
       />
@@ -24,7 +26,7 @@ import { computed } from 'vue'
 import { useScoresheet, isUndoMark } from '../../../hooks/scoresheet'
 
 import ScoreButton from '../../../components/ScoreButton.vue'
-import ThreeScale from '../../../components/ThreeScale.vue'
+import HorizontalScale from '../../../components/HorizontalScale.vue'
 
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'

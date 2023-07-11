@@ -10,10 +10,12 @@
 
     <section class="mx-2">
       <div v-for="field of fields" :key="field[0]">
-        <ten-scale
+        <vertical-scale
           :label="field[1]"
           :hints="field[2]"
           :value="tally(field[0])"
+          :min="0"
+          :max="10"
           :disabled="!!scoresheet?.completedAt"
           @update:value="handleUpdate(field[0], $event)"
         />
@@ -27,7 +29,7 @@ import { computed } from 'vue'
 import { useScoresheet, isUndoMark } from '../../../hooks/scoresheet'
 
 import ScoreButton from '../../../components/ScoreButton.vue'
-import TenScale from '../../../components/TenScale.vue'
+import VerticalScale from '../../../components/VerticalScale.vue'
 
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'

@@ -5,9 +5,9 @@
       <span v-if="filled" class="font-bold text-red-500">MISSING</span>
     </legend>
 
-    <div class="grid grid-cols-3 grid-rows-[4rem,max-content]">
+    <div class="grid grid-cols-scale grid-rows-[4rem,max-content]">
       <label
-        v-for="n in 3"
+        v-for="n, idx in range"
         :key="n"
         class="
           flex justify-center w-full h-full p-1
@@ -26,11 +26,11 @@
 
           'hover:bg-green-600': !disabled,
 
-          'rounded-l': n === 1,
-          'border-l-0': n !== 1,
+          'rounded-l': n === min,
+          'border-l-0': n !== min,
 
-          'rounded-r': n === 3,
-          'border-r-0': n !== 3
+          'rounded-r': n === max,
+          'border-r-0': n !== max
         }"
       >
         <input
@@ -45,21 +45,21 @@
         <span class="flex items-center justify-center">{{ n }}</span>
       </label>
       <div
-        v-for="n in 3"
+        v-for="n, idx in range"
         :key="`hint-${n}`"
         class="
           flex justify-center w-full
           select-none tap-transparent
         "
       >
-        {{ hints[n - 1] ?? '' }}
+        {{ hints[idx] ?? '' }}
       </div>
     </div>
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, toRef } from 'vue'
 import { v4 as uuid } from 'uuid'
 
 import type { PropType } from 'vue'
@@ -77,6 +77,14 @@ const props = defineProps({
     type: Number,
     default: 75
   },
+  min: {
+    type: Number,
+    default: 1
+  },
+  max: {
+    type: Number,
+    default: 3
+  },
   hints: {
     type: Array as PropType<Array<string | undefined>>,
     default: () => []
@@ -85,6 +93,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:value'])
+
+const range = computed(() => new Array(props.max - props.min + 1).fill(props.min).map((v: number, idx) => v + idx))
+const cols = computed(() => range.value.length)
 
 const id = uuid().replace(/^\d+/, '')
 
@@ -116,3 +127,9 @@ function handleClick () {
   navigator.vibrate?.(props.vibration)
 }
 </script>
+
+<style scoped>
+.grid-cols-scale {
+  grid-template-columns: repeat(v-bind(cols), minmax(0, 1fr));
+}
+</style>
