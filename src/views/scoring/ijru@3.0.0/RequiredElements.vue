@@ -1,5 +1,70 @@
 <template>
-  <main class="grid grid-cols-3 grid-rows-score">
+  <main v-if="isShow" class="grid grid-cols-3 grid-rows-score">
+    <score-button
+      label="Score"
+      color="none"
+      :value="result"
+      single-row
+      class="col-span-3"
+    />
+
+    <score-button
+      label="Double Dutch"
+      :value="tally('rdDoubleDutch')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'rdDoubleDutch' })"
+    />
+    <score-button
+      color="none"
+      label=""
+    />
+    <score-button
+      label="Single Rope"
+      :value="tally('rdSingleRope')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'rdSingleRope' })"
+    />
+
+    <score-button
+      label="Long Ropes"
+      :value="tally('rdLongRopes')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'rdLongRopes' })"
+    />
+    <score-button
+      label="Time Violations"
+      color="red"
+      :value="tally('timeViolation')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'timeViolation' })"
+    />
+    <score-button
+      label="Traveller"
+      :value="tally('rdTraveller')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'rdTraveller' })"
+    />
+
+    <score-button
+      label="Misses"
+      color="red"
+      :value="tally('miss')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'miss' })"
+    />
+    <score-button
+      color="none"
+      label=""
+    />
+    <score-button
+      label="Wheel"
+      :value="tally('rdWheel')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'rdWheel' })"
+    />
+  </main>
+
+  <main v-else class="grid grid-cols-3 grid-rows-score">
     <score-button
       label="Score"
       color="none"
@@ -101,8 +166,8 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 
-export type Schema = 'rqMultiples' | 'rqWrapsReleases' | 'rqGymnasticsPower'
-| 'rqInteractions' | 'rqTurnerInvolvement'
+export type Schema = typeof requiredElements[number]
+| typeof requiredDisciplines[number]
 | 'miss' | 'timeViolation' | 'spaceViolation'
 
 defineProps({
@@ -124,22 +189,40 @@ const requiredElements = [
   'rqTurnerInvolvement'
 ] as const
 
+const requiredDisciplines = [
+  'rdSingleRope',
+  'rdDoubleDutch',
+  'rdWheel',
+  'rdLongRopes',
+  'rdTraveller'
+] as const
+
 const isDoubleDutch = computed(() => lookupCodeParts.value[3] === 'dd')
+const isShow = computed(() => lookupCodeParts.value[3] === 'ts')
 const hasInteractions = computed(() => parseInt(lookupCodeParts.value[5], 10) > (lookupCodeParts.value[3] === 'dd' ? 3 : 1))
 
 const result = computed(() => {
   let elements = 0
   let completed = 0
+
   if (isDoubleDutch.value) elements += 2
   else elements += 3
-
   if (hasInteractions.value) elements += 1
 
-  for (const schema of requiredElements) {
-    const done = tally(schema)
-    completed += done > 4 ? 4 : done
-  }
+  if (isShow.value) elements = requiredDisciplines.length
 
-  return 1 - (((elements * 4) - completed) * 0.025)
+  if (isShow.value) {
+    for (const schema of requiredDisciplines) {
+      const done = tally(schema)
+      completed += done > 1 ? 1 : done
+    }
+    return 1 - ((elements - completed) * 0.05)
+  } else {
+    for (const schema of requiredElements) {
+      const done = tally(schema)
+      completed += done > 4 ? 4 : done
+    }
+    return 1 - (((elements * 4) - completed) * 0.025)
+  }
 })
 </script>

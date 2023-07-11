@@ -156,7 +156,7 @@ const tally = ref<ScoreTally<string>>(reactive({}))
 const ready = idbReady()
 const { push: pushNotification } = useNotifications()
 
-function processMark <Schema extends string> (mark: MarkPayload<Schema>, marks: Array<Mark<Schema>>) {
+function processMark <Schema extends string> (tally: Ref<ScoreTally<Schema>>, mark: MarkPayload<Schema>, marks: Array<Mark<Schema>>) {
   try {
     if (isUndoMark(mark)) {
       const undoneMark = marks[mark.target]
@@ -173,6 +173,12 @@ function processMark <Schema extends string> (mark: MarkPayload<Schema>, marks: 
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
     throw err
   }
+}
+
+export function calculateTally <Schema extends string> (marks: Array<Mark<Schema>>) {
+  const tally: Ref<ScoreTally<Schema>> = ref({})
+  for (const mark of marks) processMark(tally, mark, marks)
+  return tally.value
 }
 
 function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
@@ -192,7 +198,7 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
       ...mark
     } as Mark<Schema>)
 
-    processMark(mark, scsh.marks)
+    processMark(tally, mark, scsh.marks)
 
     if (scsh.options?.live === true) {
       const mutation = useAddStreamMarkMutation({})
@@ -529,7 +535,7 @@ export function useScoresheet <Schema extends string> (): UseScoresheetReturn<Sc
 
         const marks = scoresheet.value?.marks ?? []
 
-        for (const mark of marks) processMark(mark, marks)
+        for (const mark of marks) processMark(tally, mark, marks)
       } catch (err) {
         if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
         throw err

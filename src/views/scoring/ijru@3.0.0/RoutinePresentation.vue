@@ -92,13 +92,16 @@ defineProps({
 
 const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 
+const isShow = computed(() => scoresheet.value?.competitionEventId.split('.')[3] === 'ts')
+
 const entertainmentResult = computed(() => {
   const plus = tally('entertainmentPlus')
   const check = tally('entertainmentCheck')
   const minus = tally('entertainmentMinus')
   if (plus + check + minus === 0) return 1
   const average = (3 * (plus - minus)) / (plus + check + minus)
-  const percentage = average * (0.60 / 4)
+  const F = isShow.value ? (0.50 / 4) : (0.60 / 4)
+  const percentage = average * F
   return (1 + percentage)
 })
 
@@ -108,7 +111,8 @@ const musicalityResult = computed(() => {
   const minus = tally('musicalityMinus')
   if (plus + check + minus === 0) return 1
   const average = (3 * (plus - minus)) / (plus + check + minus)
-  const percentage = average * (0.60 / 4)
+  const F = isShow.value ? (0.50 / 4) : (0.60 / 4)
+  const percentage = average * F
   return (1 + percentage)
 })
 

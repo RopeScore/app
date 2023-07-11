@@ -1,6 +1,7 @@
 <template>
   <main class="grid grid-cols-3 grid-rows-score">
     <score-button
+      v-if="!isShow"
       color="orange"
       label="Rep. Skill"
       :value="tally('rep')"
@@ -13,8 +14,10 @@
       label="Score"
       :value="result"
       single-row
+      :class="{ 'col-span-3': isShow }"
     />
     <score-button
+      v-if="!isShow"
       color="orange"
       label="Rep. Skill"
       :value="tally('rep')"
@@ -53,6 +56,8 @@ defineProps({
 })
 
 const { addMark, tally, scoresheet } = useScoresheet<Schema>()
+
+const isShow = computed(() => scoresheet.value?.competitionEventId.split('.')[3] === 'ts')
 
 function L (level: number): number {
   if (level === 0) return 0
