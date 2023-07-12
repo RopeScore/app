@@ -23,10 +23,11 @@
       />
 
       <horizontal-scale
-        label="Bonus"
+        label="Surprise Bonus"
         :value="tally('bonus')"
         :min="0"
         :max="1"
+        :hints="['No', 'Yes']"
         :disabled="!!scoresheet?.completedAt"
         @update:value="handleUpdate('bonus', $event)"
       />

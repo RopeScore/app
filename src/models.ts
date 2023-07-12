@@ -524,6 +524,7 @@ const models: Model[] = [
     rulesId: ['ijru.ddc.2023'],
     judgeType: 'J',
     name: 'Jumper',
+    allowScroll: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {
       servo: servoDdc2023Converter
@@ -533,6 +534,7 @@ const models: Model[] = [
     rulesId: ['ijru.ddc.2023'],
     judgeType: 'T',
     name: 'Turner',
+    allowScroll: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {
       servo: servoDdc2023Converter
@@ -542,6 +544,7 @@ const models: Model[] = [
     rulesId: ['ijru.ddc.2023'],
     judgeType: 'E',
     name: 'Expression',
+    allowScroll: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {
       servo: servoDdc2023Converter
@@ -551,6 +554,7 @@ const models: Model[] = [
     rulesId: ['ijru.ddc.2023'],
     judgeType: 'S',
     name: 'Styling',
+    allowScroll: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {
       servo: servoDdc2023Converter

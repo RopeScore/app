@@ -2,12 +2,12 @@
   <fieldset class="mb-4">
     <legend class="my-1 w-full flex nowrap flex-row justify-between">
       <span>{{ label }}</span>
-      <span v-if="filled" class="font-bold text-red-500">MISSING</span>
+      <span v-if="missing" class="font-bold text-red-500">MISSING</span>
     </legend>
 
     <div class="grid grid-cols-scale grid-rows-[4rem,max-content]">
       <label
-        v-for="n, idx in range"
+        v-for="n in range"
         :key="n"
         class="
           flex justify-center w-full h-full p-1
@@ -100,7 +100,7 @@ const cols = computed(() => range.value.length)
 const id = uuid().replace(/^\d+/, '')
 
 const selected = ref<number>()
-const filled = computed(() => ![1, 2, 3].includes(selected.value as number))
+const missing = computed(() => props.value == null || !range.value.includes(props.value))
 
 function propChange () {
   if (typeof props.value === 'number') {
