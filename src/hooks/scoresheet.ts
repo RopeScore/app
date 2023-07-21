@@ -266,7 +266,7 @@ export function convertMarksToServoIntermediate <Schema extends string> (_marks:
     }
   }
 
-  return marks
+  return marks as Array<Exclude<Mark<Schema>, UndoMark | ClearMark>>
 }
 
 const complete = () => {
