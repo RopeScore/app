@@ -603,7 +603,7 @@ export interface CreateServoScoresheetArgs {
 export async function createServoScoresheet ({ competitionId, entryId, judgeSequence, scoringModel, competitionEventId, options }: CreateServoScoresheetArgs) {
   try {
     let judgeType: string
-    if (scoringModel.startsWith('ijru.freestyle.')) {
+    if (scoringModel.startsWith('ijru.freestyle.') || scoringModel.startsWith('ijru.teamshow.')) {
       if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'Pa'
       else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'Pr'
       else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'R'
