@@ -3,6 +3,7 @@
     <legend class="my-1 w-full flex nowrap flex-row justify-between">
       <span>{{ label }}</span>
       <span v-if="missing" class="font-bold text-red-500">MISSING</span>
+      <span v-else class="font-bold">{{ value }}</span>
     </legend>
 
     <div class="grid grid-cols-scale grid-rows-[4rem,max-content]">

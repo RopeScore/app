@@ -3,12 +3,12 @@
     <section class="mx-2">
       <vertical-scale
         :label="scoreLabel"
-        :value="tally('score')"
+        :value="tally(scoreMark)"
         :disabled="!!scoresheet?.completedAt"
         no-half-point
         :min="0"
         :max="10"
-        @update:value="handleUpdate('score', $event)"
+        @update:value="handleUpdate(scoreMark, $event)"
       />
 
       <vertical-scale
@@ -45,7 +45,8 @@ import HorizontalScale from '../../../components/HorizontalScale.vue'
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
-export type Schema = 'score' | 'bonus' | 'miss'
+export type Schema = 'jumperScore' | 'turnerScore' | 'expressionScore'
+| 'stagingScore' | 'bonus' | 'miss'
 
 const props = defineProps({
   model: {
@@ -71,9 +72,24 @@ const scoreLabel = computed(() => {
     case 'E':
       return 'Expression Score'
     case 'S':
-      return 'Styling Score'
+      return 'Staging Score'
     default:
       return 'Score'
+  }
+})
+
+const scoreMark = computed<Schema>(() => {
+  switch (model.value.judgeType) {
+    case 'J':
+      return 'jumperScore'
+    case 'T':
+      return 'turnerScore'
+    case 'E':
+      return 'expressionScore'
+    case 'S':
+      return 'stagingScore'
+    default:
+      throw new TypeError('Invalid Judge Type')
   }
 })
 

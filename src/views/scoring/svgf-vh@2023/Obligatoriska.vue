@@ -72,7 +72,6 @@ const result = computed(() => {
 })
 
 function handleUpdate (schema: Schema) {
-  console.log(schema)
   const marks = scoresheet.value?.marks ?? []
   let prevMark
   for (let idx = marks.length - 1; idx >= 0; idx--) {

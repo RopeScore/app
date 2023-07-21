@@ -26,10 +26,27 @@ export interface Model {
 
 function servoDdc2023Converter (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ddc@2023/Judge.vue').Schema>) {
   const tally = calculateTally(scoresheet.marks)
-  const scores = {
-    Score: tally.score ?? 0,
+  const scores: Record<string, number> = {
     Bonus: tally.bonus ?? 0,
     Misses: tally.miss ?? 0
+  }
+  switch (scoresheet.judgeType) {
+    case 'J': {
+      scores.Jumper = tally.jumperScore ?? 0
+      break
+    }
+    case 'T': {
+      scores.Turner = tally.turnerScore ?? 0
+      break
+    }
+    case 'E': {
+      scores.Expression = tally.expressionScore ?? 0
+      break
+    }
+    case 'S': {
+      scores.Staging = tally.stagingScore ?? 0
+      break
+    }
   }
   return scores
 }
@@ -553,7 +570,7 @@ const models: Model[] = [
   {
     rulesId: ['ijru.ddc.2023'],
     judgeType: 'S',
-    name: 'Styling',
+    name: 'Staging',
     allowScroll: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {

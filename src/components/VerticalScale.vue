@@ -1,8 +1,9 @@
 <template>
   <fieldset class="mb-4">
-    <legend class="my-1">
+    <legend class="my-1 w-full flex nowrap flex-row justify-between">
       <span>{{ label }}</span>
       <span v-if="missing" class="font-bold text-red-500">MISSING</span>
+      <span v-else class="font-bold">{{ value }}</span>
     </legend>
 
     <label
@@ -119,13 +120,12 @@ const id = uuid().replace(/^\d+/, '')
 
 const addHalf = ref(false)
 const selected = ref<number>()
-const missing = computed(() => props.value == null || !range.value.includes(props.value))
+const missing = computed(() => selected.value == null || !range.value.includes(selected.value))
 
 const range = computed(() => new Array(props.max - props.min + 1).fill(props.min).map((v: number, idx) => v + idx))
 
 function propChange () {
   if (typeof props.value === 'number') {
-    console.log(props.value)
     const checked = Math.ceil(props.value - 0.5)
 
     if (checked !== props.value) {
