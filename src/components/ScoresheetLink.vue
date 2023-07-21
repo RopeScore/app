@@ -1,7 +1,7 @@
 <template>
   <router-link
     v-if="scoresheet"
-    class="grid grid-cols-[3rem,auto] grid-rows-4 rounded text-white p-2"
+    class="grid grid-cols-[3rem,auto] grid-rows-[max-content,max-content,max-content,max-content] rounded text-white p-2"
     :class="{
       'bg-green-500': color === 'green',
       'hover:bg-green-600': color === 'green',

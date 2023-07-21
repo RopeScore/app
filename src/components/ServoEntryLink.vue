@@ -8,7 +8,7 @@
     }"
   >
     <a
-      class="w-full relative grid grid-cols-[3rem,auto,3rem] grid-rows-4 p-2"
+      class="w-full relative grid grid-cols-[3rem,auto,3rem] grid-rows-[max-content,max-content,max-content,max-content] p-2"
       :class="{
         'hover:bg-green-600': color === 'green',
         'hover:bg-indigo-600': color === 'indigo',
