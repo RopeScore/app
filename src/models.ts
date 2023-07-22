@@ -538,7 +538,7 @@ const models: Model[] = [
   },
 
   {
-    rulesId: ['ijru.ddc.2023'],
+    rulesId: ['ijru.ddc.2023', 'ijru.ddcf.2023'],
     judgeType: 'J',
     name: 'Jumper',
     allowScroll: true,
@@ -548,7 +548,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru.ddc.2023'],
+    rulesId: ['ijru.ddc.2023', 'ijru.ddcf.2023'],
     judgeType: 'T',
     name: 'Turner',
     allowScroll: true,
@@ -558,7 +558,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru.ddc.2023'],
+    rulesId: ['ijru.ddc.2023', 'ijru.ddcf.2023'],
     judgeType: 'E',
     name: 'Expression',
     allowScroll: true,
@@ -568,7 +568,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru.ddc.2023'],
+    rulesId: ['ijru.ddc.2023', 'ijru.ddcf.2023'],
     judgeType: 'S',
     name: 'Staging',
     allowScroll: true,
