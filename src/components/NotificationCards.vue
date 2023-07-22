@@ -4,7 +4,7 @@
       v-for="notif of notes"
       :key="notif.id"
       :color="isErrorMessage(notif) ? (notif.type === 'server' ? 'red' : 'orange') : notif.color"
-      class="grid grid-cols-[auto,2rem]"
+      class="grid grid-cols-[auto,2rem] items-start"
     >
       <p>{{ notif.message }}</p>
       <text-button @click="pop(notif.id)">

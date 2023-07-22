@@ -1,14 +1,14 @@
 <template>
   <nav class="grid grid-cols-3 h-header">
     <score-button
-      v-if="!confirmExit && !scsh.scoresheet.value?.completedAt"
+      v-if="!confirmExit && !scsh.scoresheet.value?.submittedAt"
       label="Exit"
       :vibration="500"
       @click="exit()"
     />
 
     <score-button
-      v-if="!confirmExit && !!scsh.scoresheet.value?.completedAt"
+      v-if="!confirmExit && !!scsh.scoresheet.value?.submittedAt"
       label="Exit"
       @click="immediateExit()"
     />

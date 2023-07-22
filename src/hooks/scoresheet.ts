@@ -73,8 +73,6 @@ export interface ServoIntermediateScoresheet<T extends string> {
   completedAt?: number
   submittedAt?: number
 
-  rejump: boolean
-
   options?: Partial<Record<string, any>> | null
 }
 export function isServoIntermediateScoresheet (x: unknown): x is ServoIntermediateScoresheet<string> {
@@ -283,6 +281,10 @@ const complete = () => {
   scoresheet.value.completedAt = Date.now()
 }
 
+interface CloseScoresheetOptions {
+  save: boolean
+}
+
 const openLocal = async (id: string) => {
   try {
     await ready
@@ -300,7 +302,7 @@ const openLocal = async (id: string) => {
   }
 }
 
-const closeLocal = async () => {
+const closeLocal = async ({ save }: CloseScoresheetOptions) => {
   try {
     if (!scoresheet.value) {
       const err = new Error('Scoresheet is not open')
@@ -309,13 +311,11 @@ const closeLocal = async () => {
       return
     }
 
-    if (scoresheet.value.submittedAt) {
-      console.warn('Scoresheet already completed, no need to save')
-      return
+    if (save && scoresheet.value.submittedAt == null) {
+      if (scoresheet.value.completedAt) scoresheet.value.submittedAt = Date.now()
+      await ready
+      await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
     }
-    if (scoresheet.value.completedAt) scoresheet.value.submittedAt = Date.now()
-    await ready
-    await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
     throw err
@@ -361,7 +361,7 @@ const openRs = async (groupId: string, entryId: string, scoresheetId: string) =>
   })
 }
 
-const closeRs = async () => {
+const closeRs = async ({ save }: CloseScoresheetOptions) => {
   return await new Promise((resolve, reject) => {
     provideApolloClient(apolloClient)
     if (!scoresheet.value) {
@@ -371,17 +371,16 @@ const closeRs = async () => {
       resolve(undefined)
       return
     }
-    if (scoresheet.value.submittedAt) {
-      console.warn('Scoresheet already completed, no need to save')
-      resolve(undefined); return
-    }
-    const { mutate, onDone } = useSaveScoresheetMutation({})
-    mutate({ scoresheetId: scoresheet.value.id, marks: scoresheet.value.marks, completedAt: scoresheet.value.completedAt })
+    if (save && scoresheet.value.submittedAt == null) {
+      // TODO: store local copy in case submit fails and need to resubmit
+      const { mutate, onDone } = useSaveScoresheetMutation({})
+      mutate({ scoresheetId: scoresheet.value.id, marks: scoresheet.value.marks, completedAt: scoresheet.value.completedAt })
 
-    onDone(res => {
-      if (res.errors) reject(res.errors)
-      resolve(undefined)
-    })
+      onDone(res => {
+        if (res.errors) reject(res.errors)
+        resolve(undefined)
+      })
+    }
   })
 }
 
@@ -425,7 +424,7 @@ const openServo = async (competitionId: number, entryId: number, judgeSequence: 
   }
 }
 
-const closeServo = async () => {
+const closeServo = async ({ save }: CloseScoresheetOptions) => {
   try {
     const { baseUrl, token, deviceId } = useServoAuth()
     if (baseUrl.value == null || token.value == null) {
@@ -456,51 +455,72 @@ const closeServo = async () => {
     }
     const [,competitionId, entryId, judgeSequence] = scoresheet.value.id.split('::')
 
-    // Store the local copy
-    await ready
-    await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
+    if (save && scoresheet.value.submittedAt == null) {
+      // Store the local copy
+      await ready
+      await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
 
-    const battery = useBattery()
+      const battery = useBattery()
 
-    let url: URL, method: string
-    if (scoresheet.value.rejump) {
-      url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}`, baseUrl.value)
-      method = 'PUT'
-    } else {
-      url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores`, baseUrl.value)
-      method = 'POST'
+      const prevScoresheets = await getServoScoresheetsForEntry({ competitionId, entryId, judgeSequence })
+      const rejump = prevScoresheets.length > 0 && prevScoresheets.some(scsh => scsh.submittedAt != null)
+
+      let url: URL, method: string
+      if (rejump) {
+        url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}`, baseUrl.value)
+        method = 'PUT'
+      } else {
+        url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores`, baseUrl.value)
+        method = 'POST'
+      }
+
+      const scores = model.converters.servo(scoresheet.value)
+
+      // store the remote copy
+      const response = await fetch(url, {
+        method,
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          authorization: `Bearer ${token.value}`
+        },
+        body: JSON.stringify({
+          ScoreSequence: parseInt(judgeSequence, 10),
+          IsScored: false,
+          JudgeScoreData: {
+            Version: version,
+            DeviceID: deviceId.value,
+            RoutineStartTime: scoresheet.value.openedAt ?? scoresheet.value.createdAt,
+            BatteryLevel: battery.isSupported ? Math.round(battery.level.value * 100) : undefined,
+            ...scores
+          }
+        })
+      })
+
+      if (!response.ok) {
+        const body = await response.text()
+        throw new Error(`Request to ${method} ${url.href} failed with status code ${response.status} and body ${body}`)
+      }
+
+      scoresheet.value.submittedAt = Date.now()
+      await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
     }
 
-    const scores = model.converters.servo(scoresheet.value)
-
-    // store the remote copy
-    const response = await fetch(url, {
-      method,
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Bearer ${token.value}`
-      },
-      body: JSON.stringify({
-        ScoreSequence: parseInt(judgeSequence, 10),
-        IsScored: false,
-        JudgeScoreData: {
-          Version: version,
-          DeviceID: deviceId.value,
-          RoutineStartTime: scoresheet.value.openedAt ?? scoresheet.value.createdAt,
-          BatteryLevel: battery.isSupported ? Math.round(battery.level.value * 100) : undefined,
-          ...scores
+    if (scoresheet.value.submittedAt == null) {
+      const url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}/scoresheet-closed`, baseUrl.value)
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: `Bearer ${token.value}`
         }
       })
-    })
-
-    if (!response.ok) {
-      const body = await response.text()
-      throw new Error(`Request to ${method} ${url.href} failed with status code ${response.status} and body ${body}`)
+      if (!response.ok) {
+        const body = await response.text()
+        console.error(new Error(`Request to ${url.href} failed with status code ${response.status} and body ${body}`))
+        pushNotification({ message: body, color: 'orange' })
+      }
     }
-
-    scoresheet.value.submittedAt = Date.now()
-    await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
     throw err
@@ -544,28 +564,21 @@ export function useScoresheet <Schema extends string> (): UseScoresheetReturn<Sc
     async close (save: boolean = true) {
       try {
         if (!scoresheet.value) return
-        if (save) {
-          switch (system.value) {
-            case 'local':
-              await closeLocal()
-              break
-            case 'rs':
-              await closeRs()
-              break
-            case 'servo':
-              await closeServo()
-              break
-            default:
-              throw new TypeError('Unknown system specified, cannot open scoresheet')
-          }
-        } else if (!scoresheet.value.completedAt) {
-          switch (system.value) {
-            case 'local':
-            case 'rs':
-              addMark({ schema: 'clear' })
-              break
-          }
+
+        switch (system.value) {
+          case 'local':
+            await closeLocal({ save })
+            break
+          case 'rs':
+            await closeRs({ save })
+            break
+          case 'servo':
+            await closeServo({ save })
+            break
+          default:
+            throw new TypeError('Unknown system specified, cannot open scoresheet')
         }
+
         scoresheet.value = undefined
         system.value = undefined
         tally.value = reactive({})
@@ -639,16 +652,12 @@ export async function createServoScoresheet ({ competitionId, entryId, judgeSequ
       throw new TypeError(`scoring model ${scoringModel} not supported`)
     }
 
-    const prevScoresheets = await getServoScoresheetsForEntry({ competitionId, entryId, judgeSequence })
-    const rejump = prevScoresheets.length > 0 && prevScoresheets.some(scsh => scsh.submittedAt != null)
-
     const newScoresheet: ServoIntermediateScoresheet<string> = {
       id: `servo::${competitionId}::${entryId}::${judgeSequence}::${uuid()}`,
       marks: [],
       rulesId: scoringModel,
       judgeType,
       competitionEventId,
-      rejump,
       options,
       createdAt: Date.now()
     }
@@ -662,9 +671,9 @@ export async function createServoScoresheet ({ competitionId, entryId, judgeSequ
 }
 
 export interface GetServoScoresheetsForEntry {
-  competitionId: number
-  entryId: number
-  judgeSequence: number
+  competitionId: number | string
+  entryId: number | string
+  judgeSequence: number | string
 }
 export async function getServoScoresheetsForEntry ({ competitionId, entryId, judgeSequence }: GetServoScoresheetsForEntry) {
   const scoresheetIds = await idbKeyval.keys<string>()
