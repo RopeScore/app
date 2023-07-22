@@ -612,7 +612,7 @@ export async function createServoScoresheet ({ competitionId, entryId, judgeSequ
     } else if (scoringModel.startsWith('ijru.speed.')) {
       if (judgeSequence === 1) judgeType = 'Shj'
       else judgeType = 'S'
-    } else if (scoringModel.startsWith('ijru.ddc.')) {
+    } else if (scoringModel.startsWith('ijru.ddcf.') || scoringModel.startsWith('ijru.ddc.')) {
       switch (judgeSequence) {
         case 1:
         case 2:
