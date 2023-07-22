@@ -294,8 +294,6 @@ const openLocal = async (id: string) => {
 
     scoresheet.value = loaded
     system.value = 'local'
-
-    addMark({ schema: 'clear' })
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
     throw err
@@ -403,20 +401,20 @@ const openServo = async (competitionId: number, entryId: number, judgeSequence: 
     system.value = 'servo'
     scoresheet.value.openedAt = Date.now()
 
-    if (!scoresheet.value.completedAt) addMark({ schema: 'clear' })
-
-    const url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}/scoresheet-opened`, baseUrl.value)
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        authorization: `Bearer ${token.value}`
+    if (scoresheet.value.submittedAt == null) {
+      const url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}/scoresheet-opened`, baseUrl.value)
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: `Bearer ${token.value}`
+        }
+      })
+      if (!response.ok) {
+        const body = await response.text()
+        console.error(new Error(`Request to ${url.href} failed with status code ${response.status} and body ${body}`))
+        pushNotification({ message: body, color: 'orange' })
       }
-    })
-    if (!response.ok) {
-      const body = await response.text()
-      console.error(new Error(`Request to ${url.href} failed with status code ${response.status} and body ${body}`))
-      pushNotification({ message: body, color: 'orange' })
     }
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
