@@ -17,8 +17,9 @@ export interface Model {
   localAlternativeCompetitionEvents?: Array<[string, string]>
   localOptions?: Option[]
   hidden?: boolean
+  historic?: boolean
 
-  // I would kind alike this broken out somehow, but this will do for now
+  // I would kinda like this broken out somehow, but this will do for now
   converters?: {
     servo?: (scoresheet: ServoIntermediateScoresheet<any>) => Record<string, unknown>
   }
@@ -97,6 +98,7 @@ const models: Model[] = [
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'svgf-par@2.0.0'],
     judgeType: 'D',
     name: 'Difficulty',
+    historic: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Difficulty.vue'))
   },
   {
@@ -155,6 +157,7 @@ const models: Model[] = [
     rulesId: ['ijru@2.0.0', 'svgf-par@2.0.0'],
     judgeType: 'Pa',
     name: 'Athlete Presentation',
+    historic: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/AthletePresentation.vue'))
   },
   {
@@ -247,6 +250,7 @@ const models: Model[] = [
     rulesId: ['ijru@2.0.0', 'svgf-par@2.0.0'],
     judgeType: 'Pr',
     name: 'Routine Presentation',
+    historic: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/RoutinePresentation.vue'))
   },
   {
@@ -322,6 +326,7 @@ const models: Model[] = [
     rulesId: ['ijru@2.0.0', 'svgf-par@2.0.0'],
     judgeType: 'R',
     name: 'Required Elements',
+    historic: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/RequiredElements.vue')),
     localAlternativeCompetitionEvents: [
       ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75'],

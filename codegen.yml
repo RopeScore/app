@@ -1,7 +1,7 @@
 overwrite: true
 schema:
-  # - https://api.ropescore.com/graphql
-  - http://localhost:5000/graphql
+  - https://api.ropescore.com/graphql
+  # - http://localhost:5000/graphql
 config:
   scalars:
     JSONObject: "{ [prop: string]: any }"

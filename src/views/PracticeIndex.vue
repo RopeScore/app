@@ -25,12 +25,16 @@
       <p v-else class="text-white">
         -
       </p>
+      <checkbox-field
+        label="Show historic rules"
+        v-model="showHistoric"
+      />
       <template
         v-for="(model, idx) in models"
         :key="`model-${idx}`"
       >
         <model-card
-          v-if="!model.hidden || showHidden"
+          v-if="(!model.hidden || showHidden) && (!model.historic || showHistoric)"
           :model="model"
           :loading="loading"
           @select="selectModel"
@@ -41,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiDomain } from '../apollo'
 import models from '../models'
@@ -53,12 +57,14 @@ import type { Model } from '../models'
 import { useSessionStorage } from '@vueuse/core'
 import { DeviceStreamShareStatus, useDeviceStreamSharesQuery } from '../graphql/generated'
 import { useAuth } from '../hooks/auth'
+import { CheckboxField } from '@ropescore/components'
 
 const auth = useAuth()
 const router = useRouter()
 
 const hiddenCount = useSessionStorage('show-hidden', 0, { })
 const showHidden = computed(() => hiddenCount.value >= 5)
+const showHistoric = ref(false)
 
 async function selectModel (model: Model, options?: Record<string, any>, competitionEventId?: string) {
   const id = await createLocalScoresheet({
