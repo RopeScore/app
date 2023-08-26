@@ -372,7 +372,12 @@ const closeRs = async ({ save }: CloseScoresheetOptions) => {
     if (save && scoresheet.value.submittedAt == null) {
       // TODO: store local copy in case submit fails and need to resubmit
       const { mutate, onDone } = useSaveScoresheetMutation({})
-      mutate({ scoresheetId: scoresheet.value.id, marks: scoresheet.value.marks, completedAt: scoresheet.value.completedAt })
+      mutate({
+        scoresheetId: scoresheet.value.id,
+        marks: scoresheet.value.marks,
+        completedAt: scoresheet.value.completedAt,
+        programVersion: `@ropescore/app@${import.meta.env.VITE_COMMIT_REF?.toString() ?? 'dev'}`
+      })
 
       onDone(res => {
         if (res.errors) reject(res.errors)

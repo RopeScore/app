@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import * as Sentry from '@sentry/vue'
-import { Integrations } from '@sentry/tracing'
 import 'virtual:windi.css'
 import '../node_modules/@ropescore/components/dist/style.css'
 import App from './App.vue'
@@ -21,7 +20,7 @@ if (import.meta.env.PROD) {
     release: import.meta.env.VITE_COMMIT_REF?.toString(),
     environment: import.meta.env.VITE_CONTEXT?.toString(),
     logErrors: true,
-    integrations: [new Integrations.BrowserTracing({
+    integrations: [new Sentry.BrowserTracing({
       tracingOrigins: ['ropescore.app'],
       routingInstrumentation: Sentry.vueRouterInstrumentation(router)
     })],
