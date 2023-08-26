@@ -50,12 +50,11 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useScoresheet, isUndoMark } from '../hooks/scoresheet'
 import { useConfirm } from '../hooks/confirm'
 import ScoreButton from './ScoreButton.vue'
 
-const route = useRoute()
 const router = useRouter()
 const scsh = useScoresheet()
 

@@ -383,6 +383,8 @@ const closeRs = async ({ save }: CloseScoresheetOptions) => {
         if (res.errors) reject(res.errors)
         resolve(undefined)
       })
+    } else {
+      resolve(undefined)
     }
   })
 }

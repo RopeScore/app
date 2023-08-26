@@ -8,7 +8,7 @@ fragment ScoresheetBaseFragment on Scoresheet {
 
   createdAt
   updatedAt
-  deletedAt
+  excludedAt
 
   options
 
