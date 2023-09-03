@@ -86,8 +86,8 @@ const models: Model[] = [
     name: 'Speed Head Judge',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue')),
     localAlternativeCompetitionEvents: [
-      ['False Switches', 'e.ijru.sp.sr.srsr.4.4x30'],
-      ['No Switches', 'e.ijru.sp.sr.srss.1.30']
+      ['False Switches', 'e.ijru.sp.sr.srsr.4.4x30@1.0.0'],
+      ['No Switches', 'e.ijru.sp.sr.srss.1.30@1.0.0']
     ],
     converters: {
       servo: servoSpeedConverter
@@ -107,8 +107,8 @@ const models: Model[] = [
     name: 'Difficulty',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/Difficulty.vue')),
     localAlternativeCompetitionEvents: [
-      ['Freestyle', 'e.ijru.fs.sr.srif.1.75'],
-      ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300']
+      ['Freestyle', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
+      ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300@3.0.0']
     ],
     converters: {
       servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@3.0.0/Difficulty.vue').Schema>) {
@@ -165,8 +165,8 @@ const models: Model[] = [
     judgeType: 'Pa',
     name: 'Athlete Presentation',
     localAlternativeCompetitionEvents: [
-      ['Freestyle', 'e.ijru.fs.sr.srif.1.75'],
-      ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300']
+      ['Freestyle', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
+      ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300@3.0.0']
     ],
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/AthletePresentation.vue')),
     converters: {
@@ -259,8 +259,8 @@ const models: Model[] = [
     name: 'Routine Presentation',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue')),
     localAlternativeCompetitionEvents: [
-      ['Freestyle', 'e.ijru.fs.sr.srif.1.75'],
-      ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300']
+      ['Freestyle', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
+      ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300@3.0.0']
     ],
     converters: {
       servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue').Schema>) {
@@ -329,10 +329,10 @@ const models: Model[] = [
     historic: true,
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/RequiredElements.vue')),
     localAlternativeCompetitionEvents: [
-      ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75'],
-      ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75'],
-      ['Double Dutch Single Freestyle', 'e.ijru.fs.dd.ddsf.3.75'],
-      ['Double Dutch Other', 'e.ijru.fs.dd.ddpf.4.75']
+      ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75@2.0.0'],
+      ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75@2.0.0'],
+      ['Double Dutch Single Freestyle', 'e.ijru.fs.dd.ddsf.3.75@2.0.0'],
+      ['Double Dutch Other', 'e.ijru.fs.dd.ddpf.4.75@2.0.0']
     ]
   },
   {
@@ -341,11 +341,11 @@ const models: Model[] = [
     name: 'Required Elements',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RequiredElements.vue')),
     localAlternativeCompetitionEvents: [
-      ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75'],
-      ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75'],
-      ['Double Dutch Single Freestyle', 'e.ijru.fs.dd.ddsf.3.75'],
-      ['Double Dutch Other', 'e.ijru.fs.dd.ddpf.4.75'],
-      ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300']
+      ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
+      ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75@3.0.0'],
+      ['Double Dutch Single Freestyle', 'e.ijru.fs.dd.ddsf.3.75@3.0.0'],
+      ['Double Dutch Other', 'e.ijru.fs.dd.ddpf.4.75@3.0.0'],
+      ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300@3.0.0']
     ],
     converters: {
       servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@3.0.0/RequiredElements.vue').Schema>) {
@@ -497,8 +497,8 @@ const models: Model[] = [
     allowScroll: true,
     component: defineAsyncComponent(async () => import('./views/scoring/svgf-rh@2020/Presentation.vue')),
     localAlternativeCompetitionEvents: [
-      ['Single Rope', 'e.ijru.fs.sr.srif.1.75'],
-      ['Double Dutch', 'e.ijru.fs.dd.ddpf.4.75']
+      ['Single Rope', 'e.svgf.fs.sr.srif-rh.1.75@2020'],
+      ['Double Dutch', 'e.svgf.fs.dd.ddpf-rh.4.75@2020']
     ]
   },
 
@@ -520,8 +520,8 @@ const models: Model[] = [
     name: 'Presentation',
     component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Presentation.vue')),
     localAlternativeCompetitionEvents: [
-      ['Single Rope', 'e.ijru.fs.sr.srif.1.75'],
-      ['Double Dutch', 'e.ijru.fs.dd.ddpf.4.75']
+      ['Single Rope', 'e.svgf.fs.sr.srif-vh.1.75@2023'],
+      ['Double Dutch', 'e.svgf.fs.dd.ddpf-vh.4.120@2023']
     ]
   },
   {
