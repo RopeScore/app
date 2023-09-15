@@ -1,6 +1,5 @@
 import type { Ref } from 'vue'
 import { isUndoMark, type useScoresheet, type Mark, type Scoresheet } from './hooks/scoresheet'
-import type { Schema } from './views/scoring/ddc@2023/Judge.vue'
 
 const numInt = new Intl.NumberFormat(['en-GB'], { style: 'decimal', maximumFractionDigits: 2 })
 

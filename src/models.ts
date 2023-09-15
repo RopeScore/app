@@ -549,7 +549,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentation.vue')),
     hidden: true,
     localOptions: [
-      { prop: 'overallImpression', name: 'with overall impression', type: 'boolean' },
+      { prop: 'overallImpression', name: 'with overall impression', type: 'boolean' }
     ]
   },
 

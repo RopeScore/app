@@ -26,8 +26,8 @@
         -
       </p>
       <checkbox-field
-        label="Show historic rules"
         v-model="showHistoric"
+        label="Show historic rules"
       />
       <template
         v-for="(model, idx) in models"
