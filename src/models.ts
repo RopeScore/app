@@ -538,7 +538,18 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => import('./views/scoring/experiments/SimplifiedPresentation.vue')),
     hidden: true,
     localOptions: [
-      { prop: 'scale5', name: '5-grade scale', type: 'boolean' }
+      { prop: 'scale5', name: 'wider scale', type: 'boolean' },
+      { prop: 'noCheck', name: 'no checkmark', type: 'boolean' }
+    ]
+  },
+  {
+    rulesId: 'experiments',
+    judgeType: 'Pc',
+    name: 'Circular Presentation',
+    component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentation.vue')),
+    hidden: true,
+    localOptions: [
+      { prop: 'overallImpression', name: 'with overall impression', type: 'boolean' },
     ]
   },
 

@@ -2,8 +2,10 @@
   <main
     class="grid grid-cols-3"
     :class="{
-      'grid-rows-score': !scoresheet?.options?.scale5,
-      'grid-rows-score-5': !!scoresheet?.options?.scale5
+      'grid-rows-score-2': !scoresheet?.options?.scale5 && !!scoresheet?.options?.noCheck,
+      'grid-rows-score': !scoresheet?.options?.scale5 && !scoresheet?.options?.noCheck,
+      'grid-rows-score-4': !!scoresheet?.options?.scale5 && !!scoresheet?.options?.noCheck,
+      'grid-rows-score-5': !!scoresheet?.options?.scale5 && !scoresheet?.options?.noCheck
     }"
   >
     <div class="m-auto text-center" single-row>
@@ -55,22 +57,24 @@
       @click="addMark({ schema: 'PaPlus' })"
     />
 
-    <score-button
-      label="&#10004;"
-      :value="tally('PrCheck')"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'PrCheck' })"
-    />
-    <score-button
-      color="none"
-      label=""
-    />
-    <score-button
-      label="&#10004;"
-      :value="tally('PaCheck')"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'PaCheck' })"
-    />
+    <template v-if="!scoresheet?.options?.noCheck">
+      <score-button
+        label="&#10004;"
+        :value="tally('PrCheck')"
+        :disabled="!!scoresheet?.completedAt"
+        @click="addMark({ schema: 'PrCheck' })"
+      />
+      <score-button
+        color="none"
+        label=""
+      />
+      <score-button
+        label="&#10004;"
+        :value="tally('PaCheck')"
+        :disabled="!!scoresheet?.completedAt"
+        @click="addMark({ schema: 'PaCheck' })"
+      />
+    </template>
 
     <score-button
       label="-"
@@ -169,6 +173,12 @@ const result = computed(() => {
 </script>
 
 <style scoped>
+.grid-rows-score-2 {
+  grid-template-rows: 9vh repeat(2, calc(82vh / 2));
+}
+.grid-rows-score-4 {
+  grid-template-rows: 9vh repeat(4, calc(82vh / 4));
+}
 .grid-rows-score-5 {
   grid-template-rows: 9vh repeat(5, calc(82vh / 5));
 }

@@ -37,13 +37,14 @@
 
 <script lang="ts" setup>
 import { computed, toRef } from 'vue'
-import { useScoresheet, isUndoMark, type Mark } from '../../../hooks/scoresheet'
+import { useScoresheet } from '../../../hooks/scoresheet'
 
 import VerticalScale from '../../../components/VerticalScale.vue'
 import HorizontalScale from '../../../components/HorizontalScale.vue'
 
 import type { Model } from '../../../models'
 import type { PropType } from 'vue'
+import { handleScaleUpdateFactory } from '../../../helpers'
 
 export type Schema = 'jumperScore' | 'turnerScore' | 'expressionScore'
 | 'stagingScore' | 'bonus' | 'miss'
@@ -93,30 +94,5 @@ const scoreMark = computed<Schema>(() => {
   }
 })
 
-function handleUpdate (schema: Schema, value: number) {
-  const marks = scoresheet.value?.marks ?? []
-  let prevMark: Mark<Schema> | undefined
-  for (let idx = marks.length - 1; idx >= 0; idx--) {
-    if (marks[idx].schema === schema) {
-      prevMark = marks[idx]
-      break
-    }
-  }
-
-  if (prevMark) {
-    let isUndone = false
-    for (let idx = marks.length - 1; idx >= 0; idx--) {
-      const mark = marks[idx]
-      if (isUndoMark(mark) && mark.target === prevMark.sequence) {
-        isUndone = true
-        break
-      }
-      if (marks[idx].sequence === prevMark.sequence) break // can't undo earlier than the mark
-    }
-
-    if (!isUndone) addMark({ schema: 'undo', target: prevMark.sequence })
-  }
-
-  addMark({ schema, value })
-}
+const handleUpdate = handleScaleUpdateFactory<Schema>(scoresheet, addMark)
 </script>
