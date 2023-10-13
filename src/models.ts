@@ -544,13 +544,17 @@ const models: Model[] = [
   },
   {
     rulesId: 'experiments',
-    judgeType: 'Pc',
-    name: 'Circular Presentation',
-    component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentation.vue')),
-    hidden: true,
-    localOptions: [
-      { prop: 'overallImpression', name: 'with overall impression', type: 'boolean' }
-    ]
+    judgeType: 'Pc1',
+    name: 'Circular Presentation (Not-scales)',
+    component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentationAlt1.vue')),
+    hidden: true
+  },
+  {
+    rulesId: 'experiments',
+    judgeType: 'Pc2',
+    name: 'Circular Presentation (Scales)',
+    component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentationAlt2.vue')),
+    hidden: true
   },
 
   {
