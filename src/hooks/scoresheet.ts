@@ -376,7 +376,7 @@ const closeRs = async ({ save }: CloseScoresheetOptions) => {
         scoresheetId: scoresheet.value.id,
         marks: scoresheet.value.marks,
         completedAt: scoresheet.value.completedAt,
-        programVersion: `@ropescore/app@${import.meta.env.VITE_COMMIT_REF?.toString() ?? 'dev'}`
+        programVersion: `@ropescore/app@${version ?? 'dev'}`
       })
 
       onDone(res => {
