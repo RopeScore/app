@@ -1,41 +1,47 @@
 <template>
   <nav class="grid grid-cols-3 h-header">
-    <score-button
-      v-if="!confirmExit && !scsh.scoresheet.value?.submittedAt"
-      label="Exit"
-      :vibration="500"
-      @click="exit()"
-    />
+    <template v-if="!confirmNext">
+      <score-button
+        v-if="!scsh.scoresheet.value?.submittedAt"
+        label="Next Step"
+        :vibration="500"
+        @click="next()"
+      />
+      <score-button
+        v-else
+        label="Next Step"
+        @click="immediateExit()"
+      />
 
-    <score-button
-      v-if="!confirmExit && !!scsh.scoresheet.value?.submittedAt"
-      label="Exit"
-      @click="immediateExit()"
-    />
-
-    <score-button
-      v-if="confirmExit"
-      label="Submit"
-      @click="exit('submit')"
-    />
-    <score-button
-      v-if="confirmExit"
-      label="Discard"
-      color="red"
-      @click="exit('discard')"
-    />
-
-    <score-button
-      v-if="!disableUndo && !confirmExit"
-      color="orange"
-      label="Undo"
-      @click="scsh.addMark({ schema: 'undo', target: lastMarkSequence })"
-    />
-    <score-button
-      v-else-if="!confirmExit"
-      color="none"
-      label=""
-    />
+      <score-button
+        v-if="!disableUndo"
+        color="orange"
+        label="Undo"
+        @click="scsh.addMark({ schema: 'undo', target: lastMarkSequence })"
+      />
+      <score-button
+        v-else
+        color="none"
+        label=""
+      />
+    </template>
+    <template v-else>
+      <score-button
+        v-if="!isLastStep"
+        label="Next"
+        @click="next('next')"
+      />
+      <score-button
+        v-else
+        label="Submit"
+        @click="next('submit')"
+      />
+      <score-button
+        label="Discard"
+        color="red"
+        @click="next('discard')"
+      />
+    </template>
 
     <score-button
       ref="resetRef"
@@ -49,7 +55,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, type PropType } from 'vue'
 import { useRouter } from 'vue-router'
 import { useScoresheet, isUndoMark } from '../hooks/scoresheet'
 import { useConfirm } from '../hooks/confirm'
@@ -57,6 +63,23 @@ import ScoreButton from './ScoreButton.vue'
 
 const router = useRouter()
 const scsh = useScoresheet()
+
+const props = defineProps({
+  steps: {
+    type: Array as PropType<string[]>,
+    default: null
+  },
+  currentStep: {
+    type: String,
+    default: null
+  }
+})
+
+const emit = defineEmits<{
+  'change:step': [step: string]
+}>()
+
+const isLastStep = computed(() => !Array.isArray(props.steps) || props.steps.length === 0 || props.currentStep === props.steps.at(-1))
 
 const lastMarkSequence = computed(() => (scsh.scoresheet.value?.marks.length ?? 0) - 1)
 const disableUndo = computed(() => {
@@ -69,12 +92,18 @@ const resetRef = ref(null)
 const { fire: reset, fireNext: resetNext } = useConfirm(async () => {
   if (!scsh.scoresheet.value) return
   await scsh.addMark({ schema: 'clear' })
+  if (Array.isArray(props.steps) && props.steps.length > 0) emit('change:step', props.steps[0])
 }, resetRef)
 
-const { fire: exit, fireNext: confirmExit } = useConfirm(async (mode?: 'submit' | 'discard') => {
-  if (mode === 'submit') await scsh.complete()
-  await scsh.close(mode === 'submit')
-  router.go(-1)
+const { fire: next, fireNext: confirmNext } = useConfirm(async (mode?: 'submit' | 'discard' | 'next') => {
+  if (mode === 'next') {
+    const nextStep = props.steps[props.steps.indexOf(props.currentStep) + 1]
+    if (nextStep != null) emit('change:step', nextStep)
+  } else {
+    if (mode === 'submit') await scsh.complete()
+    await scsh.close(mode === 'submit')
+    router.go(-1)
+  }
 })
 
 async function immediateExit () {

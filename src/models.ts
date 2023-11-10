@@ -12,12 +12,19 @@ export interface Model {
   rulesId: string | string[]
   judgeType: string | string[]
   name: string
+  // TODO: configure allowScroll per step
   allowScroll?: boolean
   component: Component
   localAlternativeCompetitionEvents?: Array<[string, string]>
   localOptions?: Option[]
   hidden?: boolean
   historic?: boolean
+  /**
+   * If this model has multiple steps that you must pass through before exiting
+   * specify their step "id"'s. Clicking "Exit"/"Next" will advance to the next
+   * step and pass the current step id as the prop `step` to the model component
+   */
+  steps?: string[]
 
   // I would kinda like this broken out somehow, but this will do for now
   converters?: {
@@ -537,6 +544,7 @@ const models: Model[] = [
     name: 'Simplified Presentation',
     component: defineAsyncComponent(async () => import('./views/scoring/experiments/SimplifiedPresentation.vue')),
     hidden: true,
+    historic: true,
     localOptions: [
       { prop: 'scale5', name: 'wider scale', type: 'boolean' },
       { prop: 'noCheck', name: 'no checkmark', type: 'boolean' }
@@ -547,14 +555,16 @@ const models: Model[] = [
     judgeType: 'Pc1',
     name: 'Circular Presentation (Not-scales)',
     component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentationAlt1.vue')),
-    hidden: true
+    hidden: true,
+    historic: true
   },
   {
     rulesId: 'experiments',
     judgeType: 'Pc2',
     name: 'Circular Presentation (Scales)',
     component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentationAlt2.vue')),
-    hidden: true
+    hidden: true,
+    steps: ['marks', 'adjust']
   },
 
   {

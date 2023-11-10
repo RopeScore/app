@@ -1,5 +1,6 @@
 <template>
   <main
+    v-if="step === 'marks'"
     class="grid grid-cols-5 grid-rows-score-circle"
   >
     <score-button
@@ -106,6 +107,106 @@
       @click="addMark({ schema: 'miss' })"
     />
   </main>
+
+  <main
+    v-else-if="step === 'adjust'"
+    class="grid grid-cols-4 grid-rows-adjust"
+  >
+    <score-button
+      label="-0.5"
+      color="red"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-musicMinus' })"
+    />
+    <score-button
+      label="Musicality"
+      class="col-span-2"
+      color="none"
+      :value="(tally('exp-musicPlus') - tally('exp-musicMinus')) * factor"
+    />
+    <score-button
+      label="+0.5"
+      color="green"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-musicPlus' })"
+    />
+
+    <score-button
+      label="-0.5"
+      color="red"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-formMinus' })"
+    />
+    <score-button
+      label="Form/Execution"
+      class="col-span-2"
+      color="none"
+      :value="(tally('exp-formPlus') - tally('exp-formMinus')) * factor"
+    />
+    <score-button
+      label="+0.5"
+      color="green"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-formPlus' })"
+    />
+
+    <score-button
+      label="-0.5"
+      color="red"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-creaPlus' })"
+    />
+    <score-button
+      label="Creativity"
+      class="col-span-2"
+      color="none"
+      :value="(tally('exp-creaPlus') - tally('exp-creaMinus')) * factor"
+    />
+    <score-button
+      label="+0.5"
+      color="green"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-creaMinus' })"
+    />
+
+    <score-button
+      label="-0.5"
+      color="red"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-entPlus' })"
+    />
+    <score-button
+      label="Audience Connection/Entertainment"
+      class="col-span-2"
+      color="none"
+      :value="(tally('exp-entPlus') - tally('exp-entMinus')) * factor"
+    />
+    <score-button
+      label="+0.5"
+      color="green"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-entMinus' })"
+    />
+
+    <score-button
+      label="-0.5"
+      color="red"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-varietyPlus' })"
+    />
+    <score-button
+      label="Variety/Repetitiveness"
+      class="col-span-2"
+      color="none"
+      :value="(tally('exp-varietyPlus') - tally('exp-varietyMinus')) * factor"
+    />
+    <score-button
+      label="+0.5"
+      color="green"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'exp-varietyMinus' })"
+    />
+  </main>
 </template>
 
 <script lang="ts" setup>
@@ -124,8 +225,14 @@ defineProps({
   model: {
     type: Object as PropType<Model>,
     required: true
+  },
+  step: {
+    type: String,
+    default: null
   }
 })
+
+const factor = 0.5
 
 const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 </script>
@@ -133,5 +240,8 @@ const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 <style scoped>
 .grid-rows-score-circle {
   grid-template-rows: 9vh repeat(9, calc(82vh / 9));
+}
+.grid-rows-adjust {
+  grid-template-rows: repeat(5, calc(91vh / 5));
 }
 </style>

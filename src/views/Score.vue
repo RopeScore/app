@@ -1,5 +1,5 @@
 <template>
-  <score-navigation />
+  <score-navigation :steps="model?.steps" :current-step="currentStep" @change:step="currentStep = $event" />
   <battery-status :hidden="true" />
 
   <div v-if="!scsh.scoresheet.value">
@@ -13,11 +13,12 @@
     :is="model?.component"
     v-else
     :model="model"
+    :step="currentStep"
   />
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, onMounted, onUnmounted } from 'vue'
+import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWakeLock } from '@vueuse/core'
 import models from '../models'
@@ -32,6 +33,8 @@ function preventDefualt (event: TouchEvent) {
 const route = useRoute()
 const scsh = useScoresheet()
 const wakeLock = useWakeLock()
+
+const currentStep = ref<string>()
 
 onMounted(async () => {
   document.body.addEventListener('touchmove', preventDefualt, { passive: false })
@@ -73,5 +76,24 @@ const model = computed(() => {
   }
 
   return model
+})
+
+watch(model, (newModel, oldModel) => {
+  if (!Array.isArray(newModel?.steps) || newModel?.steps.length === 0) {
+    currentStep.value = undefined
+  } else {
+    // newModel has steps!
+    if (
+      // if the old model didn't have steps
+      !Array.isArray(oldModel?.steps) ||
+      oldModel?.steps.length === 0 ||
+      // or if the old model had different steps
+      newModel?.steps.length !== oldModel?.steps.length ||
+      newModel?.steps.some((step, idx) => oldModel?.steps?.indexOf(step) !== idx)
+    ) {
+      // we reset to the first step
+      currentStep.value = newModel?.steps[0]
+    }
+  }
 })
 </script>
