@@ -62,7 +62,7 @@
       <!-- TODO: instructions -->
     </p>
     <p>
-      &copy; Swantzter 2021-2023 &mdash;
+      &copy; Swantzter 2021-2024 &mdash;
       {{ version }} &mdash;
       <a
         class="text-indigo-700 hover:text-indigo-900"
