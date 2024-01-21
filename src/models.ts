@@ -591,7 +591,7 @@ const models: Model[] = [
   {
     rulesId: 'experiments',
     judgeType: 'Pc3',
-    name: 'Five-Scale Presentation',
+    name: 'Five Presentation Scales',
     component: defineAsyncComponent(async () => import('./views/scoring/experiments/FiveScalePresentation.vue')),
     hidden: true,
     steps: ['marks', 'adjust'],
