@@ -2,11 +2,22 @@
 import { type Component, defineAsyncComponent } from 'vue'
 import { calculateTally, convertMarksToServoIntermediate, type ServoIntermediateScoresheet } from './hooks/scoresheet'
 
-export interface Option {
+export interface BaseOption {
   name: string
   prop: string
-  type: 'boolean' // TODO implement others
+  type: string
 }
+
+export interface BooleanOption extends BaseOption {
+  type: 'boolean'
+}
+
+export interface SingleSelectOption extends BaseOption {
+  type: 'single-select'
+  options: string[]
+}
+
+export type Option = BooleanOption | SingleSelectOption
 
 export interface Model {
   rulesId: string | string[]
@@ -565,6 +576,27 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentationAlt2.vue')),
     hidden: true,
     steps: ['marks', 'adjust']
+  },
+  {
+    rulesId: 'experiments',
+    judgeType: 'Pc3',
+    name: 'Five-Scale Presentation',
+    component: defineAsyncComponent(async () => import('./views/scoring/experiments/FiveScalePresentation.vue')),
+    hidden: true,
+    steps: ['marks', 'adjust'],
+    localOptions: [
+      {
+        name: 'Second-step Weights',
+        prop: 'w2',
+        type: 'single-select',
+        options: [
+          'Even',
+          'Form, Ent 30 / Mus 20 / Crea, Var 10',
+          'Form, Ent 25 / Mus 20 / Crea, Var 15',
+          'Form, Ent 25 / Mus, Crea, Var 17'
+        ]
+      }
+    ]
   },
 
   {

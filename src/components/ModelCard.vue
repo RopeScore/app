@@ -33,6 +33,19 @@
           :model-value="options[option.prop]"
           @update:model-value="options[option.prop] = $event"
         />
+        <select
+          v-else-if="option.type === 'single-select'"
+          v-model="options[option.prop]"
+          class="p-2 mt-4 rounded w-full"
+        >
+          <option
+            v-for="desc in option.options"
+            :key="desc"
+            :value="desc"
+          >
+            {{ desc }}
+          </option>
+        </select>
         <div v-else>
           Unsupported option type
         </div>
