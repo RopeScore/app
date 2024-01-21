@@ -28,6 +28,7 @@ module.exports = {
     '@typescript-eslint/return-await': 'off',
     '@typescript-eslint/no-floating-promises': 'off',
     'vue/max-attributes-per-line': ['warn', { singleline: 5 }],
-    'vue/multi-word-component-names': 'off'
+    'vue/multi-word-component-names': 'off',
+    '@typescript-eslint/no-unsafe-argument': 'off'
   }
 }

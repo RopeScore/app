@@ -162,6 +162,10 @@ const models: Model[] = [
             scores.SkillLevels.push(level)
             scores.SkillTimes.push(mark.timestamp)
           } else if (mark.schema === 'rep' && !isShow) {
+            // make TS happy by re-initing
+            scores.NumRepeated ??= 0
+            scores.RepeatedSkillTimes ??= []
+
             scores.NumRepeated += mark.value ?? 1
             scores.RepeatedSkillTimes.push(mark.timestamp)
           }
@@ -237,6 +241,13 @@ const models: Model[] = [
           }
 
           if (isShow) {
+            // make TS happy by re-initing
+            scores.StyleMinus ??= 0
+            scores.StyleCheck ??= 0
+            scores.StylePlus ??= 0
+            scores.StyleScores ??= []
+            scores.StyleTimes ??= []
+
             switch (mark.schema) {
               case 'styleMinus': {
                 scores.StyleMinus += mark.value ?? 1

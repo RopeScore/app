@@ -21,7 +21,7 @@ const timeouts = new Map<string, Stoppable>()
 export default function useNotifications () {
   return {
     notifications,
-    push (notif: Omit<ErrorMessage, 'id'> | Omit<Notification, 'id'>) {
+    push: (notif: Omit<ErrorMessage, 'id'> | Omit<Notification, 'id'>) => {
       if (isErrorMessage(notif) && notif.code) {
         const exists = notifications.value.find(e => isErrorMessage(e) && e.code === notif.code)
         if (exists) {
@@ -46,7 +46,7 @@ export default function useNotifications () {
         timeouts.delete(id)
       }, 5000))
     },
-    pop (id: Notification['id']) {
+    pop: (id: Notification['id']) => {
       const errIdx = notifications.value.findIndex(e => e.id === id)
       if (errIdx > -1) notifications.value.splice(errIdx, 1)
       timeouts.get(id)?.stop()
