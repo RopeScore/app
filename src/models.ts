@@ -603,9 +603,15 @@ const models: Model[] = [
         options: [
           'Even',
           'Form, Ent 30 / Mus 20 / Crea, Var 10',
+          'Ent 30 / Form 25 / Mus, Cre, Var 15',
           'Form, Ent 25 / Mus 20 / Crea, Var 15',
           'Form, Ent 25 / Mus, Crea, Var 17'
         ]
+      },
+      {
+        name: 'No Boost button',
+        prop: 'noBoost',
+        type: 'boolean'
       }
     ]
   },

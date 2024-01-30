@@ -1,11 +1,18 @@
 <template>
   <main
     v-if="step === 'marks'"
-    class="grid grid-cols-4 grid-rows-score-five"
+    class="grid grid-cols-3"
+    :class="{
+      'grid-rows-score-five': !scoresheet?.options?.noBoost,
+      'grid-rows-score-five-no-boost': !!scoresheet?.options?.noBoost
+    }"
   >
     <score-button
       label="Breaks"
-      class="col-span-5 col-start-1 row-start-1"
+      :class="{
+        'col-span-5 col-start-1 row-start-1': !scoresheet?.options?.noBoost,
+        'row-span-2 col-start-2 row-start-2': !!scoresheet?.options?.noBoost,
+      }"
       color="red"
       :value="tally('exp-break')"
       :disabled="!!scoresheet?.completedAt"
@@ -54,8 +61,9 @@
     />
 
     <score-button
+      v-if="!scoresheet?.options?.noBoost"
       label="Boost"
-      class="row-span-5 col-span-2 col-start-2 row-start-2"
+      class="row-span-5 col-start-2 row-start-2"
       color="indigo"
       :value="tally('exp-boost')"
       :disabled="!!scoresheet?.completedAt"
@@ -64,35 +72,35 @@
 
     <score-button
       label="Musicality +"
-      class="row-start-2 col-start-4"
+      class="row-start-2 col-start-3"
       :value="tally('exp-musicPlus')"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'exp-musicPlus' })"
     />
     <score-button
       label="Form +"
-      class="row-start-3 col-start-4"
+      class="row-start-3 col-start-3"
       :value="tally('exp-formPlus')"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'exp-formPlus' })"
     />
     <score-button
       label="Creativity +"
-      class="row-start-4 col-start-4"
+      class="row-start-4 col-start-3"
       :value="tally('exp-creaPlus')"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'exp-creaPlus' })"
     />
     <score-button
       label="Entertainment +"
-      class="row-start-5 col-start-4"
+      class="row-start-5 col-start-3"
       :value="tally('exp-entPlus')"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'exp-entPlus' })"
     />
     <score-button
       label="Variety +"
-      class="row-start-6 col-start-4"
+      class="row-start-6 col-start-3"
       :value="tally('exp-varietyPlus')"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'exp-varietyPlus' })"
@@ -100,7 +108,10 @@
 
     <score-button
       label="Miss"
-      class="col-span-5 col-start-1 row-start-7"
+      :class="{
+        'col-span-5 col-start-1 row-start-7': !scoresheet?.options?.noBoost,
+        'row-span-2 col-start-2 row-start-5': !!scoresheet?.options?.noBoost,
+      }"
       color="red"
       :value="tally('miss')"
       :disabled="!!scoresheet?.completedAt"
@@ -110,7 +121,11 @@
 
   <main
     v-else-if="step === 'adjust'"
-    class="grid grid-cols-4 grid-rows-score-five"
+    class="grid grid-cols-4"
+    :class="{
+      'grid-rows-score-five': !scoresheet?.options?.noBoost,
+      'grid-rows-score-five-no-boost': !!scoresheet?.options?.noBoost
+    }"
   >
     <score-button
       color="none"
@@ -159,11 +174,15 @@
     <div
       v-for="component, idx of components"
       :key="component"
-      class="col-span-2 col-start-2 flex content-center justify-center flex-wrap"
+      class="col-span-2 col-start-2 flex justify-between items-center"
       :class="`row-start-${2 + idx}`"
     >
-      <div>{{ componentScore(component).toFixed(1) }}</div>
-      <progress class="w-full" max="10" :value="componentScore(component)" />
+      <span>0</span>
+      <div class="flex content-center justify-center flex-wrap w-full m-2">
+        <div>{{ (componentScore(component) * weights[component] * 10).toFixed(1) }}</div>
+        <progress class="w-full" max="10" :value="componentScore(component)" />
+      </div>
+      <span>{{ weights[component] * 100 }}</span>
     </div>
 
     <score-button
@@ -272,6 +291,14 @@ const weights = computed((): Record<Component, number> => {
       crea: 1 / 6,
       variety: 1 / 6
     }
+  } else if (scoresheet.value?.options?.w2 === 'Ent 30 / Form 25 / Mus, Cre, Var 15') {
+    return {
+      music: 0.15,
+      form: 0.25,
+      crea: 0.15,
+      ent: 0.3,
+      variety: 0.15
+    }
   }
 
   return {
@@ -297,12 +324,16 @@ const result = computed(() => {
     sum += componentScores[key] * weights.value[key]
   }
 
-  return Math.round(clamp(sum, 0, 10) * 100) / 100
+  return Math.round(clamp(sum, 0, 100) * 10)
 })
 </script>
 
 <style scoped>
 .grid-rows-score-five {
   grid-template-rows: 9vh repeat(5, calc(73vh / 5)) 9vh;
+}
+
+.grid-rows-score-five-no-boost {
+  grid-template-rows: 9vh repeat(5, calc(82vh / 5));
 }
 </style>
