@@ -218,4 +218,13 @@ function addRepeatedSkill (schema: Schema) {
   addMark({ schema })
   diffOpen.value = false
 }
+
+function onUndo () {
+  diffOpen.value = false
+}
+
+defineExpose({
+  onUndo,
+  onClear: onUndo
+})
 </script>

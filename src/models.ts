@@ -615,6 +615,19 @@ const models: Model[] = [
       }
     ]
   },
+  {
+    rulesId: 'experiments',
+    judgeType: 'R',
+    name: 'Density Required Elements',
+    component: defineAsyncComponent(async () => import('./views/scoring/experiments/DensityReqEl.vue')),
+    hidden: true,
+    localAlternativeCompetitionEvents: [
+      ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
+      ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75@3.0.0'],
+      ['Double Dutch Single Freestyle', 'e.ijru.fs.dd.ddsf.3.75@3.0.0'],
+      ['Double Dutch Other', 'e.ijru.fs.dd.ddpf.4.75@3.0.0']
+    ]
+  },
 
   {
     rulesId: ['ijru.ddc.2023', 'ijru.ddcf.2023'],

@@ -1,5 +1,11 @@
 <template>
-  <score-navigation :steps="model?.steps" :current-step="currentStep" @change:step="currentStep = $event" />
+  <score-navigation
+    :steps="model?.steps"
+    :current-step="currentStep"
+    @change:step="currentStep = $event"
+    @undo="onUndo()"
+    @clear="onClear()"
+  />
   <battery-status :hidden="true" />
 
   <div v-if="!scsh.scoresheet.value">
@@ -12,13 +18,14 @@
   <component
     :is="model?.component"
     v-else
+    ref="compRef"
     :model="model"
     :step="currentStep"
   />
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
+import { computed, watch, onMounted, onUnmounted, ref, type Component } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWakeLock } from '@vueuse/core'
 import models from '../models'
@@ -96,4 +103,15 @@ watch(model, (newModel, oldModel) => {
     }
   }
 })
+
+const compRef = ref()
+
+async function onUndo () {
+  compRef.value?.onUndo?.()
+}
+
+async function onClear () {
+  compRef.value?.onClear?.()
+}
+
 </script>

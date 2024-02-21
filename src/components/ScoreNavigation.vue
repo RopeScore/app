@@ -17,7 +17,7 @@
         v-if="!disableUndo"
         color="orange"
         label="Undo"
-        @click="scsh.addMark({ schema: 'undo', target: lastMarkSequence })"
+        @click="undo()"
       />
       <score-button
         v-else
@@ -77,6 +77,8 @@ const props = defineProps({
 
 const emit = defineEmits<{
   'change:step': [step: string]
+  'undo': []
+  'clear': []
 }>()
 
 const isLastStep = computed(() => !Array.isArray(props.steps) || props.steps.length === 0 || props.currentStep === props.steps.at(-1))
@@ -88,11 +90,17 @@ const disableUndo = computed(() => {
   return marks.length === 0 || isUndoMark(marks[marks.length - 1])
 })
 
+function undo () {
+  scsh.addMark({ schema: 'undo', target: lastMarkSequence.value })
+  emit('undo')
+}
+
 const resetRef = ref(null)
 const { fire: reset, fireNext: resetNext } = useConfirm(async () => {
   if (!scsh.scoresheet.value) return
   await scsh.addMark({ schema: 'clear' })
   if (Array.isArray(props.steps) && props.steps.length > 0) emit('change:step', props.steps[0])
+  emit('clear')
 }, resetRef)
 
 const { fire: next, fireNext: confirmNext } = useConfirm(async (mode?: 'submit' | 'discard' | 'next') => {
