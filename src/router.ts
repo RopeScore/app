@@ -8,6 +8,8 @@ export default createRouter({
     { path: '/', component: async () => import('./views/Home.vue') },
     { path: '/practice', component: async () => import('./views/PracticeIndex.vue') },
     { path: '/score/:system/:vendor+', component: async () => import('./views/Score.vue') },
+    { path: '/scoresheets', component: async () => import('./views/ScoresheetsList.vue') },
+    { path: '/scoresheets/:system/:vendor+/marks', component: async () => import('./views/ScoresheetMarks.vue') },
 
     // RopeScore
     { path: '/rs/groups', component: async () => import('./views/ropescore/Groups.vue') },

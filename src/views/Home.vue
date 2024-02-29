@@ -31,6 +31,12 @@
         Connect to a RopeScore Live Screen
       </router-link>
       <router-link
+        class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
+        to="/scoresheets"
+      >
+        Stored Scoresheets
+      </router-link>
+      <router-link
         class="block p-2 my-8 text-center text-lg text-white bg-white rounded"
         to="/servo/connect"
       >
@@ -57,10 +63,29 @@
       />
     </div>
 
-    <p v-if="!standalone">
-      For best experience, add this web-app to your homescreen
-      <!-- TODO: instructions -->
-    </p>
+    <note-card v-if="!standalone">
+      For best experience, add this web-app to your homescreen.<br>
+      <span class="font-semibold">On Android</span>, open the menu in your
+      browser (usually three dots next to the search bar) and select an option
+      saying something like "Add to homescreen" or "Install".<br>
+      <span class="font-semibold">On iOS</span>, tap the "share" button and
+      select "Add to Home Screen".<br>
+    </note-card>
+    <note-card v-if="!standalone" color="orange">
+      In the EU, Apple has chosen to remove the ability to add web apps to the
+      homescreen on iPhones, this will prevent you from using this web app in
+      fullscreen mode, and will cause you to loose all stored scoresheets and
+      authentication after 7 days.<br>
+      We are working with EU legislators and the
+      <a
+        class="text-indigo-700 hover:text-indigo-900"
+        href="https://letter.open-web-advocacy.org/"
+        target="_blank"
+        rel="noopener"
+      >Open Web Advocacy Group</a>
+      to prevent this.<br>
+      We're separately working to find an alternative solution.
+    </note-card>
     <p>
       &copy; Swantzter 2021-2024 &mdash;
       {{ version }} &mdash;
@@ -81,7 +106,7 @@ import { useSW } from '../hooks/sw'
 import { apiDomain, localManual, localApis } from '../apollo'
 import { version } from '../helpers'
 
-import { SelectField } from '@ropescore/components'
+import { SelectField, NoteCard } from '@ropescore/components'
 
 const standalone = ref(false)
 

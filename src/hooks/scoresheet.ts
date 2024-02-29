@@ -51,6 +51,7 @@ export interface LocalScoresheet<T extends string> {
 
   marks: Array<Mark<T>>
 
+  createdAt?: number
   openedAt?: number
   completedAt?: number
   submittedAt?: number
@@ -80,10 +81,10 @@ export function isServoIntermediateScoresheet (x: unknown): x is ServoIntermedia
 }
 
 export function isRemoteMarkScoresheet (x: unknown): x is ScoresheetBaseFragment & MarkScoresheetFragment {
-  return isObject(x) && 'createdAt' in x && !!x?.createdAt && 'marks' in x
+  return isObject(x) && 'judge' in x && !!x?.judge && 'marks' in x
 }
 export function isRemoteTallyScoresheet (x: unknown): x is ScoresheetBaseFragment & TallyScoresheetFragment {
-  return isObject(x) && 'createdAt' in x && !!x?.createdAt && 'tally' in x
+  return isObject(x) && 'judge' in x && !!x?.judge && 'tally' in x
 }
 
 export type Scoresheet<Schema extends string> = (ScoresheetBaseFragment & MarkScoresheetFragment & { marks: Array<Mark<Schema>> }) | LocalScoresheet<Schema>
@@ -600,6 +601,7 @@ export async function createLocalScoresheet ({ judgeType, rulesId, competitionEv
     id: uuid(),
     judgeType,
     rulesId,
+    createdAt: Date.now(),
     competitionEventId: competitionEventId ?? '',
     marks: [],
     options
@@ -685,4 +687,8 @@ export async function getServoScoresheetsForEntry ({ competitionId, entryId, jud
   const prevScoresheetIds = scoresheetIds.filter(scshId => scshId.startsWith(`servo::${competitionId}::${entryId}::${judgeSequence}::`))
   const scoresheets: Array<ServoIntermediateScoresheet<string>> = await idbKeyval.getMany(prevScoresheetIds)
   return scoresheets
+}
+
+export async function listScoresheets (): Promise<Array<Scoresheet<string>>> {
+  return await idbKeyval.values()
 }
