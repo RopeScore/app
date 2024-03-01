@@ -11,33 +11,33 @@
       RopeScore Judging
     </h1>
 
-    <nav class="grid grid-cols-1 grid-rows-2">
+    <nav class="grid grid-cols-1 grid-rows-2 gap-8 mt-8">
       <router-link
-        class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none focus:outline-none outline-none"
+        class="block p-2 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded hover:outline-none focus:outline-none outline-none"
         to="/practice"
       >
         Practice
       </router-link>
       <router-link
-        class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
+        class="block p-2 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
         to="/rs/groups"
       >
         Judge a RopeScore Competition
       </router-link>
       <router-link
-        class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
+        class="block p-2 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
         to="/rs/device-shares"
       >
         Connect to a RopeScore Live Screen
       </router-link>
       <router-link
-        class="block p-2 my-8 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
+        class="block p-2 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
         to="/scoresheets"
       >
         Stored Scoresheets
       </router-link>
       <router-link
-        class="block p-2 my-8 text-center text-lg text-white bg-white rounded"
+        class="block p-2 text-center text-lg text-white bg-white rounded"
         to="/servo/connect"
       >
         Judge an IJRU Scoring Competition
@@ -73,9 +73,10 @@
     </note-card>
     <note-card v-if="!standalone" color="orange">
       In the EU, Apple has chosen to remove the ability to add web apps to the
-      homescreen on iPhones, this will prevent you from using this web app in
-      fullscreen mode, and will cause you to loose all stored scoresheets and
-      authentication after 7 days.<br>
+      homescreen on iPhones in an act of malicious compliance.
+      This will prevent you from using this web app in fullscreen mode, and will
+      cause you to loose all stored scoresheets and authentication
+      after 7 days.<br>
       We are working with EU legislators and the
       <a
         class="text-indigo-700 hover:text-indigo-900"
