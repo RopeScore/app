@@ -20,7 +20,7 @@ useIntervalFn(() => {
   localDiscover.execute()
 }, 60_000)
 
-export const localApis = ['', 'local-001', 'local-002', 'dev']
+export const localApis = ['', 'local-001', 'local-002', 'local-003', 'dev']
 export const localManual = useLocalStorage<string>('rs-local-api', null)
 const manualReachable = useFetch(
   computed(() => localManual.value === 'dev'
