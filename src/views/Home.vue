@@ -71,22 +71,7 @@
       <span class="font-semibold">On iOS</span>, tap the "share" button and
       select "Add to Home Screen".<br>
     </note-card>
-    <note-card v-if="!standalone" color="orange">
-      In the EU, Apple has chosen to remove the ability to add web apps to the
-      homescreen on iPhones in an act of malicious compliance.
-      This will prevent you from using this web app in fullscreen mode, and will
-      cause you to loose all stored scoresheets and authentication
-      after 7 days.<br>
-      We are working with EU legislators and the
-      <a
-        class="text-indigo-700 hover:text-indigo-900"
-        href="https://letter.open-web-advocacy.org/"
-        target="_blank"
-        rel="noopener"
-      >Open Web Advocacy Group</a>
-      to prevent this.<br>
-      We're separately working to find an alternative solution.
-    </note-card>
+
     <p>
       &copy; Swantzter 2021-2024 &mdash;
       {{ version }} &mdash;
