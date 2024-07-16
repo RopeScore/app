@@ -94,6 +94,13 @@ const models: Model[] = [
     judgeType: 'S',
     name: 'Speed',
     component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue')),
+    localOptions: [
+      {
+        type: 'boolean',
+        name: 'Minus button',
+        prop: 'minusButton'
+      }
+    ],
     converters: {
       servo: servoSpeedConverter
     }
@@ -106,6 +113,13 @@ const models: Model[] = [
     localAlternativeCompetitionEvents: [
       ['False Switches', 'e.ijru.sp.sr.srsr.4.4x30@1.0.0'],
       ['No Switches', 'e.ijru.sp.sr.srss.1.30@1.0.0']
+    ],
+    localOptions: [
+      {
+        type: 'boolean',
+        name: 'Minus button',
+        prop: 'minusButton'
+      }
     ],
     converters: {
       servo: servoSpeedConverter

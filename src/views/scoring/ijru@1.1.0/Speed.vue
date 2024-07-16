@@ -1,44 +1,53 @@
 <template>
-  <main class="grid grid-rows-score grid-cols-2">
-    <template v-if="isHeadJudge">
-      <score-button
-        label="False Starts"
-        color="red"
-        :value="tally('falseStart')"
-        single-row
-        :disabled="!!scoresheet?.completedAt"
-        @click="addMark({ schema: 'falseStart' })"
-      />
-      <score-button
-        v-if="hasSwitches"
-        label="False Switches"
-        color="red"
-        :value="tally('falseSwitch')"
-        single-row
-        :disabled="!!scoresheet?.completedAt"
-        @click="addMark({ schema: 'falseSwitch' })"
-      />
-      <score-button
-        v-else
-        color="none"
-        label=""
-      />
-    </template>
-    <template v-else>
-      <score-button
-        color="none"
-        label=""
-      />
-      <score-button
-        color="none"
-        label=""
-      />
-    </template>
+  <main class="grid grid-rows-score grid-cols-3">
+    <score-button
+      v-if="isHeadJudge"
+      label="False Starts"
+      color="red"
+      :value="tally('falseStart')"
+      single-row
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'falseStart' })"
+    />
+    <score-button
+      v-else
+      color="none"
+      label=""
+    />
+
+    <score-button
+      v-if="scoresheet?.options?.minusButton"
+      label="Remove Step"
+      color="red"
+      single-row
+      :disabled="!!scoresheet?.completedAt || tally('step') <= 0"
+      @click="addMark({ schema: 'step', value: -1 })"
+    />
+    <score-button
+      v-else
+      color="none"
+      label=""
+    />
+
+    <score-button
+      v-if="isHeadJudge && hasSwitches"
+      label="False Switches"
+      color="red"
+      :value="tally('falseSwitch')"
+      single-row
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'falseSwitch' })"
+    />
+    <score-button
+      v-else
+      color="none"
+      label=""
+    />
 
     <score-button
       label="Steps"
       :value="tally('step')"
-      class="col-span-2 row-span-3 mx-12"
+      class="col-span-3 row-span-3 mx-12"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'step' })"
     />
@@ -65,5 +74,5 @@ const props = defineProps({
 const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 
 const isHeadJudge = computed(() => props.model.judgeType === 'Shj')
-const hasSwitches = computed(() => /\.\d+x\d+$/.test(scoresheet.value?.competitionEventId ?? ''))
+const hasSwitches = computed(() => /\.\d+x\d+@.*$/.test(scoresheet.value?.competitionEventId ?? ''))
 </script>
