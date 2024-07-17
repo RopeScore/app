@@ -688,7 +688,13 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {
       servo: servoDdc2023Converter
-    }
+    },
+  },
+  {
+    rulesId: ['ijru@1.1.0'],
+    judgeType: 'St',
+    name: 'Speed Load Test',
+    component: defineAsyncComponent(async () => import('./views/scoring/experiments/SpeedLoadTest.vue'))
   }
 ]
 
