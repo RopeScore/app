@@ -692,7 +692,7 @@ const models: Model[] = [
   },
   {
     rulesId: ['ijru@1.1.0'],
-    judgeType: 'St',
+    judgeType: 'S',
     name: 'Speed Load Test',
     component: defineAsyncComponent(async () => import('./views/scoring/experiments/SpeedLoadTest.vue'))
   }
