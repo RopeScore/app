@@ -125,6 +125,12 @@ const models: Model[] = [
       servo: servoSpeedConverter
     }
   },
+  {
+    rulesId: ['experiments'],
+    judgeType: 'S',
+    name: 'Speed Auto Clicker',
+    component: defineAsyncComponent(async () => import('./views/scoring/experiments/SpeedAutoClicker.vue'))
+  },
 
   {
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'svgf-par@2.0.0'],
@@ -689,12 +695,6 @@ const models: Model[] = [
     converters: {
       servo: servoDdc2023Converter
     },
-  },
-  {
-    rulesId: ['experiments'],
-    judgeType: 'S',
-    name: 'Speed Load Test',
-    component: defineAsyncComponent(async () => import('./views/scoring/experiments/SpeedLoadTest.vue'))
   }
 ]
 
