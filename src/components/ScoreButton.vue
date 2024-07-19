@@ -81,6 +81,8 @@ const emit = defineEmits<{
 
 const focus = ref(false)
 function handleClick () {
+  if (props.disabled) return
+
   emit('click')
   focus.value = true
   if (props.color === 'none') return
