@@ -4,14 +4,16 @@
       v-model="steps"
       type="number"
       label="Steps to count"
+      :disabled="ticker.isActive.value"
     />
     <text-field
       v-model="duration"
       type="number"
       label="Duration to count (seconds)"
+      :disabled="ticker.isActive.value"
     />
 
-    <div v-if="ticker.isActive.value" class="flex content-center justify-center flex-wrap w-full m-2">
+    <div v-if="ticker.isActive.value" class="flex content-center justify-center flex-wrap w-full p-2">
       <span>{{ elapsed }}</span>
       <progress class="w-full" :max="duration" :value="elapsed" />
     </div>
@@ -22,7 +24,7 @@
       label="Start"
       :value="tally('step')"
       class="row-span-4 mx-12"
-      :disabled="!!scoresheet?.completedAt"
+      :disabled="!!scoresheet?.completedAt || !valid"
       @click="resume()"
     />
     <score-button
@@ -31,7 +33,6 @@
       color="red"
       :value="tally('step')"
       class="row-span-4 mx-12"
-      :disabled="!!scoresheet?.completedAt"
       @click="ticker.pause()"
     />
   </main>
@@ -69,7 +70,10 @@ const elapsed = computed(() => {
   else return t
 })
 
+const valid = computed(() => Number.isSafeInteger(steps.value) && steps.value > 0 && Number.isSafeInteger(duration.value) && duration.value > 0)
+
 function resume () {
+  if (!valid.value) return
   startTime.value = Date.now()
   ticker.resume()
 }
