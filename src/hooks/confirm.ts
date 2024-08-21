@@ -18,7 +18,7 @@ export function useConfirm<T extends (...args: any[]) => void | Promise<void>> (
     fire (...args) {
       if (fireNext.value) {
         stop()
-        func(...args)
+        void func(...args)
         return
       }
       start()

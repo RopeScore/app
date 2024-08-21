@@ -123,14 +123,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { isClearMark, isUndoMark, useScoresheet } from '../../../hooks/scoresheet'
 
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
-import useNotifications from '../../../hooks/notifications'
-import { watchArray } from '@vueuse/core'
+
+const requiredElements = [
+  'rqMultiples',
+  'rqWrapsReleases',
+  'rqGymnasticsPower',
+  'rqInteractions',
+  'rqTurnerInvolvement'
+] as const
 
 export type Schema = typeof requiredElements[number]
 | 'missStart' | 'missEnd' | 'timeViolation' | 'spaceViolation' | 'break'
@@ -143,17 +149,8 @@ defineProps({
 })
 
 const { scoresheet, addMark, tally } = useScoresheet<Schema>()
-const { push: pushNotification } = useNotifications()
 
-const lookupCodeParts = computed(() => scoresheet.value?.competitionEventId.split('.') ?? [])
-
-const requiredElements = [
-  'rqMultiples',
-  'rqWrapsReleases',
-  'rqGymnasticsPower',
-  'rqInteractions',
-  'rqTurnerInvolvement'
-] as const
+const lookupCodeParts = computed<string[]>(() => scoresheet.value?.competitionEventId.split('.') ?? [])
 
 const isDoubleDutch = computed(() => lookupCodeParts.value[3] === 'dd')
 const hasInteractions = computed(() => parseInt(lookupCodeParts.value[5], 10) > (lookupCodeParts.value[3] === 'dd' ? 3 : 1))
@@ -162,12 +159,12 @@ const ongoingMiss = ref(false)
 function startMiss () {
   if (ongoingMiss.value) return
   ongoingMiss.value = true
-  addMark({ schema: 'missStart' })
+  void addMark({ schema: 'missStart' })
 }
 function endMiss () {
   if (!ongoingMiss.value) return
   ongoingMiss.value = false
-  addMark({ schema: 'missEnd' })
+  void addMark({ schema: 'missEnd' })
 }
 
 const rqScore = computed(() => {

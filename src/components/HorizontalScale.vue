@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed, toRef } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { v4 as uuid } from 'uuid'
 
 import type { PropType } from 'vue'

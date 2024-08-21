@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, onMounted, onUnmounted, ref, type Component } from 'vue'
+import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWakeLock } from '@vueuse/core'
 import models from '../models'

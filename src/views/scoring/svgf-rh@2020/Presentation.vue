@@ -88,7 +88,7 @@ impression[2][10] = 'Mycket underhållande hoppning; glädje och variation.'
 
 const fields = computed(() => {
   const isDD = scoresheet.value?.competitionEventId.split('.')[3] === 'dd'
-  const numSkippers = parseInt(scoresheet.value?.competitionEventId.split('.')[5] ?? '1', 10)
+  const numSkippers = parseInt(scoresheet.value?.competitionEventId.split('.')[5] as string ?? '1', 10)
   let midMisses = 4
 
   if (!isDD && numSkippers >= 2) midMisses = 5 // srpf

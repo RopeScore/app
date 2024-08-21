@@ -25,7 +25,7 @@ const { data, error, isFetching, execute: refetch } = useFetch(url, {
     accept: 'application/json'
   }
 }, {
-  beforeFetch ({ url, options, cancel }) {
+  beforeFetch ({ options, cancel }) {
     if (token.value == null || assignment.value?.assignmentCode == null) {
       cancel()
       return

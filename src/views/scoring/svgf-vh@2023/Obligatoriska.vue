@@ -31,7 +31,7 @@ import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
 export type Schema = 'rqHighKnee' | 'rqSki' | 'rqTurn' | 'rqPair' | 'rqTool'
-| 'rqHighKnee' | 'rqBack' | 'rqCross' | 'rqSideJump' | 'rqOutTogether'
+  | 'rqBack' | 'rqCross' | 'rqSideJump' | 'rqOutTogether'
 
 defineProps({
   model: {
@@ -67,7 +67,7 @@ const fields = computed<Definition[]>(() => {
 })
 
 const result = computed(() => {
-  const res = fields.value.map(s => tally(s[0]) ?? 0).reduce((a, b) => a + b, 0)
+  const res = fields.value.map(s => tally(s[0])).reduce((a, b) => a + b, 0)
   return 1 - ((5 - res) * 0.1)
 })
 
@@ -93,11 +93,11 @@ function handleUpdate (schema: Schema) {
     }
 
     if (!isUndone) {
-      addMark({ schema: 'undo', target: prevMark.sequence })
+      void addMark({ schema: 'undo', target: prevMark.sequence })
       return
     }
   }
 
-  addMark({ schema, value: 1 })
+  void addMark({ schema, value: 1 })
 }
 </script>

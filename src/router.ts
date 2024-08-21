@@ -5,29 +5,29 @@ import { useAuth } from './hooks/auth'
 export default createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: async () => import('./views/Home.vue') },
-    { path: '/practice', component: async () => import('./views/PracticeIndex.vue') },
-    { path: '/score/:system/:vendor+', component: async () => import('./views/Score.vue') },
-    { path: '/scoresheets', component: async () => import('./views/ScoresheetsList.vue') },
-    { path: '/scoresheets/:system/:vendor+/marks', component: async () => import('./views/ScoresheetMarks.vue') },
+    { path: '/', component: async () => await import('./views/Home.vue') },
+    { path: '/practice', component: async () => await import('./views/PracticeIndex.vue') },
+    { path: '/score/:system/:vendor+', component: async () => await import('./views/Score.vue') },
+    { path: '/scoresheets', component: async () => await import('./views/ScoresheetsList.vue') },
+    { path: '/scoresheets/:system/:vendor+/marks', component: async () => await import('./views/ScoresheetMarks.vue') },
 
     // RopeScore
-    { path: '/rs/groups', component: async () => import('./views/ropescore/Groups.vue') },
+    { path: '/rs/groups', component: async () => await import('./views/ropescore/Groups.vue') },
     {
       path: '/rs/groups/:id',
-      component: async () => import('./views/ropescore/Group.vue'),
+      component: async () => await import('./views/ropescore/Group.vue'),
       beforeEnter: (to, fron) => {
         const { token } = useAuth()
         if (token.value == null) return { path: '/rs/groups' }
       }
     },
-    { path: '/rs/device-shares', component: async () => import('./views/ropescore/DeviceShare.vue') },
+    { path: '/rs/device-shares', component: async () => await import('./views/ropescore/DeviceShare.vue') },
 
     // IJRU
-    { path: '/servo/connect', component: async () => import('./views/servo/Connect.vue') },
+    { path: '/servo/connect', component: async () => await import('./views/servo/Connect.vue') },
     {
       path: '/servo/entries',
-      component: async () => import('./views/servo/Entries.vue'),
+      component: async () => await import('./views/servo/Entries.vue'),
       beforeEnter: (to, fron) => {
         const { token } = useServoAuth()
         if (token.value == null) return { path: '/servo/connect' }

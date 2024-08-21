@@ -75,7 +75,7 @@ watch(auth.user, user => {
 watch(battery.level, () => {
   if (props.noPush) return
   if (!auth.isLoggedIn.value || !battery.isSupported) return
-  mutate({
+  void mutate({
     batteryStatus: {
       automatic: true,
       charging: battery.charging.value,
@@ -89,7 +89,7 @@ watch(battery.level, () => {
 watchWithFilter(manualLevel, level => {
   if (props.noPush) return
   if (!auth.isLoggedIn.value || !level) return
-  mutate({
+  void mutate({
     batteryStatus: {
       automatic: false,
       batteryLevel: parseInt(level, 10)
@@ -115,7 +115,7 @@ useIntervalFn(() => {
   if (!auth.user.value.battery?.updatedAt || auth.user.value.battery?.updatedAt < Date.now() - minWait) {
     needUpdate.value = true
     if (auth.isLoggedIn.value && !battery.isSupported) {
-      mutate({
+      void mutate({
         batteryStatus: {
           automatic: true,
           charging: battery.charging.value,

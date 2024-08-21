@@ -37,7 +37,7 @@ import type { Model } from '../../../models'
 
 export type Schema = 'seconds'
 
-const props = defineProps({
+defineProps({
   model: {
     type: Object as PropType<Model>,
     required: true
@@ -63,8 +63,8 @@ const interval = useIntervalFn(() => {
 
   const time = Math.round((Date.now() - startTime.value) / 1000)
   if (time !== tally('seconds')) {
-    if (prevMark) addMark({ schema: 'undo', target: prevMark.sequence })
-    addMark({ schema: 'seconds', value: time })
+    if (prevMark) void addMark({ schema: 'undo', target: prevMark.sequence })
+    void addMark({ schema: 'seconds', value: time })
   }
 }, 100, { immediate: false })
 
@@ -78,7 +78,7 @@ function stopTimer () {
   if (!interval.isActive.value || startTime.value == null) return
   interval.pause()
   const time = Math.round((Date.now() - startTime.value) / 1000)
-  addMark({ schema: 'clear' })
-  addMark({ schema: 'seconds', value: time })
+  void addMark({ schema: 'clear' })
+  void addMark({ schema: 'seconds', value: time })
 }
 </script>

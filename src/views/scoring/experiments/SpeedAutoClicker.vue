@@ -50,7 +50,7 @@ import type { Model } from '../../../models'
 
 export type Schema = 'step' | 'falseStart' | 'falseSwitch'
 
-const props = defineProps({
+defineProps({
   model: {
     type: Object as PropType<Model>,
     required: true
@@ -88,7 +88,7 @@ const ticker = useIntervalFn(() => {
   }
 
   for (let count = current; count < expected; count++) {
-    addMark({ schema: 'step' })
+    void addMark({ schema: 'step' })
   }
 }, 50, { immediate: false, immediateCallback: true })
 </script>

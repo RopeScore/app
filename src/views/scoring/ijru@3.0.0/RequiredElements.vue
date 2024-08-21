@@ -166,21 +166,6 @@ import { useScoresheet } from '../../../hooks/scoresheet'
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
 
-export type Schema = typeof requiredElements[number]
-| typeof requiredDisciplines[number]
-| 'miss' | 'timeViolation' | 'spaceViolation'
-
-defineProps({
-  model: {
-    type: Object as PropType<Model>,
-    required: true
-  }
-})
-
-const { scoresheet, addMark, tally } = useScoresheet<Schema>()
-
-const lookupCodeParts = computed(() => scoresheet.value?.competitionEventId.split('.') ?? [])
-
 const requiredElements = [
   'rqMultiples',
   'rqWrapsReleases',
@@ -197,9 +182,24 @@ const requiredDisciplines = [
   'rdTraveller'
 ] as const
 
+export type Schema = typeof requiredElements[number]
+| typeof requiredDisciplines[number]
+| 'miss' | 'timeViolation' | 'spaceViolation'
+
+defineProps({
+  model: {
+    type: Object as PropType<Model>,
+    required: true
+  }
+})
+
+const { scoresheet, addMark, tally } = useScoresheet<Schema>()
+
+const lookupCodeParts = computed(() => scoresheet.value?.competitionEventId.split('.') ?? [])
+
 const isDoubleDutch = computed(() => lookupCodeParts.value[3] === 'dd')
 const isShow = computed(() => lookupCodeParts.value[3] === 'ts')
-const hasInteractions = computed(() => parseInt(lookupCodeParts.value[5], 10) > (lookupCodeParts.value[3] === 'dd' ? 3 : 1))
+const hasInteractions = computed(() => parseInt(lookupCodeParts.value[5] as string, 10) > (lookupCodeParts.value[3] === 'dd' ? 3 : 1))
 
 const result = computed(() => {
   let elements = 0

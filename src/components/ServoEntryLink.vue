@@ -108,7 +108,7 @@ const color = computed(() => {
 
 function openScoresheet (id: ServoIntermediateScoresheet<string>['id']) {
   const [,competitionId, entryId, judgeSequence, scoresheetId] = id.split('::')
-  router.push(`/score/servo/${competitionId}/${entryId}/${judgeSequence}/${scoresheetId}`)
+  void router.push(`/score/servo/${competitionId}/${entryId}/${judgeSequence}/${scoresheetId}`)
 }
 
 const prevScoresheets = ref<Array<ServoIntermediateScoresheet<string>>>([])

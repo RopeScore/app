@@ -77,8 +77,8 @@ const props = defineProps({
 
 const emit = defineEmits<{
   'change:step': [step: string]
-  'undo': []
-  'clear': []
+  undo: []
+  clear: []
 }>()
 
 const isLastStep = computed(() => !Array.isArray(props.steps) || props.steps.length === 0 || props.currentStep === props.steps.at(-1))
@@ -91,7 +91,7 @@ const disableUndo = computed(() => {
 })
 
 function undo () {
-  scsh.addMark({ schema: 'undo', target: lastMarkSequence.value })
+  void scsh.addMark({ schema: 'undo', target: lastMarkSequence.value })
   emit('undo')
 }
 

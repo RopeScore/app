@@ -13,7 +13,7 @@ export function useAuth () {
   watch(token, (nT, pT) => {
     console.log('token', nT)
     if (pT === null && nT !== null) {
-      refetch()
+      void refetch()
     }
   })
 

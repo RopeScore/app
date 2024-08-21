@@ -5,6 +5,15 @@ const numInt = new Intl.NumberFormat(['en-GB'], { style: 'decimal', maximumFract
 
 export function numFmt (v: number) { return numInt.format(v) }
 
+declare global {
+  interface ImportMetaEnv {
+    VITE_COMMIT_REF?: string
+    VITE_CONTEXT?: string
+    VITE_GRAPHQL_ENDPOINT?: string
+    VITE_GRAPHQL_WS_ENDPOINT?: string
+  }
+}
+
 const locales = ['en-SE', 'en-AU', 'en-GB']
 const dateFormatter = Intl.DateTimeFormat(locales, {
   dateStyle: 'medium',
@@ -24,7 +33,7 @@ export function formatList (list: string[]): string {
   return listFormatter.format(list)
 }
 
-export const version = (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
+export const version: string = (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
 
 export function handleScaleUpdateFactory <Schema extends string> (scoresheet: Readonly<Ref<Scoresheet<Schema> | undefined>>, addMark: ReturnType<typeof useScoresheet<Schema>>['addMark']) {
   return function handleScaleUpdate (schema: Schema, value: number) {
@@ -48,9 +57,9 @@ export function handleScaleUpdateFactory <Schema extends string> (scoresheet: Re
         if (marks[idx].sequence === prevMark.sequence) break // can't undo earlier than the mark
       }
 
-      if (!isUndone) addMark({ schema: 'undo', target: prevMark.sequence })
+      if (!isUndone) void addMark({ schema: 'undo', target: prevMark.sequence })
     }
 
-    addMark({ schema, value })
+    void addMark({ schema, value })
   }
 }

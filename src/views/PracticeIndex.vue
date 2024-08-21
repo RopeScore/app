@@ -77,7 +77,7 @@ async function selectModel (model: Model, options?: Record<string, any>, competi
     }
   })
 
-  router.push(`/score/local/${id}`)
+  await router.push(`/score/local/${id}`)
 }
 
 const { result, loading } = useDeviceStreamSharesQuery({

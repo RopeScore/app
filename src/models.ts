@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { type Component, defineAsyncComponent } from 'vue'
 import { calculateTally, convertMarksToServoIntermediate, type ServoIntermediateScoresheet } from './hooks/scoresheet'
@@ -80,6 +82,7 @@ function servoSpeedConverter (scoresheet: ServoIntermediateScoresheet<import('./
     switch (mark.schema) {
       case 'step': {
         scores.Clicks += mark.value ?? 1
+
         scores.ClickTimes.push(mark.timestamp)
         break
       }
@@ -93,7 +96,7 @@ const models: Model[] = [
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
     judgeType: 'S',
     name: 'Speed',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Speed.vue')),
     localOptions: [
       {
         type: 'boolean',
@@ -109,7 +112,7 @@ const models: Model[] = [
     rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'ijru.speed.2020'],
     judgeType: 'Shj',
     name: 'Speed Head Judge',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Speed.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Speed.vue')),
     localAlternativeCompetitionEvents: [
       ['False Switches', 'e.ijru.sp.sr.srsr.4.4x30@1.0.0'],
       ['No Switches', 'e.ijru.sp.sr.srss.1.30@1.0.0']
@@ -129,7 +132,7 @@ const models: Model[] = [
     rulesId: ['experiments'],
     judgeType: 'S',
     name: 'Speed Auto Clicker',
-    component: defineAsyncComponent(async () => import('./views/scoring/experiments/SpeedAutoClicker.vue'))
+    component: defineAsyncComponent(async () => await import('./views/scoring/experiments/SpeedAutoClicker.vue'))
   },
 
   {
@@ -137,13 +140,13 @@ const models: Model[] = [
     judgeType: 'D',
     name: 'Difficulty',
     historic: true,
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@1.1.0/Difficulty.vue'))
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Difficulty.vue'))
   },
   {
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
     judgeType: 'D',
     name: 'Difficulty',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/Difficulty.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@3.0.0/Difficulty.vue')),
     localAlternativeCompetitionEvents: [
       ['Freestyle', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
       ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300@3.0.0']
@@ -180,6 +183,7 @@ const models: Model[] = [
 
             scores[`Level${levelName}`] += mark.value ?? 1
             scores.SkillLevels.push(level)
+
             scores.SkillTimes.push(mark.timestamp)
           } else if (mark.schema === 'rep' && !isShow) {
             // make TS happy by re-initing
@@ -200,7 +204,7 @@ const models: Model[] = [
     judgeType: 'Pa',
     name: 'Athlete Presentation',
     historic: true,
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/AthletePresentation.vue'))
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@2.0.0/AthletePresentation.vue'))
   },
   {
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
@@ -210,7 +214,7 @@ const models: Model[] = [
       ['Freestyle', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
       ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300@3.0.0']
     ],
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/AthletePresentation.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@3.0.0/AthletePresentation.vue')),
     converters: {
       servo (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ijru@3.0.0/AthletePresentation.vue').Schema>) {
         const isShow = scoresheet.competitionEventId.split('.')[3] === 'ts'
@@ -300,13 +304,13 @@ const models: Model[] = [
     judgeType: 'Pr',
     name: 'Routine Presentation',
     historic: true,
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/RoutinePresentation.vue'))
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@2.0.0/RoutinePresentation.vue'))
   },
   {
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
     judgeType: 'Pr',
     name: 'Routine Presentation',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue')),
     localAlternativeCompetitionEvents: [
       ['Freestyle', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
       ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300@3.0.0']
@@ -376,7 +380,7 @@ const models: Model[] = [
     judgeType: 'R',
     name: 'Required Elements',
     historic: true,
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@2.0.0/RequiredElements.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@2.0.0/RequiredElements.vue')),
     localAlternativeCompetitionEvents: [
       ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75@2.0.0'],
       ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75@2.0.0'],
@@ -388,7 +392,7 @@ const models: Model[] = [
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
     judgeType: 'R',
     name: 'Required Elements',
-    component: defineAsyncComponent(async () => import('./views/scoring/ijru@3.0.0/RequiredElements.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@3.0.0/RequiredElements.vue')),
     localAlternativeCompetitionEvents: [
       ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
       ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75@3.0.0'],
@@ -537,14 +541,14 @@ const models: Model[] = [
     rulesId: 'svgf-rh@2020',
     judgeType: 'D',
     name: 'Difficulty',
-    component: defineAsyncComponent(async () => import('./views/scoring/svgf-rh@2020/Difficulty.vue'))
+    component: defineAsyncComponent(async () => await import('./views/scoring/svgf-rh@2020/Difficulty.vue'))
   },
   {
     rulesId: 'svgf-rh@2020',
     judgeType: 'P',
     name: 'Presentation',
     allowScroll: true,
-    component: defineAsyncComponent(async () => import('./views/scoring/svgf-rh@2020/Presentation.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/svgf-rh@2020/Presentation.vue')),
     localAlternativeCompetitionEvents: [
       ['Single Rope', 'e.svgf.fs.sr.srif-rh.1.75@2020'],
       ['Double Dutch', 'e.svgf.fs.dd.ddpf-rh.4.75@2020']
@@ -555,19 +559,19 @@ const models: Model[] = [
     rulesId: 'svgf-vh@2023',
     judgeType: 'D',
     name: 'Difficulty',
-    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Difficulty.vue'))
+    component: defineAsyncComponent(async () => await import('./views/scoring/svgf-vh@2023/Difficulty.vue'))
   },
   {
     rulesId: 'svgf-vh@2023',
     judgeType: 'O',
     name: 'Obligatoriska',
-    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Obligatoriska.vue'))
+    component: defineAsyncComponent(async () => await import('./views/scoring/svgf-vh@2023/Obligatoriska.vue'))
   },
   {
     rulesId: 'svgf-vh@2023',
     judgeType: 'P',
     name: 'Presentation',
-    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Presentation.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/svgf-vh@2023/Presentation.vue')),
     localAlternativeCompetitionEvents: [
       ['Single Rope', 'e.svgf.fs.sr.srif-vh.1.75@2023'],
       ['Double Dutch', 'e.svgf.fs.dd.ddpf-vh.4.120@2023']
@@ -577,14 +581,14 @@ const models: Model[] = [
     rulesId: 'svgf-vh@2023',
     judgeType: 'T',
     name: 'Timing',
-    component: defineAsyncComponent(async () => import('./views/scoring/svgf-vh@2023/Timing.vue'))
+    component: defineAsyncComponent(async () => await import('./views/scoring/svgf-vh@2023/Timing.vue'))
   },
 
   {
     rulesId: 'experiments',
     judgeType: 'P',
     name: 'Simplified Presentation',
-    component: defineAsyncComponent(async () => import('./views/scoring/experiments/SimplifiedPresentation.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/experiments/SimplifiedPresentation.vue')),
     hidden: true,
     historic: true,
     localOptions: [
@@ -596,7 +600,7 @@ const models: Model[] = [
     rulesId: 'experiments',
     judgeType: 'Pc1',
     name: 'Circular Presentation (Not-scales)',
-    component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentationAlt1.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/experiments/CirclePresentationAlt1.vue')),
     hidden: true,
     historic: true
   },
@@ -604,7 +608,7 @@ const models: Model[] = [
     rulesId: 'experiments',
     judgeType: 'Pc2',
     name: 'Circular Presentation (Scales)',
-    component: defineAsyncComponent(async () => import('./views/scoring/experiments/CirclePresentationAlt2.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/experiments/CirclePresentationAlt2.vue')),
     hidden: true,
     steps: ['marks', 'adjust']
   },
@@ -612,14 +616,14 @@ const models: Model[] = [
     rulesId: 'experiments',
     judgeType: 'Pc5',
     name: 'Five Presentation Scales 2024',
-    component: defineAsyncComponent(async () => import('./views/scoring/experiments/FiveScalePresentation2024.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/experiments/FiveScalePresentation2024.vue')),
     steps: ['marks', 'adjust']
   },
   {
     rulesId: 'experiments',
     judgeType: 'Pc3',
     name: 'Five Presentation Scales 2023',
-    component: defineAsyncComponent(async () => import('./views/scoring/experiments/FiveScalePresentation.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/experiments/FiveScalePresentation.vue')),
     hidden: true,
     steps: ['marks', 'adjust'],
     localOptions: [
@@ -646,7 +650,7 @@ const models: Model[] = [
     rulesId: 'experiments',
     judgeType: 'R',
     name: 'Density Required Elements',
-    component: defineAsyncComponent(async () => import('./views/scoring/experiments/DensityReqEl.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/experiments/DensityReqEl.vue')),
     hidden: true,
     localAlternativeCompetitionEvents: [
       ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
@@ -661,7 +665,7 @@ const models: Model[] = [
     judgeType: 'J',
     name: 'Jumper',
     allowScroll: true,
-    component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {
       servo: servoDdc2023Converter
     }
@@ -671,7 +675,7 @@ const models: Model[] = [
     judgeType: 'T',
     name: 'Turner',
     allowScroll: true,
-    component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {
       servo: servoDdc2023Converter
     }
@@ -681,7 +685,7 @@ const models: Model[] = [
     judgeType: 'E',
     name: 'Expression',
     allowScroll: true,
-    component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {
       servo: servoDdc2023Converter
     }
@@ -691,7 +695,7 @@ const models: Model[] = [
     judgeType: 'S',
     name: 'Staging',
     allowScroll: true,
-    component: defineAsyncComponent(async () => import('./views/scoring/ddc@2023/Judge.vue')),
+    component: defineAsyncComponent(async () => await import('./views/scoring/ddc@2023/Judge.vue')),
     converters: {
       servo: servoDdc2023Converter
     },

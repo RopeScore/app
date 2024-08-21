@@ -52,7 +52,7 @@ const fields: Definition[] = [
 ]
 
 const result = computed(() => {
-  const res = fields.map(s => tally(s[0]) ?? 0).reduce((a, b) => a + b, 0)
+  const res = fields.map(s => tally(s[0])).reduce((a, b) => a + b, 0)
   return res
 })
 
@@ -77,9 +77,9 @@ function handleUpdate (schema: Schema, value: number) {
       if (marks[idx].sequence === prevMark.sequence) break // can't undo earlier than the mark
     }
 
-    if (!isUndone) addMark({ schema: 'undo', target: prevMark.sequence })
+    if (!isUndone) void addMark({ schema: 'undo', target: prevMark.sequence })
   }
 
-  addMark({ schema, value })
+  void addMark({ schema, value })
 }
 </script>

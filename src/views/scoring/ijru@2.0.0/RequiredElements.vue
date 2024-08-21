@@ -178,7 +178,7 @@ const requiredElements = [
 ] as const
 
 const isDoubleDutch = computed(() => lookupCodeParts.value[3] === 'dd')
-const hasInteractions = computed(() => parseInt(lookupCodeParts.value[5], 10) > (lookupCodeParts.value[3] === 'dd' ? 3 : 1))
+const hasInteractions = computed(() => parseInt(lookupCodeParts.value[5] as string, 10) > (lookupCodeParts.value[3] === 'dd' ? 3 : 1))
 
 function L (level: number): number {
   if (level === 0) return 0
@@ -215,7 +215,7 @@ const result = computed(() => {
 })
 
 function addRepeatedSkill (schema: Schema) {
-  addMark({ schema })
+  void addMark({ schema })
   diffOpen.value = false
 }
 

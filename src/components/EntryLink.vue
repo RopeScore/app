@@ -150,7 +150,7 @@ async function createScoresheet () {
 
   if (!res?.data?.createMarkScoresheet.id) return
 
-  router.push(`/score/rs/${props.groupId}/${entry.value.id}/${res.data.createMarkScoresheet.id}`)
+  await router.push(`/score/rs/${props.groupId}/${entry.value.id}/${res.data.createMarkScoresheet.id}`)
 }
 
 async function openUncompletedOrCreate () {
@@ -161,7 +161,7 @@ async function openUncompletedOrCreate () {
       .at(-1)
 
   if (scoresheet?.id) {
-    router.push(`/score/rs/${props.groupId}/${entry.value.id}/${scoresheet.id}`)
+    await router.push(`/score/rs/${props.groupId}/${entry.value.id}/${scoresheet.id}`)
   } else {
     const res = await createScoresheetMutation.mutate({
       entryId: entry.value.id,
@@ -171,7 +171,7 @@ async function openUncompletedOrCreate () {
 
     if (!res?.data?.createMarkScoresheet.id) return
 
-    router.push(`/score/rs/${props.groupId}/${entry.value.id}/${res.data.createMarkScoresheet.id}`)
+    await router.push(`/score/rs/${props.groupId}/${entry.value.id}/${res.data.createMarkScoresheet.id}`)
   }
 }
 </script>

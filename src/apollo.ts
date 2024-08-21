@@ -7,17 +7,19 @@ import { WebSocketLink } from './graphql-ws'
 import { computed, watch } from 'vue'
 import { useFetch, useIntervalFn, useLocalStorage } from '@vueuse/core'
 import useNotifications from './hooks/notifications'
+import { Kind, OperationTypeNode } from 'graphql'
 
 const localDiscover = useFetch('http://ropescore.local').get().text()
 const resolvedReachable = useFetch(
   computed(() => `https://${localDiscover.data.value}/.well-known/apollo/server-health`),
   {
     refetch: computed(() => typeof localDiscover.data.value === 'string' && /\.local\.ropescore\.com(:\d+)?$/.test(localDiscover.data.value)),
+    timeout: 5_000,
     immediate: false
   }
 ).get().json()
 useIntervalFn(() => {
-  localDiscover.execute()
+  void localDiscover.execute()
 }, 60_000)
 
 export const localApis = ['', 'local-001', 'local-002', 'local-003', 'local-004', 'dev']
@@ -28,11 +30,12 @@ const manualReachable = useFetch(
     : `https://${localManual.value}.local.ropescore.com/.well-known/apollo/server-health`),
   {
     refetch: computed(() => !!localManual.value),
+    timeout: 5_000,
     immediate: !!localManual.value
   }
 ).get().json()
 useIntervalFn(() => {
-  manualReachable.execute()
+  void manualReachable.execute()
 }, 60_000)
 
 export const apiDomain = computed(() => {
@@ -87,7 +90,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       pushError({
         message: err.message,
         type: 'server',
-        code: typeof err.extensions.code === 'string' ? err.extensions.code : undefined
+        code: typeof err.extensions?.code === 'string' ? err.extensions.code : undefined
       })
     }
   }
@@ -119,16 +122,16 @@ const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query)
     return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
+      definition.kind === Kind.OPERATION_DEFINITION &&
+      definition.operation === OperationTypeNode.SUBSCRIPTION
     ) ||
     (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'mutation' &&
-      definition.name?.kind === 'Name' &&
+      definition.kind === Kind.OPERATION_DEFINITION &&
+      definition.operation === OperationTypeNode.MUTATION &&
+      definition.name?.kind === Kind.NAME &&
       (
-        definition.name?.value === 'AddStreamMark' ||
-        definition.name?.value === 'AddDeviceStreamMark'
+        definition.name.value === 'AddStreamMark' ||
+        definition.name.value === 'AddDeviceStreamMark'
       )
     )
   },

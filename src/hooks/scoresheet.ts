@@ -190,7 +190,6 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
       provideApolloClient(apolloClient)
     }
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     scsh.marks.push({
       timestamp: Date.now(),
       sequence: scsh.marks.length,
@@ -210,6 +209,9 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
         },
         tally: tally.value
       })
+        .catch(err => {
+          if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+        })
     }
 
     if (scsh.options?.deviceStream === true) {
@@ -227,6 +229,9 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
         },
         tally: tally.value
       })
+        .catch(err => {
+          if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+        })
     }
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
@@ -352,7 +357,7 @@ const openRs = async (groupId: string, entryId: string, scoresheetId: string) =>
 
       if (!scoresheet.value.completedAt) {
         const { mutate } = useOpenScoresheetMutation({})
-        mutate({ scoresheetId, openedAt: Date.now() })
+        void mutate({ scoresheetId, openedAt: Date.now() })
       }
 
       resolve(undefined)
@@ -373,16 +378,17 @@ const closeRs = async ({ save }: CloseScoresheetOptions) => {
     if (save && scoresheet.value.submittedAt == null) {
       // TODO: store local copy in case submit fails and need to resubmit
       const { mutate, onDone } = useSaveScoresheetMutation({})
-      mutate({
+      onDone(res => {
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+        if (res.errors) reject(res.errors)
+        resolve(undefined)
+      })
+
+      void mutate({
         scoresheetId: scoresheet.value.id,
         marks: scoresheet.value.marks,
         completedAt: scoresheet.value.completedAt,
         programVersion: `@ropescore/app@${version ?? 'dev'}`
-      })
-
-      onDone(res => {
-        if (res.errors) reject(res.errors)
-        resolve(undefined)
       })
     } else {
       resolve(undefined)
@@ -397,7 +403,7 @@ const openServo = async (competitionId: number, entryId: number, judgeSequence: 
       const err = new Error('Not logged in')
       console.error(err)
       pushNotification({ message: err.message, color: 'red' })
-      router.push({ path: '/servo/connect' })
+      await router.push({ path: '/servo/connect' })
       return
     }
 
@@ -437,7 +443,7 @@ const closeServo = async ({ save }: CloseScoresheetOptions) => {
       const err = new Error('Not logged in')
       console.error(err)
       pushNotification({ message: err.message, color: 'red' })
-      router.push({ path: '/servo/connect' })
+      await router.push({ path: '/servo/connect' })
       return
     }
 
@@ -567,7 +573,7 @@ export function useScoresheet <Schema extends string> (): UseScoresheetReturn<Sc
         throw err
       }
     },
-    async close (save: boolean = true) {
+    async close (save = true) {
       try {
         if (!scoresheet.value) return
 
