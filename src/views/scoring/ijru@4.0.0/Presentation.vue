@@ -213,7 +213,7 @@ defineProps({
   step: {
     type: String,
     default: null
-  }
+  },
 })
 
 const { addMark, tally, scoresheet } = useScoresheet<Schema>()

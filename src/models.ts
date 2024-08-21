@@ -551,7 +551,7 @@ const models: Model[] = [
     judgeType: 'T',
     name: 'Technical',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/Technical.vue')),
-    steps: ['marks', 'adjust'],
+    steps: ['marks', 'timeViolations'],
   },
 
   {
