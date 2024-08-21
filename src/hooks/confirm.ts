@@ -6,7 +6,9 @@ import type { Ref } from 'vue'
 
 export function useConfirm<T extends (...args: any[]) => void | Promise<void>> (func: T, target?: MaybeElementRef): { fire: (...args: Parameters<T>) => void, fireNext: Ref<boolean> } {
   const fireNext = ref(false)
-  const { start, stop } = useTimeoutFn(() => { fireNext.value = false }, 3000, { immediate: false })
+  const timeout = useTimeoutFn(() => {
+    fireNext.value = false
+  }, 3000, { immediate: false })
 
   if (target) {
     onClickOutside(target, () => {
@@ -17,11 +19,12 @@ export function useConfirm<T extends (...args: any[]) => void | Promise<void>> (
   return {
     fire (...args) {
       if (fireNext.value) {
-        stop()
+        timeout.stop()
+        fireNext.value = false
         void func(...args)
         return
       }
-      start()
+      timeout.start()
       fireNext.value = true
     },
     fireNext

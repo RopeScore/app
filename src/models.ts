@@ -93,7 +93,7 @@ function servoSpeedConverter (scoresheet: ServoIntermediateScoresheet<import('./
 
 const models: Model[] = [
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru@4.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
     judgeType: 'S',
     name: 'Speed',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Speed.vue')),
@@ -109,7 +109,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'ijru.speed.2020'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru@4.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'ijru.speed.2020'],
     judgeType: 'Shj',
     name: 'Speed Head Judge',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Speed.vue')),
@@ -145,6 +145,7 @@ const models: Model[] = [
   {
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
     judgeType: 'D',
+    historic: true,
     name: 'Difficulty',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@3.0.0/Difficulty.vue')),
     localAlternativeCompetitionEvents: [
@@ -210,6 +211,7 @@ const models: Model[] = [
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
     judgeType: 'Pa',
     name: 'Athlete Presentation',
+    historic: true,
     localAlternativeCompetitionEvents: [
       ['Freestyle', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
       ['Show Freestyle', 'e.ijru.fs.ts.sctf.8.300@3.0.0']
@@ -298,7 +300,6 @@ const models: Model[] = [
       }
     }
   },
-
   {
     rulesId: ['ijru@2.0.0', 'svgf-par@2.0.0'],
     judgeType: 'Pr',
@@ -310,6 +311,7 @@ const models: Model[] = [
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
     judgeType: 'Pr',
     name: 'Routine Presentation',
+    historic: true,
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@3.0.0/RoutinePresentation.vue')),
     localAlternativeCompetitionEvents: [
       ['Freestyle', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
@@ -374,6 +376,13 @@ const models: Model[] = [
       }
     }
   },
+  {
+    rulesId: ['ijru@4.0.0'],
+    judgeType: 'P',
+    name: 'Presentation',
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/Presentation.vue')),
+    steps: ['marks', 'adjust'],
+  },
 
   {
     rulesId: ['ijru@2.0.0', 'svgf-par@2.0.0'],
@@ -392,6 +401,7 @@ const models: Model[] = [
     rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
     judgeType: 'R',
     name: 'Required Elements',
+    historic: true,
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@3.0.0/RequiredElements.vue')),
     localAlternativeCompetitionEvents: [
       ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
@@ -536,6 +546,13 @@ const models: Model[] = [
       }
     }
   },
+    {
+    rulesId: ['ijru@4.0.0'],
+    judgeType: 'T',
+    name: 'Technical',
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/Technical.vue')),
+    steps: ['marks', 'adjust'],
+  },
 
   {
     rulesId: 'svgf-rh@2020',
@@ -610,6 +627,7 @@ const models: Model[] = [
     name: 'Circular Presentation (Scales)',
     component: defineAsyncComponent(async () => await import('./views/scoring/experiments/CirclePresentationAlt2.vue')),
     hidden: true,
+    historic: true,
     steps: ['marks', 'adjust']
   },
   {
@@ -617,7 +635,9 @@ const models: Model[] = [
     judgeType: 'Pc5',
     name: 'Five Presentation Scales 2024',
     component: defineAsyncComponent(async () => await import('./views/scoring/experiments/FiveScalePresentation2024.vue')),
-    steps: ['marks', 'adjust']
+    steps: ['marks', 'adjust'],
+    hidden: true,
+    historic: true,
   },
   {
     rulesId: 'experiments',
@@ -625,6 +645,7 @@ const models: Model[] = [
     name: 'Five Presentation Scales 2023',
     component: defineAsyncComponent(async () => await import('./views/scoring/experiments/FiveScalePresentation.vue')),
     hidden: true,
+    historic: true,
     steps: ['marks', 'adjust'],
     localOptions: [
       {
@@ -652,6 +673,7 @@ const models: Model[] = [
     name: 'Density Required Elements',
     component: defineAsyncComponent(async () => await import('./views/scoring/experiments/DensityReqEl.vue')),
     hidden: true,
+    historic: true,
     localAlternativeCompetitionEvents: [
       ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75@3.0.0'],
       ['Pair/Team Single Rope, and Wheel', 'e.ijru.fs.sr.srtf.4.75@3.0.0'],
