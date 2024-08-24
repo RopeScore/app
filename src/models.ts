@@ -215,7 +215,7 @@ const models: Model[] = [
     rulesId: ['ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0'],
     judgeType: ['Dp', 'Dm', 'Dr', 'Da', 'Db'],
     name: 'Difficulty (Single Rope and Wheel)',
-    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/SRWHDifficulty.vue'))
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@3.0.0/Difficulty.vue'))
   },
 
   {
