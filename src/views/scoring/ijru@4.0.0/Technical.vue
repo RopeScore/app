@@ -99,6 +99,7 @@
       @click="addMark({ schema: 'miss' })"
     />
     <score-button
+      v-if="cEvtDef?.discipline !== 'dd'"
       label="Breaks"
       color="orange"
       class="col-start-3 row-start-4"
