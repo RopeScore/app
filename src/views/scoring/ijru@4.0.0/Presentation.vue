@@ -225,7 +225,7 @@ function componentScore (type: Component) {
   for (const mark of scoresheet.value?.marks ?? []) {
     if (mark.schema === `${type}Plus`) score += CHANGE
     else if (mark.schema === `${type}Minus`) score -= CHANGE
-    else if (mark.schema === `miss`) score -= CHANGE
+    else if (mark.schema === 'miss') score -= CHANGE
   }
 
   score = Math.round(clamp(score, 0, 24))
