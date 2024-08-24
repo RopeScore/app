@@ -1,0 +1,32 @@
+{
+  "hosting": {
+    "public": "dist",
+    "site": "ropescore-app",
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "ignore": [
+      "**/.*"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(css|js|png|svg|woff|woff2|eot|ttf|otf)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=86400"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
+      }
+    ]
+  }
+}
