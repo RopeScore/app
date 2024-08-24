@@ -93,7 +93,7 @@ function servoSpeedConverter (scoresheet: ServoIntermediateScoresheet<import('./
 
 const models: Model[] = [
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru@4.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru.speed@4.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
     judgeType: 'S',
     name: 'Speed',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Speed.vue')),
@@ -109,7 +109,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru@4.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'ijru.speed.2020'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru.speed@4.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'ijru.speed.2020'],
     judgeType: 'Shj',
     name: 'Speed Head Judge',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Speed.vue')),
@@ -198,6 +198,24 @@ const models: Model[] = [
         return scores
       }
     }
+  },
+  // {
+  //   rulesId: ['ijru.freestyle.dd@4.0.0'],
+  //   judgeType: 'Dt',
+  //   name: 'Turner Difficulty (Double Dutch)',
+  //   component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/DDTurnerDifficulty.vue'))
+  // },
+  // {
+  //   rulesId: ['ijru.freestyle.dd@4.0.0'],
+  //   judgeType: 'Dj',
+  //   name: 'Jumper Difficulty (Double Dutch)',
+  //   component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/DDJumperDifficulty.vue'))
+  // },
+  {
+    rulesId: ['ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0'],
+    judgeType: ['Dp', 'Dm', 'Dr', 'Da', 'Db'],
+    name: 'Difficulty (Single Rope and Wheel)',
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/SRWHDifficulty.vue'))
   },
 
   {
@@ -377,7 +395,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru@4.0.0'],
+    rulesId: ['ijru.freestyle.dd@4.0.0', 'ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0'],
     judgeType: 'P',
     name: 'Presentation',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/Presentation.vue')),

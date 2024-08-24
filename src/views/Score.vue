@@ -73,7 +73,9 @@ watch(() => route.params, async (next, prev) => {
 const model = computed(() => {
   const sc = scsh.scoresheet.value
   if (!sc) return null
-  const model = models.find(model => model.rulesId.includes(sc.rulesId) && model.judgeType === sc.judgeType)
+  const model = models.find(model => model.rulesId.includes(sc.rulesId) && (
+    Array.isArray(model.judgeType) ? model.judgeType.includes(sc.judgeType) : model.judgeType === sc.judgeType
+  ))
   if (!model) return null
 
   if (model.allowScroll) {
