@@ -21,6 +21,7 @@
   "dependencies": {
     "@apollo/client": "^3.11.4",
     "@ropescore/components": "^1.9.1",
+    "@ropescore/rulesets": "^0.8.0",
     "@sentry/vue": "^7.102.0",
     "@vue/apollo-composable": "^4.2.0",
     "@vue/tsconfig": "^0.5.1",

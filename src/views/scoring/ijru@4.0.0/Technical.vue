@@ -1,11 +1,76 @@
 <template>
-  <main class="grid grid-cols-3 grid-rows-score">
+  <main v-if="step === 'timeViolations'" class="grid grid-cols-3 grid-rows-score">
     <score-button
-      label="Score"
+      label="Timer"
       color="none"
-      :value="result"
-      single-row
-      class="col-span-3"
+      class="col-start-1 row-start-1"
+      :value="duration.toFixed(1)"
+      disabled
+    />
+
+    <score-button
+      label="Time Violations: Was the routine too short?"
+      color="none"
+      class="col-start-2 col-span-2 row-start-1"
+      disabled
+    />
+
+    <score-button
+      label="more than 5s, less than 10s"
+      color="red"
+      class="col-start-2 row-start-2"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'timeViolation', value: 4 })"
+    />
+    <score-button
+      label="more than 10s, less than 15s"
+      color="red"
+      class="col-start-2 row-start-3"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'timeViolation', value: 8 })"
+    />
+    <score-button
+      label="more than 15s"
+      color="red"
+      class="col-start-2 row-start-4"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'timeViolation', value: 12 })"
+    />
+
+    <score-button
+      label="Total Time Violations"
+      color="none"
+      class="col-start-3 row-start-4"
+      :value="tally('timeViolation')"
+      disabled
+    />
+  </main>
+
+  <main v-else class="grid grid-cols-3 grid-rows-score">
+    <score-button
+      v-if="lastStartMark == null"
+      label="Start Timer"
+      color="green"
+      class="col-start-1 row-start-1"
+      :value="duration.toFixed(1)"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'resumeTimer' })"
+    />
+    <score-button
+      v-else
+      label="Pause Timer"
+      color="orange"
+      class="col-start-1 row-start-1"
+      :value="duration.toFixed(1)"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'pauseTimer' })"
+    />
+    <score-button
+      label="Reset Timer"
+      color="red"
+      class="col-start-2 row-start-1"
+      :disabled="!!scoresheet?.completedAt || duration === 0"
+      @click="addMark({ schema: 'resetTimer' })"
     />
 
     <score-button
@@ -16,7 +81,6 @@
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'spaceViolation' })"
     />
-
     <score-button
       label="Time Violations"
       color="red"
@@ -34,7 +98,6 @@
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'miss' })"
     />
-
     <score-button
       label="Breaks"
       color="orange"
@@ -43,20 +106,64 @@
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'break' })"
     />
+
+    <score-button
+      v-if="cEvtDef?.discipline === 'sr' && cEvtDef.numParticipants > 1"
+      label="Pairs Interactions"
+      class="col-start-1 row-start-2"
+      :value="tally('rqInteractions')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'rqInteractions' })"
+    />
+
+    <template v-if="cEvtDef?.discipline === 'wh'">
+      <score-button
+        label="Partner Interactions"
+        class="col-start-1 row-start-2"
+        :value="tally('rqInteractions')"
+        :disabled="!!scoresheet?.completedAt"
+        @click="addMark({ schema: 'rqInteractions' })"
+      />
+      <score-button
+        label="Rope Manipulation"
+        class="col-start-3 row-start-2"
+        :value="tally('rqRopeManipulation')"
+        :disabled="!!scoresheet?.completedAt"
+        @click="addMark({ schema: 'rqRopeManipulation' })"
+      />
+      <score-button
+        label="Gymnastics / Power"
+        class="col-start-1 row-start-3"
+        :value="tally('rqGymnasticsPower')"
+        :disabled="!!scoresheet?.completedAt"
+        @click="addMark({ schema: 'rqGymnasticsPower' })"
+      />
+      <score-button
+        label="Multiples"
+        class="col-start-3 row-start-3"
+        :value="tally('rqMultiples')"
+        :disabled="!!scoresheet?.completedAt"
+        @click="addMark({ schema: 'rqMultiples' })"
+      />
+    </template>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
-import { useScoresheet } from '../../../hooks/scoresheet'
+import { useScoresheet, type Mark } from '../../../hooks/scoresheet'
+import { useIntervalFn } from '@vueuse/core'
 
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'
+import { parseCompetitionEventDefinition } from '@ropescore/rulesets'
 
-export type Schema = 'timerStart' | 'timerStop' | 'miss' | 'break' | 'timeViolation' | 'spaceViolation'
+export type Schema = 'resumeTimer' | 'pauseTimer' | 'resetTimer' |
+  'miss' | 'break' | 'timeViolation' | 'spaceViolation' |
+  'rqInteractions' | 'rqRopeManipulation' | 'rqMultiples' | 'rqGymnasticsPower'
 
-defineProps({
+const props = defineProps({
   model: {
     type: Object as PropType<Model>,
     required: true
@@ -69,25 +176,72 @@ defineProps({
 
 const { scoresheet, addMark, tally } = useScoresheet<Schema>()
 
-const lookupCodeParts = computed<string[]>(() => scoresheet.value?.competitionEventId.split('.') ?? [])
+const cEvtDef = computed(() => scoresheet.value?.competitionEventId == null ? null : parseCompetitionEventDefinition(scoresheet.value.competitionEventId as string))
 
-const isDoubleDutch = computed(() => lookupCodeParts.value[3] === 'dd')
-const isShow = computed(() => lookupCodeParts.value[3] === 'ts')
-const hasInteractions = computed(() => parseInt(lookupCodeParts.value[5] as string, 10) > (lookupCodeParts.value[3] === 'dd' ? 3 : 1))
+// here we try to only process new marks without building a wrapper for addMark
+// in our component, but also without reprocessing every mark on each new mark
+// addition
+const lastMarkSequence = ref(-1)
+const accumulatedDuration = ref(0)
+const lastStartMark = ref<Mark<Schema>>()
+const skipMarks = ref<number[]>([])
+watch(() => scoresheet.value?.marks, marks => {
+  if (props.step === 'timeViolations') return
+  if (marks == null) return
+  // handle odd resets
+  if (marks.length === 0) {
+    lastMarkSequence.value = -1
+    accumulatedDuration.value = 0
+    lastStartMark.value = undefined
+    skipMarks.value = []
+    return
+  }
 
-const lastStart = computed(() => {
-  const startMarkIdx = scoresheet.value?.marks.findLastIndex(m => m.schema === 'timerStart') ?? -1
-  const clearMarkIdx = scoresheet.value?.marks.findLastIndex(m => m.schema === 'clear') ?? -1
-  if (startMarkIdx > clearMarkIdx) return scoresheet.value?.marks[startMarkIdx]
+  // We don't have any new marks to process
+  if (marks.at(-1)?.sequence === lastMarkSequence.value) return
+
+  for (let idx = lastMarkSequence.value + 1; idx < marks.length; idx++) {
+    const mark = marks[idx]
+    if (skipMarks.value.includes(mark.sequence)) continue
+
+    if (mark.schema === 'pauseTimer') {
+      if (lastStartMark.value == null) continue
+      accumulatedDuration.value += mark.timestamp - lastStartMark.value.timestamp
+      lastStartMark.value = undefined
+    } else if (mark.schema === 'clear' || mark.schema === 'resetTimer') {
+      accumulatedDuration.value = 0
+      lastStartMark.value = undefined
+    } else if (mark.schema === 'undo') {
+      if (
+        marks[mark.target].schema === 'resumeTimer' ||
+        marks[mark.target].schema === 'resetTimer' ||
+        marks[mark.target].schema === 'pauseTimer'
+      ) {
+        skipMarks.value.push(mark.target)
+        skipMarks.value.push(mark.sequence)
+        accumulatedDuration.value = 0
+        idx = -1
+      }
+    } else if (lastStartMark.value == null) {
+      lastStartMark.value = mark
+    }
+
+    lastMarkSequence.value = mark.sequence
+  }
+}, { deep: true })
+
+watch(() => props.step, newStep => {
+  if (newStep === 'timeViolations' && lastStartMark.value != null) {
+    void addMark({ schema: 'pauseTimer' })
+  }
 })
 
-const lastStop = computed(() => {
-  if (lastStart.value == null) return
-  const stopMarkIdx = scoresheet.value?.marks.findLastIndex(m => m.schema === 'timerStop') ?? -1
-  if (stopMarkIdx > lastStart.values.sequence) return scoresheet.value?.marks[startMarkIdx]
-})
-
-const result = computed(() => {
-  return 0
-})
+const duration = ref(0)
+useIntervalFn(() => {
+  let d = accumulatedDuration.value
+  if (lastStartMark.value != null) {
+    d += Date.now() - lastStartMark.value.timestamp
+  }
+  duration.value = Math.round(d / 100) / 10
+}, 100)
 </script>

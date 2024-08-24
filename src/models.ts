@@ -546,12 +546,23 @@ const models: Model[] = [
       }
     }
   },
-    {
-    rulesId: ['ijru@4.0.0'],
+  {
+    rulesId: ['ijru.freestyle.dd@4.0.0'],
     judgeType: 'T',
-    name: 'Technical',
+    name: 'Technical (Double Dutch)',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/Technical.vue')),
     steps: ['marks', 'timeViolations'],
+  },
+  {
+    rulesId: ['ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0'],
+    judgeType: 'T',
+    name: 'Technical (Single Rope and Wheel)',
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/Technical.vue')),
+    localAlternativeCompetitionEvents: [
+      ['Individual Single Rope', 'e.ijru.fs.sr.srif.1.75@4.0.0'],
+      ['Pair/Team Single Rope', 'e.ijru.fs.sr.srtf.4.75@4.0.0'],
+      ['Wheel', 'e.ijru.fs.wh.whpf.2.75@4.0.0'],
+    ]
   },
 
   {
