@@ -187,7 +187,6 @@ const accumulatedDuration = ref(0)
 const lastStartMark = ref<Mark<Schema>>()
 const skipMarks = ref<number[]>([])
 watch(() => scoresheet.value?.marks, marks => {
-  if (props.step === 'timeViolations') return
   if (marks == null) return
   // handle odd resets
   if (marks.length === 0) {
