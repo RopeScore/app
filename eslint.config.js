@@ -1,5 +1,6 @@
 import neostandard, { resolveIgnoresFromGitignore } from 'neostandard'
 import eslint from '@eslint/js'
+// @ts-expect-error Yeah we don't need types here
 import pluginVue from 'eslint-plugin-vue'
 import tseslint from 'typescript-eslint'
 import parser from '@typescript-eslint/parser'

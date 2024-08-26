@@ -110,7 +110,7 @@ const levels = computed(() => ([5, 4, 3, 2, 1] as const).map<Array<[Schema, numb
 async function addMod (type: 'Plus' | 'Minus') {
   const prevMark = scoresheet.value?.marks.at(-1)
   if (isDiffBaseSchema(prevMark?.schema)) {
-    await addMark({ schema: 'undo', target: prevMark.sequence  })
+    await addMark({ schema: 'undo', target: prevMark.sequence })
     await addMark({ schema: `${prevMark.schema}${type}` })
   }
 }

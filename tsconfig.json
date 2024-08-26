@@ -13,6 +13,6 @@
     "src/**/*.vue",
     "*.config.js",
     "*.config.ts",
-    "**/.*.js"
+    "./*.d.ts"
   ]
 }

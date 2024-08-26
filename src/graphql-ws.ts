@@ -1,12 +1,13 @@
-import { ApolloLink, type Operation, type FetchResult, Observable } from '@apollo/client/core'
-import { print, type GraphQLError } from 'graphql'
-import { createClient, type ClientOptions, type Client } from 'graphql-ws'
+import { ApolloLink, type Operation, type FetchResult, Observable, ApolloError } from '@apollo/client/core'
+import { isNonNullObject } from '@apollo/client/utilities'
+import { print, type FormattedExecutionResult } from 'graphql'
+import { createClient, type ClientOptions, type Client, type Sink } from 'graphql-ws'
 
 interface RestartableClient extends Client {
   restart: () => void
 }
 
-function createRestartableClient (options: ClientOptions): RestartableClient {
+export function createRestartableClient (options: ClientOptions): RestartableClient {
   let restartRequested = false
   let restart = () => {
     restartRequested = true
@@ -45,6 +46,16 @@ function createRestartableClient (options: ClientOptions): RestartableClient {
   }
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close_event
+function isLikeCloseEvent (val: unknown): val is CloseEvent {
+  return isNonNullObject(val) && 'code' in val && 'reason' in val
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/error_event
+function isLikeErrorEvent (err: unknown): err is Event {
+  return isNonNullObject(err) && err.target?.readyState === WebSocket.CLOSED
+}
+
 export class WebSocketLink extends ApolloLink {
   readonly clients: RestartableClient[]
   private currentClientIdx = 0
@@ -57,39 +68,39 @@ export class WebSocketLink extends ApolloLink {
   }
 
   public request (operation: Operation): Observable<FetchResult> {
-    return new Observable((sink) => {
+    return new Observable((observer) => {
       const client = this.clients[this.currentClientIdx]
       this.currentClientIdx = (this.currentClientIdx + 1) % this.clients.length
       return client.subscribe<FetchResult>(
         { ...operation, query: print(operation.query) },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         {
-          next: sink.next.bind(sink),
-          complete: sink.complete.bind(sink),
-          error: (err) => {
+          next: observer.next.bind(observer),
+          complete: observer.complete.bind(observer),
+          error: (err: unknown) => {
             if (err instanceof Error) {
-              sink.error(err)
-              return
+              observer.error(err); return
             }
-
-            if (err instanceof CloseEvent) {
-              sink.error(
+            const likeClose = isLikeCloseEvent(err)
+            if (likeClose || isLikeErrorEvent(err)) {
+              observer.error(
                 // reason will be available on clean closes
                 new Error(
-                  `Socket closed with event ${err.code} ${err.reason || ''}`
+                  `Socket closed${likeClose ? ` with event ${err.code}` : ''}${
+                    likeClose ? ` ${err.reason}` : ''
+                  }`
                 )
-              )
-              return
+              ); return
             }
 
-            sink.error(
-              Array.isArray(err)
-                ? new Error((err as GraphQLError[])
-                  .map(({ message }) => message)
-                  .join(', '))
-                : (err as GraphQLError)
+            observer.error(
+              new ApolloError({
+                graphQLErrors: Array.isArray(err) ? err : [err],
+              })
             )
-          }
-        }
+          },
+          // casting around a wrong type in graphql-ws, which incorrectly expects `Sink<ExecutionResult>`
+        } satisfies Sink<FormattedExecutionResult> as any
       )
     })
   }
