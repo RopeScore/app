@@ -32,30 +32,3 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ROPESCORE_APP }}
           channelId: live
           projectId: ropescore-app
-
-  build_and_deploy_lyra:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    environment:
-      name: production-lyra
-      url: ${{ steps.firebase-deploy.outputs.details_url }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci --prefer-offline
-      - run: npm run codegen
-      - run: npm run build
-        env:
-          VITE_COMMIT_REF: ${{ github.sha }}
-          VITE_CONTEXT: production-lyra
-          VITE_LYRA: true
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        id: firebase-deploy
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ROPESCORE_APP }}
-          channelId: live
-          projectId: ropescore-app-lyra
