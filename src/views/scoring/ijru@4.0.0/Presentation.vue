@@ -222,11 +222,10 @@ const CHANGE = 1
 
 function componentScore (type: Component) {
   let score = 12
-  for (const mark of scoresheet.value?.marks ?? []) {
-    if (mark.schema === `${type}Plus`) score += CHANGE
-    else if (mark.schema === `${type}Minus`) score -= CHANGE
-    else if (mark.schema === 'miss') score -= CHANGE
-  }
+
+  score += tally(`${type}Plus`) * CHANGE
+  score -= tally(`${type}Minus`) * CHANGE
+  score -= tally('miss') * CHANGE
 
   score = Math.round(clamp(score, 0, 24))
 

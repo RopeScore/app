@@ -199,18 +199,18 @@ const models: Model[] = [
       }
     }
   },
-  // {
-  //   rulesId: ['ijru.freestyle.dd@4.0.0'],
-  //   judgeType: 'Dt',
-  //   name: 'Turner Difficulty (Double Dutch)',
-  //   component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/DDTurnerDifficulty.vue'))
-  // },
-  // {
-  //   rulesId: ['ijru.freestyle.dd@4.0.0'],
-  //   judgeType: 'Dj',
-  //   name: 'Jumper Difficulty (Double Dutch)',
-  //   component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/DDJumperDifficulty.vue'))
-  // },
+  {
+    rulesId: ['ijru.freestyle.dd@4.0.0'],
+    judgeType: 'Dt',
+    name: 'Turner Difficulty (Double Dutch)',
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/DDDifficulty.vue'))
+  },
+  {
+    rulesId: ['ijru.freestyle.dd@4.0.0'],
+    judgeType: 'Dj',
+    name: 'Jumper Difficulty (Double Dutch)',
+    component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/DDDifficulty.vue'))
+  },
   {
     rulesId: ['ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0'],
     judgeType: ['Dp', 'Dm', 'Dr', 'Da', 'Db'],
