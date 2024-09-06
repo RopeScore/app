@@ -3,13 +3,29 @@
     v-if="step === 'marks'"
     class="grid grid-cols-3 grid-rows-score-five"
   >
-    <score-button
+      <score-button
+      label="Creativity -"
+      class="row-start-5"
+      color="red"
+      :value="tally('creaMinus')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'creaMinus' })"
+    />
+        <score-button
       label="Musicality -"
-      class="row-start-2"
+      class="row-start-4"
       color="red"
       :value="tally('musicMinus')"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'musicMinus' })"
+    />
+    <score-button
+      label="Entertainment -"
+      class="row-start-2"
+      color="red"
+      :value="tally('entMinus')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'entMinus' })"
     />
     <score-button
       label="Form -"
@@ -18,22 +34,6 @@
       :value="tally('formMinus')"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'formMinus' })"
-    />
-    <score-button
-      label="Creativity -"
-      class="row-start-4"
-      color="red"
-      :value="tally('creaMinus')"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'creaMinus' })"
-    />
-    <score-button
-      label="Entertainment -"
-      class="row-start-5"
-      color="red"
-      :value="tally('entMinus')"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'entMinus' })"
     />
     <score-button
       label="Repetitive -"
@@ -45,11 +45,25 @@
     />
 
     <score-button
+      label="Creativity +"
+      class="row-start-5 col-start-3"
+      :value="tally('creaPlus')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'creaPlus' })"
+    />
+        <score-button
       label="Musicality +"
-      class="row-start-2 col-start-3"
+      class="row-start-4 col-start-3"
       :value="tally('musicPlus')"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'musicPlus' })"
+    />
+    <score-button
+      label="Entertainment +"
+      class="row-start-2 col-start-3"
+      :value="tally('entPlus')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'entPlus' })"
     />
     <score-button
       label="Form +"
@@ -57,20 +71,6 @@
       :value="tally('formPlus')"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'formPlus' })"
-    />
-    <score-button
-      label="Creativity +"
-      class="row-start-4 col-start-3"
-      :value="tally('creaPlus')"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'creaPlus' })"
-    />
-    <score-button
-      label="Entertainment +"
-      class="row-start-5 col-start-3"
-      :value="tally('entPlus')"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'entPlus' })"
     />
     <score-button
       label="Variety +"
@@ -110,11 +110,25 @@
     />
 
     <score-button
+      label="Creativity -"
+      class="row-start-5"
+      color="red"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'creaMinusAdj' })"
+    />
+        <score-button
       label="Musicality -"
-      class="row-start-2"
+      class="row-start-4"
       color="red"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'musicMinusAdj' })"
+    />
+    <score-button
+      label="Entertainment -"
+      class="row-start-2"
+      color="red"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'entMinusAdj' })"
     />
     <score-button
       label="Form -"
@@ -122,20 +136,6 @@
       color="red"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'formMinusAdj' })"
-    />
-    <score-button
-      label="Creativity -"
-      class="row-start-4"
-      color="red"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'creaMinusAdj' })"
-    />
-    <score-button
-      label="Entertainment -"
-      class="row-start-5"
-      color="red"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'entMinusAdj' })"
     />
     <score-button
       label="Repetitive -"
@@ -160,28 +160,28 @@
     </div>
 
     <score-button
+      label="Creativity +"
+      class="row-start-5 col-start-4"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'creaPlusAdj' })"
+    />
+        <score-button
       label="Musicality +"
-      class="row-start-2 col-start-4"
+      class="row-start-4 col-start-4"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'musicPlusAdj' })"
+    />
+    <score-button
+      label="Entertainment +"
+      class="row-start-2 col-start-4"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'entPlusAdj' })"
     />
     <score-button
       label="Form +"
       class="row-start-3 col-start-4"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'formPlusAdj' })"
-    />
-    <score-button
-      label="Creativity +"
-      class="row-start-4 col-start-4"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'creaPlusAdj' })"
-    />
-    <score-button
-      label="Entertainment +"
-      class="row-start-5 col-start-4"
-      :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'entPlusAdj' })"
     />
     <score-button
       label="Variety +"
@@ -200,7 +200,7 @@ import { computed, type PropType } from 'vue'
 import type { Model } from '../../../models'
 import { clamp } from '@vueuse/core'
 
-const components = ['music', 'form', 'crea', 'ent', 'variety'] as const
+const components = ['crea', 'music', 'ent', 'form', 'variety'] as const
 type Component = typeof components[number]
 
 export type Schema = 'miss' | `${Component}${'Plus' | 'Minus'}${'' | 'Adj'}`
@@ -238,9 +238,9 @@ function componentScore (type: Component) {
 }
 
 const weights = {
-  music: 0.2,
-  form: 0.25,
   ent: 0.25,
+  form: 0.25,
+  music: 0.2,
   crea: 0.15,
   variety: 0.15
 }
