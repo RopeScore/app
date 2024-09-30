@@ -102,7 +102,7 @@
     </template>
     <template v-else>
       <template
-        v-for="level in levels"
+        v-for="level, idx in levels"
         :key="level ? level[0] : idx"
       >
         <score-button
