@@ -88,7 +88,7 @@ const modDisabled = computed(() => !isDiffBaseSchema(scoresheet.value?.marks.at(
 
 function L (level: number): number {
   if (level === 0) return 0
-  return Math.round(Math.pow(1.5, level) * 10) / 100
+  return Math.round(Math.pow(1.5, level) * 100) / 100
 }
 
 const levelButtons = computed((): Array<[DiffBaseSchema, number] | null> => [
