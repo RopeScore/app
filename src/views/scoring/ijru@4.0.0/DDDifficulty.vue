@@ -8,32 +8,53 @@
       class="col-span-3"
     />
 
-    <template
-      v-for="btn in levelButtons"
-      :key="btn?.[0]"
-    >
-      <score-button
-        v-if="btn == null"
-        label=""
-        color="none"
-        disabled
-      />
-      <score-button
-        v-else
-        color="indigo"
-        :label="`Level ${btn?.[1]}`"
-        :value="tally(btn?.[0]) + tally(`${btn?.[0]}Plus`) + tally(`${btn?.[0]}Minus`)"
-        :disabled="!!scoresheet?.completedAt"
-        @click="addMark({ schema: btn?.[0] })"
-      />
-    </template>
+    <score-button
+      color="indigo"
+      class="col-start-1 row-start-2"
+      label="Level 1"
+      :value="tally('diffL1') + tally('diffL1Plus') + tally('diffL1Minus')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'diffL1' })"
+    />
+    <score-button
+      color="indigo"
+      class="col-start-1 row-start-3"
+      label="Level 2"
+      :value="tally('diffL2') + tally('diffL2Plus') + tally('diffL2Minus')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'diffL2' })"
+    />
+    <score-button
+      color="indigo"
+      class="col-start-1 row-start-4"
+      label="Level 3"
+      :value="tally('diffL3') + tally('diffL3Plus') + tally('diffL3Minus')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'diffL3' })"
+    />
+    <score-button
+      color="indigo"
+      class="col-start-3 row-start-2"
+      label="Level 4"
+      :value="tally('diffL4') + tally('diffL4Plus') + tally('diffL4Minus')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'diffL4' })"
+    />
+    <score-button
+      color="indigo"
+      class="col-start-3 row-start-3"
+      label="Level 5"
+      :value="tally('diffL5') + tally('diffL5Plus') + tally('diffL5Minus')"
+      :disabled="!!scoresheet?.completedAt"
+      @click="addMark({ schema: 'diffL5' })"
+    />
 
     <score-button
       label="-"
       color="red"
       single-row
       :disabled="!!scoresheet?.completedAt || modDisabled"
-      class="col-start-1 row-start-4"
+      class="col-start-3 row-start-4"
       @click="addMod('Minus')"
     />
     <score-button
@@ -42,7 +63,7 @@
       color="orange"
       :disabled="!!scoresheet?.completedAt"
       :value="tally('break')"
-      class="col-start-2 row-start-4"
+      class="col-start-2 row-start-3"
       @click="addMark({ schema: 'break' })"
     />
     <score-button
@@ -50,7 +71,7 @@
       color="green"
       single-row
       :disabled="!!scoresheet?.completedAt || modDisabled"
-      class="col-start-3 row-start-4"
+      class="col-start-2 row-start-4"
       @click="addMod('Plus')"
     />
   </main>
@@ -90,16 +111,6 @@ function L (level: number): number {
   if (level === 0) return 0
   return Math.round(Math.pow(1.5, level) * 100) / 100
 }
-
-const levelButtons = computed((): Array<[DiffBaseSchema, number] | null> => [
-  ['diffL1', 1],
-  ['diffL5', 5],
-  ['diffL2', 2],
-
-  ['diffL3', 3],
-  null,
-  ['diffL4', 4],
-])
 
 const levels = computed(() => ([5, 4, 3, 2, 1] as const).map<Array<[Schema, number]>>(l => [
   [`diffL${l}Plus`, l + 0.5],
