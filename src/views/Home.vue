@@ -68,6 +68,12 @@
       </router-link>
       <router-link
         class="block p-2 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
+        to="/servo/connect"
+      >
+        Judge an IJRU Scoring Competition
+      </router-link>
+      <router-link
+        class="block p-2 text-center text-lg text-white bg-green-500 hover:bg-green-600 rounded"
         to="/rs/groups"
       >
         Judge a RopeScore Competition
@@ -83,12 +89,6 @@
         to="/scoresheets"
       >
         Stored Scoresheets
-      </router-link>
-      <router-link
-        class="block p-2 text-center text-lg text-white bg-white rounded"
-        to="/servo/connect"
-      >
-        Judge an IJRU Scoring Competition
       </router-link>
     </nav>
 

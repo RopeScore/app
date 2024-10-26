@@ -64,7 +64,7 @@ import type { Model } from '../../../models'
 
 export type Schema = 'step' | 'falseStart' | 'falseSwitch'
 
-const props = defineProps({
+defineProps({
   model: {
     type: Object as PropType<Model>,
     required: true
@@ -73,7 +73,7 @@ const props = defineProps({
 
 const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 
-const isHeadJudge = computed(() => props.model.judgeType === 'Shj')
+const isHeadJudge = computed(() => scoresheet.value?.judgeType === 'Shj')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 const hasSwitches = computed(() => /\.\d+x\d+@.*$/.test(scoresheet.value?.competitionEventId ?? ''))
 </script>

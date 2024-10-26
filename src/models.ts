@@ -29,6 +29,7 @@ export interface Model {
   allowScroll?: boolean
   component: Component
   localAlternativeCompetitionEvents?: Array<[string, string]>
+  localCompetitionEvent?: string
   localOptions?: Option[]
   hidden?: boolean
   historic?: boolean
@@ -568,6 +569,7 @@ const models: Model[] = [
     rulesId: ['ijru.freestyle.dd@4.0.0'],
     judgeType: 'T',
     name: 'Technical (Double Dutch)',
+    localCompetitionEvent: 'e.ijru.fs.dd.ddsf.1.75@4.0.0',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/Technical.vue')),
     steps: ['marks', 'timeViolations'],
   },

@@ -95,6 +95,8 @@ const rulesetList = computed(() => Array.isArray(props.model.rulesId) ? props.mo
 onMounted(() => {
   if (props.model.localAlternativeCompetitionEvents) {
     competitionEventLookupCode.value = props.model.localAlternativeCompetitionEvents[0][1]
+  } else if (props.model.localCompetitionEvent) {
+    competitionEventLookupCode.value = props.model.localCompetitionEvent
   }
 })
 </script>

@@ -98,7 +98,7 @@ export interface ServoEntry {
   EventDefinitionName: string
   EventDefinitionAbbr: number
   ScoringModelName: string
-  EventTypeCode: string // competitionEventLookupCode
+  EventTypeCode: string // competitionEventLookupCode - without version
   IsScored: boolean
   IsScratched: boolean
   IsLocked: boolean
@@ -111,6 +111,12 @@ export interface ServoEntry {
     TeamName: string
   }>
   ScoringRulesConfig: Record<string, unknown>
+  EntryExtraData?: { options?: Record<string, unknown> }
+  EntryMeta: {
+    entryId: string
+    participantId: string
+    competitionEvent: string
+  }
 }
 
 export interface ServoSession {
@@ -122,7 +128,7 @@ export interface ServoSession {
 
 export interface ServoJudge {
   JudgeSequence: number
-  JudgeType: null // TODO
+  JudgeType: string
 }
 
 export interface ServoCompetition {
@@ -458,12 +464,12 @@ const closeServo = async ({ save }: CloseScoresheetOptions) => {
     }
     const rulesId = scoresheet.value.rulesId
     const judgeType = scoresheet.value.judgeType
-    const model = models.find(model => model.rulesId.includes(rulesId) && model.judgeType === judgeType)
+    const model = models.find(model => model.rulesId.includes(rulesId) && (Array.isArray(model.judgeType) ? model.judgeType.includes(judgeType) : model.judgeType === judgeType))
     if (!model) {
       throw new Error('Could not find model for scoresheet')
     }
     if (model.converters?.servo == null) {
-      throw new Error('Model does not have a converter for servo scoring')
+      console.warn('Model does not have a converter for servo scoring - using new structure')
     }
     const [,competitionId, entryId, judgeSequence] = scoresheet.value.id.split('::')
 
@@ -486,7 +492,7 @@ const closeServo = async ({ save }: CloseScoresheetOptions) => {
         method = 'POST'
       }
 
-      const scores = model.converters.servo(scoresheet.value)
+      const scores = model.converters?.servo?.(scoresheet.value)
 
       // store the remote copy
       const response = await fetch(url, {
@@ -504,7 +510,10 @@ const closeServo = async ({ save }: CloseScoresheetOptions) => {
             DeviceID: deviceId.value,
             RoutineStartTime: scoresheet.value.openedAt ?? scoresheet.value.createdAt,
             BatteryLevel: battery.isSupported ? Math.round(battery.level.value * 100) : undefined,
-            ...scores
+            ...(scores ?? {}),
+            MarkSheet: {
+              marks: scoresheet.value.marks
+            }
           }
         })
       })
@@ -622,47 +631,69 @@ export interface CreateServoScoresheetArgs {
   competitionId: number
   entryId: number
   judgeSequence: number
+  judgeType?: string
   scoringModel: string
   competitionEventId: string
   options?: Record<string, any> | null
 }
-export async function createServoScoresheet ({ competitionId, entryId, judgeSequence, scoringModel, competitionEventId, options }: CreateServoScoresheetArgs) {
+export async function createServoScoresheet ({ competitionId, entryId, judgeSequence, judgeType: _judgeType, scoringModel, competitionEventId, options }: CreateServoScoresheetArgs) {
   try {
-    let judgeType: string
-    if (scoringModel.startsWith('ijru.freestyle.') || scoringModel.startsWith('ijru.teamshow.')) {
-      if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'Pa'
-      else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'Pr'
-      else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'R'
-      else if (judgeSequence >= 31 && judgeSequence <= 39) judgeType = 'D'
-      else throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
-    } else if (scoringModel.startsWith('ijru.speed.')) {
-      if (judgeSequence === 1) judgeType = 'Shj'
-      else judgeType = 'S'
-    } else if (scoringModel.startsWith('ijru.ddcf.') || scoringModel.startsWith('ijru.ddc.')) {
-      switch (judgeSequence) {
-        case 1:
-        case 2:
-          judgeType = 'J'
-          break
-        case 3:
-        case 4:
-          judgeType = 'T'
-          break
-        case 5:
-        case 6:
-        case 7:
-          judgeType = 'E'
-          break
-        case 8:
-        case 9:
-        case 10:
-          judgeType = 'S'
-          break
-        default:
-          throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
+    let judgeType = _judgeType
+    if (judgeType == null) {
+      if (scoringModel.startsWith('ijru.freestyle.sr@4.0.0')) {
+        if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'P'
+        else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'T'
+        else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'Dp'
+        else if (judgeSequence >= 31 && judgeSequence <= 39) judgeType = 'Dm'
+        else if (judgeSequence >= 41 && judgeSequence <= 49) judgeType = 'Dr'
+        else throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
+      } else if (scoringModel.startsWith('ijru.freestyle.wh@4.0.0')) {
+        if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'P'
+        else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'T'
+        else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'Da'
+        else if (judgeSequence >= 31 && judgeSequence <= 39) judgeType = 'Db'
+        else throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
+      } else if (scoringModel.startsWith('ijru.freestyle.dd@4.0.0')) {
+        if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'P'
+        else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'T'
+        else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'Dj'
+        else if (judgeSequence >= 31 && judgeSequence <= 39) judgeType = 'Dt'
+        else throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
+      } else if (scoringModel.startsWith('ijru.freestyle.') || scoringModel.startsWith('ijru.teamshow.')) {
+        if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'Pa'
+        else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'Pr'
+        else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'R'
+        else if (judgeSequence >= 31 && judgeSequence <= 39) judgeType = 'D'
+        else throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
+      } else if (scoringModel.startsWith('ijru.speed.')) {
+        if (judgeSequence === 1) judgeType = 'Shj'
+        else judgeType = 'S'
+      } else if (scoringModel.startsWith('ijru.ddcf.') || scoringModel.startsWith('ijru.ddc.')) {
+        switch (judgeSequence) {
+          case 1:
+          case 2:
+            judgeType = 'J'
+            break
+          case 3:
+          case 4:
+            judgeType = 'T'
+            break
+          case 5:
+          case 6:
+          case 7:
+            judgeType = 'E'
+            break
+          case 8:
+          case 9:
+          case 10:
+            judgeType = 'S'
+            break
+          default:
+            throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
+        }
+      } else {
+        throw new TypeError(`scoring model ${scoringModel} not supported`)
       }
-    } else {
-      throw new TypeError(`scoring model ${scoringModel} not supported`)
     }
 
     const newScoresheet: ServoIntermediateScoresheet<string> = {

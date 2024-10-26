@@ -135,9 +135,10 @@ async function createScoresheet () {
       competitionId: props.competitionId,
       entryId: entry.value.EntryNumber,
       judgeSequence: judge.value.JudgeSequence,
+      judgeType: judge.value.JudgeType,
       scoringModel: entry.value.ScoringModelName,
       competitionEventId: entry.value.EventTypeCode,
-      options: entry.value.ScoringRulesConfig
+      options: entry.value.EntryExtraData?.options
     })
     openScoresheet(scoresheetId)
   } finally {

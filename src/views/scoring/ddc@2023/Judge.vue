@@ -65,7 +65,7 @@ missHints[0] = '(no-miss bonus)'
 missHints[7] = '(or more)'
 
 const scoreLabel = computed(() => {
-  switch (model.value.judgeType) {
+  switch (Array.isArray(model.value.judgeType) ? model.value.judgeType[0] : model.value.judgeType) {
     case 'J':
       return 'Jumper Score'
     case 'T':
@@ -80,7 +80,7 @@ const scoreLabel = computed(() => {
 })
 
 const scoreMark = computed<Schema>(() => {
-  switch (model.value.judgeType) {
+  switch (Array.isArray(model.value.judgeType) ? model.value.judgeType[0] : model.value.judgeType) {
     case 'J':
       return 'jumperScore'
     case 'T':
