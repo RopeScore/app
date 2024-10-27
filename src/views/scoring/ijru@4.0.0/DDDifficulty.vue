@@ -55,7 +55,7 @@
       single-row
       :disabled="!!scoresheet?.completedAt || modDisabled"
       class="col-start-3 row-start-4"
-      @click="addMod('Minus')"
+      @click="addMark({ schema: 'diffMinus' })"
     />
     <score-button
       v-if="hasBreaks"
@@ -72,7 +72,7 @@
       single-row
       :disabled="!!scoresheet?.completedAt || modDisabled"
       class="col-start-2 row-start-4"
-      @click="addMod('Plus')"
+      @click="addMark({ schema: 'diffPlus' })"
     />
   </main>
 </template>
@@ -86,7 +86,7 @@ import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
 type DiffBaseSchema = `diffL${1 | 2 | 3 | 4 | 5}`
-export type Schema = 'break' | `${DiffBaseSchema}${'Plus' | 'Minus' | ''}`
+export type Schema = 'break' | 'diffPlus' | 'diffMinus' | DiffBaseSchema
 
 defineProps({
   model: {
@@ -117,14 +117,6 @@ const levels = computed(() => ([5, 4, 3, 2, 1] as const).map<Array<[Schema, numb
   [`diffL${l}`, l],
   [`diffL${l}Minus`, l - 0.25],
 ]).flat(1))
-
-async function addMod (type: 'Plus' | 'Minus') {
-  const prevMark = scoresheet.value?.marks.at(-1)
-  if (isDiffBaseSchema(prevMark?.schema)) {
-    await addMark({ schema: 'undo', target: prevMark.sequence })
-    await addMark({ schema: `${prevMark.schema}${type}` })
-  }
-}
 
 const result = computed(() => {
   let score = 0

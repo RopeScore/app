@@ -39,9 +39,9 @@
       label="Repetitive -"
       class="row-start-6"
       color="red"
-      :value="tally('varietyMinus')"
+      :value="tally('variMinus')"
       :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'varietyMinus' })"
+      @click="addMark({ schema: 'variMinus' })"
     />
 
     <score-button
@@ -75,9 +75,9 @@
     <score-button
       label="Variety +"
       class="row-start-6 col-start-3"
-      :value="tally('varietyPlus')"
+      :value="tally('variPlus')"
       :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'varietyPlus' })"
+      @click="addMark({ schema: 'variPlus' })"
     />
 
     <score-button
@@ -142,7 +142,7 @@
       class="row-start-6"
       color="red"
       :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'varietyMinusAdj' })"
+      @click="addMark({ schema: 'variMinusAdj' })"
     />
 
     <div
@@ -187,7 +187,7 @@
       label="Variety +"
       class="row-start-6 col-start-4"
       :disabled="!!scoresheet?.completedAt"
-      @click="addMark({ schema: 'varietyPlusAdj' })"
+      @click="addMark({ schema: 'variPlusAdj' })"
     />
   </main>
 </template>
@@ -200,7 +200,7 @@ import { computed, type PropType } from 'vue'
 import type { Model } from '../../../models'
 import { clamp } from '@vueuse/core'
 
-const components = ['crea', 'music', 'ent', 'form', 'variety'] as const
+const components = ['crea', 'music', 'ent', 'form', 'vari'] as const
 type Component = typeof components[number]
 
 export type Schema = 'miss' | `${Component}${'Plus' | 'Minus'}${'' | 'Adj'}`
@@ -242,7 +242,7 @@ const weights = {
   form: 0.25,
   music: 0.2,
   crea: 0.15,
-  variety: 0.15
+  vari: 0.15
 }
 
 const result = computed(() => {
@@ -251,7 +251,7 @@ const result = computed(() => {
     form: componentScore('form'),
     ent: componentScore('ent'),
     crea: componentScore('crea'),
-    variety: componentScore('variety')
+    vari: componentScore('vari')
   }
   let sum = 0
 
