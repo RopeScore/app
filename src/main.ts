@@ -19,10 +19,10 @@ if (import.meta.env.PROD) {
     dsn: 'https://91d516fcee2348da93854140a4a8cdcc@o127465.ingest.sentry.io/5654198',
     release: import.meta.env.VITE_COMMIT_REF?.toString(),
     environment: import.meta.env.VITE_CONTEXT?.toString(),
+    tracePropagationTargets: ['ropescore.app', 'api.ropescore.com'],
     logErrors: true,
-    integrations: [new Sentry.BrowserTracing({
-      tracingOrigins: ['ropescore.app'],
-      routingInstrumentation: Sentry.vueRouterInstrumentation(router)
+    integrations: [Sentry.browserTracingIntegration({
+      router
     })],
     tracesSampleRate: 1.0
   })
