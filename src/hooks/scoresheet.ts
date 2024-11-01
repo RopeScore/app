@@ -67,6 +67,15 @@ export interface ServoIntermediateScoresheet<T extends string> {
   judgeType: string
   competitionEventId: string
 
+  entry: {
+    id: number
+    heat: number
+    station: string
+  }
+  judge: {
+    id: number
+  }
+
   marks: Array<Mark<T>>
 
   createdAt: number
@@ -635,8 +644,9 @@ export interface CreateServoScoresheetArgs {
   scoringModel: string
   competitionEventId: string
   options?: Record<string, any> | null
+  entry: ServoIntermediateScoresheet<string>['entry']
 }
-export async function createServoScoresheet ({ competitionId, entryId, judgeSequence, judgeType: _judgeType, scoringModel, competitionEventId, options }: CreateServoScoresheetArgs) {
+export async function createServoScoresheet ({ competitionId, entryId, judgeSequence, judgeType: _judgeType, scoringModel, competitionEventId, entry, options }: CreateServoScoresheetArgs) {
   try {
     let judgeType = _judgeType
     if (judgeType == null) {
@@ -700,6 +710,10 @@ export async function createServoScoresheet ({ competitionId, entryId, judgeSequ
       id: `servo::${competitionId}::${entryId}::${judgeSequence}::${uuid()}`,
       marks: [],
       rulesId: scoringModel,
+      entry,
+      judge: {
+        id: judgeSequence
+      },
       judgeType,
       competitionEventId,
       options,

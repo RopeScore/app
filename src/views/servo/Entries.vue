@@ -5,7 +5,7 @@ import ServoEntryLink from '../../components/ServoEntryLink.vue'
 import BatteryStatus from '../../components/BatteryStatus.vue'
 import { useFetch } from '@vueuse/core'
 import { useServoAuth } from '../../hooks/servo-auth'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { type AssignmentCodeLookupResponse } from '../../hooks/scoresheet'
 import { version } from '../../helpers'
 
@@ -40,42 +40,36 @@ const { data, error, isFetching, execute: refetch } = useFetch(url, {
   }
 }).json<AssignmentCodeLookupResponse>()
 
+watch(data, (newData, oldData) => {
+  if (oldData == null && newData?.Session.CurrentHeatNumber != null) {
+    scrollToHeat(newData.Session.CurrentHeatNumber)
+  }
+}, {
+  flush: 'post'
+})
+
 const currentHeat = computed(() => data.value?.Session.CurrentHeatNumber ?? 1)
 
-const remainingEntries = computed(() =>
+const entries = computed(() =>
   data.value
     ? [...data.value.Entries]
-        .filter(en =>
-          !en.IsScratched &&
-          !en.IsLocked &&
-          (
-            typeof en.HeatNumber !== 'number' ||
-            en.HeatNumber >= currentHeat.value
-          ) &&
-          !en.IsJudgeScored
-        )
         .sort((a, b) => {
           if (a.HeatNumber !== b.HeatNumber) return (a.HeatNumber ?? Infinity) - (b.HeatNumber ?? Infinity)
           else return a.Participants[0].FirstName.localeCompare(b.Participants[0].FirstName)
         })
     : []
 )
-const completedEntries = computed(() =>
-  data.value
-    ? [...data.value.Entries]
-        .filter(en =>
-          remainingEntries.value.findIndex(rem => rem.CompEventEntryID === en.CompEventEntryID) === -1
-        )
-        .sort((a, b) => {
-          if (a.HeatNumber !== b.HeatNumber) return (b.HeatNumber ?? Infinity) - (a.HeatNumber ?? Infinity)
-          else return b.Participants[0].FirstName.localeCompare(a.Participants[0].FirstName)
-        })
-    : []
-)
+
+function scrollToHeat (heatNumber: number) {
+  document.getElementById(`heat-${heatNumber}`)?.scrollIntoView({
+    behavior: 'instant',
+    block: 'center',
+  })
+}
 </script>
 
 <template>
-  <nav class="grid grid-cols-3 h-header">
+  <nav class="grid grid-cols-3 h-header sticky top-0 bg-white z-2">
     <score-button
       label="Back"
       single-row
@@ -91,7 +85,7 @@ const completedEntries = computed(() =>
     <battery-status no-push />
   </nav>
 
-  <div class="m-2 mt-0">
+  <div class="p-2 pt-0 sticky top-[9vh] bg-white z-2">
     <h1 class="text-2xl">
       {{ data?.Competition.CompetitionName ?? ' ' }}
     </h1>
@@ -101,23 +95,36 @@ const completedEntries = computed(() =>
     <p class="text-gray-600">
       {{ baseUrl ?? '' }}
     </p>
+
+    <div class="grid grid-cols-2 gap-4">
+      <score-button
+        label="Refresh"
+        single-row
+        class="mx-0 py-4"
+        color="orange"
+        :disabled="data == null || isFetching"
+        @click="refetch()"
+      />
+      <score-button
+        label="Scroll to current"
+        single-row
+        class="mx-0 py-4"
+        color="indigo"
+        :disabled="data == null"
+        @click="scrollToHeat(currentHeat)"
+      />
+    </div>
   </div>
 
   <div v-if="data" class="flex flex-col gap-4 px-2 mt-2">
-    <score-button
-      label="Refresh"
-      single-row
-      class="mx-0 py-4"
-      color="orange"
-      @click="refetch()"
-    />
-
     <servo-entry-link
-      v-for="entry in remainingEntries"
+      v-for="entry in entries"
       :key="entry.CompEventEntryID"
       :entry="entry"
       :judge="data.Judge"
       :competition-id="data.Competition.CompetitionID"
+      :station-name="data.StationName"
+      :current-heat="currentHeat === entry.HeatNumber"
     />
   </div>
 
@@ -134,20 +141,4 @@ const completedEntries = computed(() =>
   >
     {{ error }}
   </div>
-
-  <details class="px-2 mt-2 mb-2">
-    <summary class="sticky top-0 w-full bg-white py-4 cursor-pointer">
-      Completed Entries ({{ completedEntries.length }})
-    </summary>
-
-    <div v-if="data" class="flex flex-col gap-4 mt-2">
-      <servo-entry-link
-        v-for="entry in completedEntries"
-        :key="entry.CompEventEntryID"
-        :entry="entry"
-        :judge="data.Judge"
-        :competition-id="data.Competition.CompetitionID"
-      />
-    </div>
-  </details>
 </template>

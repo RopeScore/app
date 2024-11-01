@@ -26,6 +26,11 @@ fragment MarkScoresheetFragment on MarkScoresheet {
     name
   }
 
+  entry {
+    heat
+    pool
+  }
+
   marks
 }
 

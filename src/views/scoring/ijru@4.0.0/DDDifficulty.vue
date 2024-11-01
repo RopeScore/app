@@ -86,7 +86,7 @@ import type { Model } from '../../../models'
 import type { PropType } from 'vue'
 
 type DiffBaseSchema = `diffL${1 | 2 | 3 | 4 | 5}`
-export type Schema = 'break' | 'diffPlus' | 'diffMinus' | DiffBaseSchema
+export type Schema = 'break' | `diff${'Plus' | 'Minus'}` | `${DiffBaseSchema}${'Plus' | 'Minus'}` | DiffBaseSchema
 
 defineProps({
   model: {

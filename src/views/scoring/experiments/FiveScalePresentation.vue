@@ -330,10 +330,10 @@ const result = computed(() => {
 
 <style scoped>
 .grid-rows-score-five {
-  grid-template-rows: 9vh repeat(5, calc(73vh / 5)) 9vh;
+  grid-template-rows: 9vh repeat(5, calc((73vh - 2rem) / 5)) 9vh;
 }
 
 .grid-rows-score-five-no-boost {
-  grid-template-rows: 9vh repeat(5, calc(82vh / 5));
+  grid-template-rows: 9vh repeat(5, calc((82vh - 2rem) / 5));
 }
 </style>

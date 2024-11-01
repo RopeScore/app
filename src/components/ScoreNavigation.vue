@@ -1,4 +1,30 @@
 <template>
+  <div class="text-xl line-height-none px-2 overflow-hidden whitespace-nowrap grid grid-cols-[min-content,1fr,min-content] max-w-full gap-2 justify-between">
+    <div class="font-mono">
+      <template v-if="isServoIntermediateScoresheet(scsh.scoresheet.value)">
+        <span class="font-bold">H{{ scsh.scoresheet.value?.entry.heat }}</span>:{{ scsh.scoresheet.value?.entry.station }}
+        #{{ scsh.scoresheet.value?.entry.id }}
+      </template>
+
+      <template v-else-if="isRemoteMarkScoresheet(scsh.scoresheet.value)">
+        <span class="font-bold">H{{ scsh.scoresheet.value?.entry.heat }}</span>{{ scsh.scoresheet.value?.entry.pool != null ? `:${scsh.scoresheet.value?.entry.pool}`: '' }}
+        <!-- #{{ scsh.scoresheet.value?.entry.id }} -->
+      </template>
+    </div>
+
+    <div class="overflow-hidden text-center">
+      <template v-if="isServoIntermediateScoresheet(scsh.scoresheet.value)">
+        <span class="font-bold">{{ scsh.scoresheet.value?.judgeType }}</span>{{ scsh.scoresheet.value.judge.id }}
+      </template>
+      <template v-else-if="isRemoteMarkScoresheet(scsh.scoresheet.value)">
+        <span class="font-bold">{{ scsh.scoresheet.value.judgeType }}</span>: {{ scsh.scoresheet.value.judge.name }}
+      </template>
+    </div>
+
+    <div class="font-mono">
+      {{ version }} - <battery-status inline />
+    </div>
+  </div>
   <nav class="grid grid-cols-3 h-header">
     <template v-if="!confirmNext">
       <score-button
@@ -57,9 +83,11 @@
 <script lang="ts" setup>
 import { computed, ref, type PropType } from 'vue'
 import { useRouter } from 'vue-router'
-import { useScoresheet, isUndoMark } from '../hooks/scoresheet'
+import { useScoresheet, isUndoMark, isServoIntermediateScoresheet, isRemoteMarkScoresheet, isRemoteTallyScoresheet } from '../hooks/scoresheet'
 import { useConfirm } from '../hooks/confirm'
 import ScoreButton from './ScoreButton.vue'
+import { version } from '../helpers'
+import BatteryStatus from './BatteryStatus.vue'
 
 const router = useRouter()
 const scsh = useScoresheet()

@@ -239,9 +239,9 @@ const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 
 <style scoped>
 .grid-rows-score-circle {
-  grid-template-rows: 9vh repeat(9, calc(82vh / 9));
+  grid-template-rows: 9vh repeat(9, calc((82vh - 2rem) / 9));
 }
 .grid-rows-adjust {
-  grid-template-rows: repeat(5, calc(91vh / 5));
+  grid-template-rows: repeat(5, calc((91vh - 2rem) / 5));
 }
 </style>

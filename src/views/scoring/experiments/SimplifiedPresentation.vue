@@ -174,12 +174,12 @@ const result = computed(() => {
 
 <style scoped>
 .grid-rows-score-2 {
-  grid-template-rows: 9vh repeat(2, calc(82vh / 2));
+  grid-template-rows: 9vh repeat(2, calc((82vh - 2rem) / 2));
 }
 .grid-rows-score-4 {
-  grid-template-rows: 9vh repeat(4, calc(82vh / 4));
+  grid-template-rows: 9vh repeat(4, calc((82vh - 2rem) / 4));
 }
 .grid-rows-score-5 {
-  grid-template-rows: 9vh repeat(5, calc(82vh / 5));
+  grid-template-rows: 9vh repeat(5, calc((82vh - 2rem) / 5));
 }
 </style>

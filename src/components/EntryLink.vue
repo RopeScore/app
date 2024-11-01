@@ -1,11 +1,13 @@
 <template>
   <div
     v-if="assignment"
+    :id="`heat-${entry.heat}`"
     class="rounded text-white overflow-hidden cursor-pointer"
     :class="{
       'bg-green-500': color === 'green',
       'bg-indigo-500': color === 'indigo',
       'bg-gray-500': color === 'gray',
+      'outline  outline-4 outline-red-500': currentHeat,
     }"
   >
     <div
@@ -47,12 +49,13 @@
           'hover:bg-green-600': color === 'green',
           'hover:bg-indigo-600': color === 'indigo',
           'hover:bg-gray-600': color === 'gray',
-          'col-span-2': entry.didNotSkipAt || entry.lockedAt
+          'col-span-2': entry.didNotSkipAt || entry.lockedAt,
+          'border-r': !entry.didNotSkipAt && !entry.lockedAt
         }"
         @click="showPrevious = !showPrevious"
       >
-        <span v-if="showPrevious">Hide Previous</span>
-        <span v-else>Show Previous</span>
+        <span v-if="showPrevious">Hide scoresheets</span>
+        <span v-else>Show scoresheets</span>
       </button>
       <button
         v-if="!entry.didNotSkipAt && !entry.lockedAt"
@@ -95,6 +98,7 @@ import { type ScoresheetBaseFragment, type MarkScoresheetFragment, type Entry, u
 import { useRouter } from 'vue-router'
 import { type PropType, toRef, ref, computed } from 'vue'
 import { formatDate } from '../helpers'
+import { isRemoteMarkScoresheet } from '../hooks/scoresheet'
 
 const props = defineProps({
   entry: {
@@ -117,18 +121,15 @@ const props = defineProps({
     type: String,
     required: true
   },
-  color: {
-    validator (value: unknown) {
-      return typeof value === 'string' &&
-    ['green', 'indigo', 'gray'].includes(value)
-    },
-    default: 'green'
+  currentHeat: {
+    type: Boolean,
+    default: false,
   }
 })
 
 const entry = toRef(props, 'entry')
 const _scoresheets = toRef(props, 'scoresheets')
-const markScoresheets = computed(() => _scoresheets.value?.filter(scsh => scsh.__typename === 'MarkScoresheet') ?? [])
+const markScoresheets = computed(() => _scoresheets.value?.filter(scsh => isRemoteMarkScoresheet(scsh)) ?? [])
 const judge = toRef(props, 'judge')
 const router = useRouter()
 
@@ -139,6 +140,15 @@ const showPrevious = ref(false)
 
 const createScoresheetMutation = useCreateMarkScoresheetMutation({
   refetchQueries: ['GroupScoresheets']
+})
+
+const color = computed(() => {
+  if (props.entry.didNotSkipAt) return 'gray'
+  if (
+    props.entry.lockedAt ||
+    markScoresheets.value.every(scsh => !(scsh as MarkScoresheetFragment).completedAt)
+  ) return 'indigo'
+  return 'green'
 })
 
 async function createScoresheet () {

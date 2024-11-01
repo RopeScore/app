@@ -144,7 +144,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Difficulty.vue'))
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'D',
     historic: true,
     name: 'Difficulty',
@@ -227,7 +227,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@2.0.0/AthletePresentation.vue'))
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'Pa',
     name: 'Athlete Presentation',
     historic: true,
@@ -327,7 +327,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@2.0.0/RoutinePresentation.vue'))
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'Pr',
     name: 'Routine Presentation',
     historic: true,
@@ -417,7 +417,7 @@ const models: Model[] = [
     ]
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'R',
     name: 'Required Elements',
     historic: true,

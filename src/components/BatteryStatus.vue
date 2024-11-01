@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!hidden"
+    v-if="!hidden && !inline"
     class="relative m-2 rounded border border-green-500"
     :class="{ 'border-red-500': lowBattery, 'animate-pulse': !battery.isSupported && needUpdate }"
   >
@@ -8,7 +8,6 @@
       class="absolute left-0 bottom-0 top-0 bg-green-500 text-white battery-width rounded"
       :class="{
         'bg-red-500': lowBattery
-
       }"
     />
     <div
@@ -35,6 +34,20 @@
       </label>
     </div>
   </div>
+  <span
+    v-else-if="!hidden && inline"
+    class="font-mono w-[8ch] inline-block"
+    :class="{
+      'text-red-500 font-bold animate-ping': lowBattery
+    }"
+  >
+    <template v-if="battery.isSupported">
+      {{ percentage }} {{ battery.charging.value ? '(c)' : '' }}
+    </template>
+    <template v-else>
+      {{ manualLevel }} (m)
+    </template>
+  </span>
 </template>
 
 <script lang="ts" setup>
@@ -45,6 +58,10 @@ import { useAuth } from '../hooks/auth'
 
 const props = defineProps({
   hidden: {
+    type: Boolean,
+    default: false
+  },
+  inline: {
     type: Boolean,
     default: false
   },

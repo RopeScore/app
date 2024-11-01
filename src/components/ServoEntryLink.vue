@@ -1,10 +1,12 @@
 <template>
   <div
+    :id="`heat-${entry.HeatNumber}`"
     class="rounded text-white overflow-hidden cursor-pointer"
     :class="{
       'bg-green-500': color === 'green',
       'bg-indigo-500': color === 'indigo',
-      'bg-gray-500': color === 'gray'
+      'bg-gray-500': color === 'gray',
+      'outline  outline-4 outline-red-500': currentHeat
     }"
   >
     <a
@@ -40,7 +42,7 @@
     <div v-if="prevScoresheets.length > 0" class="grid grid-cols-1 grid-rows-1">
       <button
         v-if="prevScoresheets.length > 0"
-        class="block flex justify-center align-middle border-t border-r p-2"
+        class="block flex justify-center align-middle border-t p-2"
         :class="{
           'hover:bg-green-600': color === 'green',
           'hover:bg-indigo-600': color === 'indigo',
@@ -48,8 +50,8 @@
         }"
         @click="showPrevious = !showPrevious"
       >
-        <span v-if="showPrevious">Hide Previous</span>
-        <span v-else>Show Previous</span>
+        <span v-if="showPrevious">Hide scoresheets</span>
+        <span v-else>Show scoresheets</span>
       </button>
     </div>
 
@@ -90,6 +92,14 @@ const props = defineProps({
   competitionId: {
     type: Number,
     required: true
+  },
+  stationName: {
+    type: String,
+    required: true
+  },
+  currentHeat: {
+    type: Boolean,
+    default: false,
   }
 })
 
@@ -138,7 +148,12 @@ async function createScoresheet () {
       judgeType: judge.value.JudgeType,
       scoringModel: entry.value.ScoringModelName,
       competitionEventId: entry.value.EventTypeCode,
-      options: entry.value.EntryExtraData?.options
+      options: entry.value.EntryExtraData?.options,
+      entry: {
+        id: entry.value.EntryNumber,
+        heat: entry.value.HeatNumber,
+        station: props.stationName.replace(/[^\d]/g, '')
+      },
     })
     openScoresheet(scoresheetId)
   } finally {

@@ -115,5 +115,4 @@ async function onUndo () {
 async function onClear () {
   compRef.value?.onClear?.()
 }
-
 </script>

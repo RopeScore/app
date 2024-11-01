@@ -17,7 +17,7 @@ import NotificationCards from './components/NotificationCards.vue'
 }
 
 .grid-rows-score {
-  grid-template-rows: 9vh repeat(3, calc(82vh / 3));
+  grid-template-rows: 9vh repeat(3, calc((82vh - 2rem) / 3));
 }
 
 .touch-manipulation {
