@@ -98,7 +98,7 @@ function scrollToHeat (heatNumber: number) {
 
     <div class="grid grid-cols-2 gap-4">
       <score-button
-        label="Refresh"
+        :label="isFetching ? 'Loading...' : 'Refresh'"
         single-row
         class="mx-0 py-4"
         color="orange"
@@ -116,7 +116,7 @@ function scrollToHeat (heatNumber: number) {
     </div>
   </div>
 
-  <div v-if="data" class="flex flex-col gap-4 px-2 mt-2">
+  <div v-if="data" class="flex flex-col gap-4 px-2 my-2">
     <servo-entry-link
       v-for="entry in entries"
       :key="entry.CompEventEntryID"
@@ -126,13 +126,6 @@ function scrollToHeat (heatNumber: number) {
       :station-name="data.StationName"
       :current-heat="currentHeat === entry.HeatNumber"
     />
-  </div>
-
-  <div
-    v-if="isFetching"
-    class="p-2"
-  >
-    Loading...
   </div>
 
   <div
