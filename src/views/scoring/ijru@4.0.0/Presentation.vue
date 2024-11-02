@@ -7,7 +7,7 @@
       label="Creativity -"
       class="row-start-2"
       color="red"
-      :value="tally('creaMinus')"
+      :value="simpleTally.creaMinus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'creaMinus' })"
     />
@@ -15,7 +15,7 @@
       label="Musicality -"
       class="row-start-3"
       color="red"
-      :value="tally('musicMinus')"
+      :value="simpleTally.musicMinus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'musicMinus' })"
     />
@@ -23,7 +23,7 @@
       label="Entertainment -"
       class="row-start-4"
       color="red"
-      :value="tally('entMinus')"
+      :value="simpleTally.entMinus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'entMinus' })"
     />
@@ -31,7 +31,7 @@
       label="Form -"
       class="row-start-5"
       color="red"
-      :value="tally('formMinus')"
+      :value="simpleTally.formMinus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'formMinus' })"
     />
@@ -39,7 +39,7 @@
       label="Repetitive -"
       class="row-start-6"
       color="red"
-      :value="tally('variMinus')"
+      :value="simpleTally.variMinus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'variMinus' })"
     />
@@ -47,35 +47,35 @@
     <score-button
       label="Creativity +"
       class="row-start-2 col-start-3"
-      :value="tally('creaPlus')"
+      :value="simpleTally.creaPlus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'creaPlus' })"
     />
     <score-button
       label="Musicality +"
       class="row-start-3 col-start-3"
-      :value="tally('musicPlus')"
+      :value="simpleTally.musicPlus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'musicPlus' })"
     />
     <score-button
       label="Entertainment +"
       class="row-start-4 col-start-3"
-      :value="tally('entPlus')"
+      :value="simpleTally.entPlus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'entPlus' })"
     />
     <score-button
       label="Form +"
       class="row-start-5 col-start-3"
-      :value="tally('formPlus')"
+      :value="simpleTally.formPlus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'formPlus' })"
     />
     <score-button
       label="Variety +"
       class="row-start-6 col-start-3"
-      :value="tally('variPlus')"
+      :value="simpleTally.variPlus ?? 0"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'variPlus' })"
     />
@@ -153,8 +153,8 @@
     >
       <span>0</span>
       <div class="flex content-center justify-center flex-wrap w-full m-2">
-        <div>{{ componentScore(component) }}</div>
-        <progress class="w-full" max="24" :value="componentScore(component)" />
+        <div>{{ tally(component) }}</div>
+        <progress class="w-full" max="24" :value="tally(component)" />
       </div>
       <span>24</span>
     </div>
@@ -196,14 +196,15 @@
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { useScoresheet } from '../../../hooks/scoresheet'
 
-import { computed, type PropType } from 'vue'
+import { computed, type PropType, ref } from 'vue'
 import type { Model } from '../../../models'
 import { clamp } from '@vueuse/core'
+import { createMarkReducer, type ScoreTally, simpleReducer } from '@ropescore/rulesets'
 
 const components = ['crea', 'music', 'ent', 'form', 'vari'] as const
 type Component = typeof components[number]
 
-export type Schema = 'miss' | `${Component}${'Plus' | 'Minus'}${'' | 'Adj'}`
+export type Schema = 'miss' | `${Component}${'Plus' | 'Minus'}${'' | 'Adj'}` | Component
 
 defineProps({
   model: {
@@ -216,25 +217,15 @@ defineProps({
   },
 })
 
-const { addMark, tally, scoresheet } = useScoresheet<Schema>()
+const { addMark: _addMark, tally, scoresheet } = useScoresheet<Schema>()
 
-const CHANGE = 1
+const mr = ref(createMarkReducer(simpleReducer))
+const simpleTally = ref<ScoreTally<Schema>>({})
 
-function componentScore (type: Component) {
-  let score = 12
-
-  score += tally(`${type}Plus`) * CHANGE
-  score -= tally(`${type}Minus`) * CHANGE
-  score -= tally('miss') * CHANGE
-
-  score = Math.round(clamp(score, 0, 24))
-
-  for (const mark of scoresheet.value?.marks ?? []) {
-    if (mark.schema === `${type}PlusAdj` && score < 24) score += CHANGE
-    else if (mark.schema === `${type}MinusAdj` && score > 0) score -= CHANGE
-  }
-
-  return Math.round(clamp(score, 0, 24))
+const addMark: typeof _addMark = async (mark) => {
+  await _addMark(mark)
+  mr.value?.addMark(mark)
+  simpleTally.value = mr.value.tally
 }
 
 const weights = {
@@ -247,11 +238,11 @@ const weights = {
 
 const result = computed(() => {
   const componentScores: Record<Component, number> = {
-    music: componentScore('music'),
-    form: componentScore('form'),
-    ent: componentScore('ent'),
-    crea: componentScore('crea'),
-    vari: componentScore('vari')
+    music: tally('music'),
+    form: tally('form'),
+    ent: tally('ent'),
+    crea: tally('crea'),
+    vari: tally('vari')
   }
   let sum = 0
 

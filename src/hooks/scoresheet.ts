@@ -180,7 +180,6 @@ function processMark <Schema extends string> (tally: Ref<Readonly<ScoreTally<Sch
     if (markReducer.value != null) {
       markReducer.value.addMark(mark)
       tally.value = markReducer.value.tally
-      console.log(tally.value)
     }
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
