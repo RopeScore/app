@@ -764,10 +764,16 @@ export interface GetServoScoresheetsForEntry {
   judgeSequence: number | string
 }
 export async function getServoScoresheetsForEntry ({ competitionId, entryId, judgeSequence }: GetServoScoresheetsForEntry) {
+  await ready
   const scoresheetIds = await idbKeyval.keys<string>()
   const prevScoresheetIds = scoresheetIds.filter(scshId => scshId.startsWith(`servo::${competitionId}::${entryId}::${judgeSequence}::`))
   const scoresheets: Array<ServoIntermediateScoresheet<string>> = await idbKeyval.getMany(prevScoresheetIds)
   return scoresheets
+}
+
+export async function getRopeScoreLocalScoresheet (scoresheetId: string) {
+  await ready
+  return await idbKeyval.get<ScoresheetBaseFragment & MarkScoresheetFragment & { tally: ScoreTally<string> }>(`rs::${scoresheetId}`)
 }
 
 export async function listScoresheets (): Promise<Array<Scoresheet<string>>> {

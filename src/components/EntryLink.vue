@@ -78,7 +78,7 @@
       <router-link
         v-for="scoresheet of markScoresheets"
         :key="scoresheet.id"
-        class="p-2 border-t grid grid-rows-2 grid-cols-[min-content,auto] gap-x-2"
+        class="border-t grid grid-rows-2 grid-cols-[min-content,auto] gap-x-2"
         :class="{
           'hover:bg-green-600': color === 'green',
           'hover:bg-indigo-600': color === 'indigo',
@@ -86,9 +86,9 @@
         }"
         :to="`/score/rs/${props.groupId}/${entry.id}/${scoresheet.id}`"
       >
-        <div>Created</div><div>{{ formatDate(scoresheet.createdAt) }}</div>
-        <div>Completed</div><div>{{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}</div>
-        <journal-tally class="col-span-2" :tally="scoresheet.tally" />
+        <div class="px-2 pt-2">Created</div><div class="px-2 pt-2">{{ formatDate(scoresheet.createdAt) }}</div>
+        <div class="px-2">Completed</div><div class="px-2">{{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}</div>
+        <journal-tally class="col-span-2" :tally="localScoresheets[scoresheet.id]?.tally ?? {}" />
       </router-link>
     </div>
   </div>
@@ -99,8 +99,9 @@ import { type ScoresheetBaseFragment, type MarkScoresheetFragment, type Entry, u
 import { useRouter } from 'vue-router'
 import { type PropType, toRef, ref, computed } from 'vue'
 import { formatDate } from '../helpers'
-import { isRemoteMarkScoresheet } from '../hooks/scoresheet'
+import { getRopeScoreLocalScoresheet, isRemoteMarkScoresheet } from '../hooks/scoresheet'
 import JournalTally from './JournalTally.vue'
+import { computedAsync } from '@vueuse/core'
 
 const props = defineProps({
   entry: {
@@ -152,6 +153,14 @@ const color = computed(() => {
   ) return 'indigo'
   return 'green'
 })
+
+const localScoresheets = computedAsync(async () => Object.fromEntries(
+  (await Promise.all(
+    markScoresheets.value.map(async scsh => await getRopeScoreLocalScoresheet(scsh.id))
+  ))
+    .filter(scsh => scsh != null)
+    .map(scsh => [scsh.id, scsh])
+))
 
 async function createScoresheet () {
   const res = await createScoresheetMutation.mutate({

@@ -15,7 +15,7 @@ defineProps({
     <div v-for="v, k of tally" :key="k" class="even-odd p-4 flex-1">
       <span>{{ k }}:</span>
       <br>
-      {{ v }}
+      <span class="text-2xl">{{ v }}</span>
     </div>
   </div>
 </template>
