@@ -14,7 +14,8 @@
 
     <div class="overflow-hidden text-center">
       <template v-if="isServoIntermediateScoresheet(scsh.scoresheet.value)">
-        <span class="font-bold">{{ scsh.scoresheet.value?.judgeType }}</span>{{ scsh.scoresheet.value.judge.id }}
+        <span class="font-bold">{{ scsh.scoresheet.value?.judgeType }}</span>{{ scsh.scoresheet.value.judge.id }}:
+        {{ scsh.scoresheet.value?.judge.name }}
       </template>
       <template v-else-if="isRemoteMarkScoresheet(scsh.scoresheet.value)">
         <span class="font-bold">{{ scsh.scoresheet.value.judgeType }}</span>: {{ scsh.scoresheet.value.judge.name }}
@@ -83,7 +84,7 @@
 <script lang="ts" setup>
 import { computed, ref, type PropType } from 'vue'
 import { useRouter } from 'vue-router'
-import { useScoresheet, isUndoMark, isServoIntermediateScoresheet, isRemoteMarkScoresheet, isRemoteTallyScoresheet } from '../hooks/scoresheet'
+import { useScoresheet, isUndoMark, isServoIntermediateScoresheet, isRemoteMarkScoresheet } from '../hooks/scoresheet'
 import { useConfirm } from '../hooks/confirm'
 import ScoreButton from './ScoreButton.vue'
 import { version } from '../helpers'

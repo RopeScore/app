@@ -77,6 +77,7 @@ export interface ServoIntermediateScoresheet<T extends string> {
   }
   judge: {
     id: number
+    name?: string
   }
 
   marks: Array<Mark<T>>
@@ -142,6 +143,14 @@ export interface ServoSession {
 export interface ServoJudge {
   JudgeSequence: number
   JudgeType: string
+  JudgeName: string
+  AssignedJudge: ServoAssignedJudge | null
+}
+
+export interface ServoAssignedJudge {
+  ParticipantID: number
+  FirstName: string
+  LastName: string
 }
 
 export interface ServoCompetition {
@@ -674,8 +683,9 @@ export interface CreateServoScoresheetArgs {
   competitionEventId: string
   options?: Record<string, any> | null
   entry: ServoIntermediateScoresheet<string>['entry']
+  judge: Omit<ServoIntermediateScoresheet<string>['judge'], 'id'>
 }
-export async function createServoScoresheet ({ competitionId, entryId, judgeSequence, judgeType: _judgeType, scoringModel, competitionEventId, entry, options }: CreateServoScoresheetArgs) {
+export async function createServoScoresheet ({ competitionId, entryId, judgeSequence, judgeType: _judgeType, scoringModel, competitionEventId, entry, judge, options }: CreateServoScoresheetArgs) {
   try {
     let judgeType = _judgeType
     if (judgeType == null) {
@@ -742,7 +752,8 @@ export async function createServoScoresheet ({ competitionId, entryId, judgeSequ
       rulesId: scoringModel,
       entry,
       judge: {
-        id: judgeSequence
+        id: judgeSequence,
+        ...judge,
       },
       judgeType,
       competitionEventId,

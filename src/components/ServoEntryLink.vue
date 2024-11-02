@@ -156,6 +156,9 @@ async function createScoresheet () {
         heat: entry.value.HeatNumber,
         station: props.stationName.replace(/[^\d]/g, '')
       },
+      judge: {
+        name: judge.value.AssignedJudge != null ? `${judge.value.AssignedJudge.FirstName ?? ''} ${judge.value.AssignedJudge.LastName ?? ''}`.trim() : undefined
+      }
     })
     openScoresheet(scoresheetId)
   } finally {
