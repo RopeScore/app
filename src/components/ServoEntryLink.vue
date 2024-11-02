@@ -59,7 +59,7 @@
       <a
         v-for="scoresheet of prevScoresheets"
         :key="scoresheet.id"
-        class="p-2 border-t grid grid-rows-2 grid-cols-[min-content,auto] gap-x-2"
+        class="block border-t grid grid-rows-2 grid-cols-[min-content,auto] gap-x-2"
         :class="{
           'hover:bg-green-600': color === 'green',
           'hover:bg-indigo-600': color === 'indigo',
@@ -67,8 +67,9 @@
         }"
         @click.prevent="openScoresheet(scoresheet.id)"
       >
-        <div>Created</div><div>{{ formatDate(scoresheet.createdAt) }}</div>
-        <div>Completed</div><div>{{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}</div>
+        <div class="px-2 pt-2">Created</div><div class="px-2 pt-2">{{ formatDate(scoresheet.createdAt) }}</div>
+        <div class="px-2">Completed</div><div class="px-2">{{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}</div>
+        <journal-tally class="col-span-2" :tally="scoresheet.tally" />
       </a>
     </div>
   </div>
@@ -79,6 +80,7 @@ import { useRouter } from 'vue-router'
 import { type PropType, toRef, computed, ref, watch } from 'vue'
 import { formatList, formatDate } from '../helpers'
 import { type ServoJudge, type ServoEntry, createServoScoresheet, getServoScoresheetsForEntry, type ServoIntermediateScoresheet } from '../hooks/scoresheet'
+import JournalTally from './JournalTally.vue'
 
 const props = defineProps({
   entry: {

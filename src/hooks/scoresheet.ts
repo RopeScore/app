@@ -13,6 +13,8 @@ import { isObject, useBattery } from '@vueuse/core'
 import { version } from '../helpers'
 import models from '../models'
 import useNotifications from './notifications'
+import { createMarkReducer, filterMarkStream, simpleReducer, type JudgeType } from '@ropescore/rulesets'
+import { importCompetitionEventModel, importPreconfiguredCompetitionEvent } from '../import-helpers'
 
 export interface GenericMark<Schema extends string> {
   readonly timestamp: number
@@ -50,6 +52,7 @@ export interface LocalScoresheet<T extends string> {
   competitionEventId: string
 
   marks: Array<Mark<T>>
+  tally: ScoreTally<T>
 
   createdAt?: number
   openedAt?: number
@@ -77,6 +80,7 @@ export interface ServoIntermediateScoresheet<T extends string> {
   }
 
   marks: Array<Mark<T>>
+  tally: ScoreTally<T>
 
   createdAt: number
   openedAt?: number
@@ -166,22 +170,17 @@ interface UseScoresheetReturn<Schema extends string> {
 
 const scoresheet = ref<Scoresheet<string>>()
 const system = ref<'local' | 'rs' | 'servo'>()
-const tally = ref<ScoreTally<string>>(reactive({}))
+const tally = ref<Readonly<ScoreTally<string>>>(reactive({}))
+const markReducer = ref<ReturnType<JudgeType<string>['createMarkReducer']>>()
 const ready = idbReady()
 const { push: pushNotification } = useNotifications()
 
-function processMark <Schema extends string> (tally: Ref<ScoreTally<Schema>>, mark: MarkPayload<Schema>, marks: Array<Mark<Schema>>) {
+function processMark <Schema extends string> (tally: Ref<Readonly<ScoreTally<Schema>>>, mark: MarkPayload<Schema>) {
   try {
-    if (isUndoMark(mark)) {
-      const undoneMark = marks[mark.target]
-      if (!undoneMark) throw new Error('Undone mark missing')
-      if (!isUndoMark(undoneMark) && !isClearMark(undoneMark)) {
-        tally.value[undoneMark.schema] = (tally.value[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
-      }
-    } else if (isClearMark(mark)) {
-      tally.value = reactive({})
-    } else {
-      tally.value[(mark as GenericMark<Schema>).schema] = (tally.value[(mark as GenericMark<Schema>).schema] ?? 0) + ((mark as GenericMark<Schema>).value ?? 1)
+    if (markReducer.value != null) {
+      markReducer.value.addMark(mark)
+      tally.value = markReducer.value.tally
+      console.log(tally.value)
     }
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
@@ -191,7 +190,7 @@ function processMark <Schema extends string> (tally: Ref<ScoreTally<Schema>>, ma
 
 export function calculateTally <Schema extends string> (marks: Array<Mark<Schema>>) {
   const tally: Ref<ScoreTally<Schema>> = ref({})
-  for (const mark of marks) processMark(tally, mark, marks)
+  for (const mark of marks) processMark(tally, mark)
   return tally.value
 }
 
@@ -211,7 +210,7 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
       ...mark
     } as Mark<Schema>)
 
-    processMark(tally, mark, scsh.marks)
+    processMark(tally, mark)
 
     if (scsh.options?.live === true) {
       const mutation = useAddStreamMarkMutation({})
@@ -260,32 +259,16 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
  */
 export function convertMarksToServoIntermediate <Schema extends string> (_marks: Readonly<Array<Mark<Schema>>>, scoresheet?: ServoIntermediateScoresheet<Schema>) {
   // First we slice from the last clear mark removing the clear mark itself
-  let marks = [..._marks]
-  const lastClearIdx = _marks.findLastIndex(m => m.schema === 'clear')
-  if (lastClearIdx > -1) {
-    marks = marks.slice(lastClearIdx + 1)
+  let marks = filterMarkStream(_marks)
+
+  if (scoresheet != null) {
+    marks = marks.map(mark => ({
+      ...mark,
+      timestamp: mark.timestamp - (scoresheet.openedAt ?? scoresheet.createdAt)
+    }))
   }
 
-  // Then we process all the undo marks removing the undo target and the undo mark
-  for (let idx = 0; idx < marks.length; idx++) {
-    const mark = { ...marks[idx] }
-    if (scoresheet != null) mark.timestamp = mark.timestamp - (scoresheet.openedAt ?? scoresheet.createdAt)
-    if (isUndoMark(mark)) {
-      const undoneMarkIdx = marks.findIndex(m => m.sequence === mark.target)
-      if (undoneMarkIdx === -1) throw new Error('Undone mark missing')
-      const undoneMark = marks[undoneMarkIdx]
-      if (!isUndoMark(undoneMark) && !isClearMark(undoneMark)) {
-        marks.splice(undoneMarkIdx, 1)
-        idx--
-      }
-      marks.splice(idx, 1)
-      idx--
-    } else {
-      marks.splice(idx, 1, mark)
-    }
-  }
-
-  return marks as Array<Exclude<Mark<Schema>, UndoMark | ClearMark>>
+  return marks
 }
 
 const complete = () => {
@@ -309,12 +292,28 @@ interface CloseScoresheetOptions {
 const openLocal = async (id: string) => {
   try {
     await ready
-    let loaded = await idbKeyval.get(id)
+    let loaded = await idbKeyval.get<LocalScoresheet<string>>(id)
     if (!loaded) throw new Error('Local scoresheet not found')
     loaded = reactive(loaded)
 
     scoresheet.value = loaded
     system.value = 'local'
+
+    try {
+      const model = await importPreconfiguredCompetitionEvent(scoresheet.value.competitionEventId)
+      const judge = model.judges.find(j => j(scoresheet.value?.options ?? {}).id === scoresheet.value?.judgeType)?.(scoresheet.value.options ?? {})
+      markReducer.value = judge?.createMarkReducer()
+    } catch (err) {
+      console.warn('Failed to import preconfigured competition event, trying rules model', err)
+      try {
+        const model = await importCompetitionEventModel(scoresheet.value.rulesId)
+        const judge = model.judges.find(j => j(scoresheet.value?.options ?? {}).id === scoresheet.value?.judgeType)?.(scoresheet.value.options ?? {})
+        markReducer.value = judge?.createMarkReducer()
+      } catch (err) {
+        console.warn('Failed to import preconfigured competition event, falling back to simple reducer', err)
+        markReducer.value = createMarkReducer(simpleReducer)
+      }
+    }
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
     throw err
@@ -333,7 +332,10 @@ const closeLocal = async ({ save }: CloseScoresheetOptions) => {
     if (save && scoresheet.value.submittedAt == null) {
       if (scoresheet.value.completedAt) scoresheet.value.submittedAt = Date.now()
       await ready
-      await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
+      await idbKeyval.set(scoresheet.value.id, {
+        ...JSON.parse(JSON.stringify(scoresheet.value)),
+        tally: { ...tally.value }
+      })
     }
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
@@ -342,7 +344,7 @@ const closeLocal = async ({ save }: CloseScoresheetOptions) => {
 }
 
 const openRs = async (groupId: string, entryId: string, scoresheetId: string) => {
-  return await new Promise((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     provideApolloClient(apolloClient)
     const enabled = ref(true)
     const { onResult } = useGroupScoresheetQuery({
@@ -378,20 +380,37 @@ const openRs = async (groupId: string, entryId: string, scoresheetId: string) =>
       resolve(undefined)
     })
   })
+
+  if (isRemoteMarkScoresheet(scoresheet.value)) {
+    const model = await importPreconfiguredCompetitionEvent(scoresheet.value.competitionEventId as string)
+    const judge = model.judges.find(j => j(scoresheet.value?.options ?? {}).id === scoresheet.value?.judgeType)?.(scoresheet.value.options ?? {})
+    markReducer.value = judge?.createMarkReducer()
+  }
 }
 
 const closeRs = async ({ save }: CloseScoresheetOptions) => {
+  if (!scoresheet.value) {
+    const err = new Error('Scoresheet is not open')
+    console.error(err)
+    pushNotification({ message: err.message, color: 'orange' })
+    return
+  }
+
+  if (save && scoresheet.value?.submittedAt == null) {
+    await ready
+    await idbKeyval.set(`rs::${scoresheet.value.id}`, {
+      ...JSON.parse(JSON.stringify(scoresheet.value)),
+      tally: { ...tally.value }
+    })
+  }
+
   return await new Promise((resolve, reject) => {
-    provideApolloClient(apolloClient)
     if (!scoresheet.value) {
-      const err = new Error('Scoresheet is not open')
-      console.error(err)
-      pushNotification({ message: err.message, color: 'orange' })
       resolve(undefined)
       return
     }
+    provideApolloClient(apolloClient)
     if (save && scoresheet.value.submittedAt == null) {
-      // TODO: store local copy in case submit fails and need to resubmit
       const { mutate, onDone } = useSaveScoresheetMutation({})
       onDone(res => {
         // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
@@ -445,6 +464,10 @@ const openServo = async (competitionId: number, entryId: number, judgeSequence: 
         pushNotification({ message: body, color: 'orange' })
       }
     }
+
+    const model = await importCompetitionEventModel(scoresheet.value.rulesId)
+    const judge = model.judges.find(j => j(scoresheet.value?.options ?? {}).id === scoresheet.value?.judgeType)?.(scoresheet.value.options ?? {})
+    markReducer.value = judge?.createMarkReducer()
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
     throw err
@@ -485,7 +508,10 @@ const closeServo = async ({ save }: CloseScoresheetOptions) => {
     if (save && scoresheet.value.submittedAt == null) {
       // Store the local copy
       await ready
-      await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
+      await idbKeyval.set(scoresheet.value.id, {
+        ...JSON.parse(JSON.stringify(scoresheet.value)),
+        tally: { ...tally.value }
+      })
 
       const battery = useBattery()
 
@@ -533,7 +559,10 @@ const closeServo = async ({ save }: CloseScoresheetOptions) => {
       }
 
       scoresheet.value.submittedAt = Date.now()
-      await idbKeyval.set(scoresheet.value.id, JSON.parse(JSON.stringify(scoresheet.value)))
+      await idbKeyval.set(scoresheet.value.id, {
+        ...JSON.parse(JSON.stringify(scoresheet.value)),
+        tally: { ...tally.value }
+      })
     }
 
     if (scoresheet.value.submittedAt == null) {
@@ -581,11 +610,11 @@ export function useScoresheet <Schema extends string> (): UseScoresheetReturn<Sc
             throw new TypeError('Unknown system specified, cannot open scoresheet')
         }
 
-        tally.value = reactive({})
+        tally.value = {}
 
         const marks = scoresheet.value?.marks ?? []
 
-        for (const mark of marks) processMark(tally, mark, marks)
+        for (const mark of marks) processMark(tally, mark)
       } catch (err) {
         if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
         throw err
@@ -612,6 +641,7 @@ export function useScoresheet <Schema extends string> (): UseScoresheetReturn<Sc
         scoresheet.value = undefined
         system.value = undefined
         tally.value = reactive({})
+        markReducer.value = undefined
       } catch (err) {
         if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
         throw err
@@ -628,13 +658,13 @@ export async function createLocalScoresheet ({ judgeType, rulesId, competitionEv
     createdAt: Date.now(),
     competitionEventId: competitionEventId ?? '',
     marks: [],
+    tally: {},
     options
   }
 
   await idbKeyval.set(newScoresheet.id, newScoresheet)
   return newScoresheet.id
 }
-// TODO: list local, remove all local
 
 export interface CreateServoScoresheetArgs {
   competitionId: number
@@ -709,6 +739,7 @@ export async function createServoScoresheet ({ competitionId, entryId, judgeSequ
     const newScoresheet: ServoIntermediateScoresheet<string> = {
       id: `servo::${competitionId}::${entryId}::${judgeSequence}::${uuid()}`,
       marks: [],
+      tally: {},
       rulesId: scoringModel,
       entry,
       judge: {

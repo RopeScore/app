@@ -4,6 +4,7 @@ import ScoreButton from '../components/ScoreButton.vue'
 import { useRouter } from 'vue-router'
 import { listScoresheets, isServoIntermediateScoresheet, isRemoteTallyScoresheet, isRemoteMarkScoresheet, type Scoresheet } from '../hooks/scoresheet'
 import { formatDate } from '../helpers'
+import JournalTally from '../components/JournalTally.vue'
 
 const router = useRouter()
 
@@ -81,6 +82,7 @@ function scoresheetLink (scoresheet: Scoresheet<string>) {
           Judge Type: <span class="font-bold">{{ scoresheet.judgeType }}</span>
         </div>
       </div>
+      <journal-tally :tally="scoresheet.tally" />
       <div class="grid grid-cols-2 grid-rows-1">
         <router-link
           :to="`/score/${scoresheetLink(scoresheet)}`"

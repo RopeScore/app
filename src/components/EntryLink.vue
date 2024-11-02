@@ -88,6 +88,7 @@
       >
         <div>Created</div><div>{{ formatDate(scoresheet.createdAt) }}</div>
         <div>Completed</div><div>{{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}</div>
+        <journal-tally class="col-span-2" :tally="scoresheet.tally" />
       </router-link>
     </div>
   </div>
@@ -99,6 +100,7 @@ import { useRouter } from 'vue-router'
 import { type PropType, toRef, ref, computed } from 'vue'
 import { formatDate } from '../helpers'
 import { isRemoteMarkScoresheet } from '../hooks/scoresheet'
+import JournalTally from './JournalTally.vue'
 
 const props = defineProps({
   entry: {
@@ -146,7 +148,7 @@ const color = computed(() => {
   if (props.entry.didNotSkipAt) return 'gray'
   if (
     props.entry.lockedAt ||
-    markScoresheets.value.every(scsh => !(scsh as MarkScoresheetFragment).completedAt)
+    (markScoresheets.value.length > 0 && markScoresheets.value.every(scsh => !(scsh as MarkScoresheetFragment).completedAt))
   ) return 'indigo'
   return 'green'
 })

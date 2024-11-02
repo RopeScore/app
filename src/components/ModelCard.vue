@@ -9,7 +9,7 @@
       {{ rulesetList }}
     </p>
 
-    <template v-if="model.localAlternativeCompetitionEvents">
+    <template v-if="Array.isArray(model.localAlternativeCompetitionEvents)">
       <select
         v-model="competitionEventLookupCode"
         class="p-2 mt-4 rounded"
@@ -93,10 +93,10 @@ function getPlainOptions (options: Record<string, any>) {
 const rulesetList = computed(() => Array.isArray(props.model.rulesId) ? props.model.rulesId.join(', ') : props.model.rulesId)
 
 onMounted(() => {
-  if (props.model.localAlternativeCompetitionEvents) {
+  if (Array.isArray(props.model.localAlternativeCompetitionEvents)) {
     competitionEventLookupCode.value = props.model.localAlternativeCompetitionEvents[0][1]
-  } else if (props.model.localCompetitionEvent) {
-    competitionEventLookupCode.value = props.model.localCompetitionEvent
+  } else {
+    competitionEventLookupCode.value = props.model.localAlternativeCompetitionEvents
   }
 })
 </script>
