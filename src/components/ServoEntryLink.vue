@@ -32,7 +32,8 @@
         {{ entry.ScoringModelName }}: <span class="font-bold">{{ entry.EventTypeCode }}</span>
       </div>
       <div class="col-start-2 col-end-2">
-        <span class="font-bold">Judge {{ judge.JudgeSequence }}</span>: {{ judge.JudgeType ?? '-' }}
+        <span class="font-bold">{{ judge.JudgeType ?? '' }}</span>{{ judge.JudgeSequence }}:
+        {{ judge.AssignedJudge?.FirstName ?? '' }} {{ judge.AssignedJudge?.LastName ?? '' }}
       </div>
       <div v-if="!entry.IsScratched && !entry.IsLocked" class="row-span-4 row-start-1 col-start-3 flex justify-center items-center">
         <span v-if="!createScoresheetLoading">New</span>
