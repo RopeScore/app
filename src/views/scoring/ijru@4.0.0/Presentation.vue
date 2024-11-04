@@ -228,6 +228,13 @@ const addMark: typeof _addMark = async (mark) => {
   simpleTally.value = mr.value.tally
 }
 
+function onClear () {
+  mr.value = createMarkReducer(simpleReducer)
+  simpleTally.value = mr.value.tally
+}
+
+defineExpose({ onClear })
+
 const weights = {
   ent: 0.25,
   form: 0.25,
