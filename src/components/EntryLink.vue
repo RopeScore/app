@@ -14,9 +14,9 @@
       class="w-full relative grid grid-cols-[3rem,auto,3rem] grid-rows-4 p-2"
       :disabled="createScoresheetMutation.loading.value"
       :class="{
-        'hover:bg-green-600': color === 'green' && (!entry.didNotSkipAt || (entry.didNotSkipAt && markScoresheets.length > 0)),
-        'hover:bg-indigo-600': color === 'indigo' && (!entry.didNotSkipAt || (entry.didNotSkipAt && markScoresheets.length > 0)),
-        'hover:bg-gray-600': color === 'gray' && (!entry.didNotSkipAt || (entry.didNotSkipAt && markScoresheets.length > 0))
+        'hover:bg-green-600': color === 'green',
+        'hover:bg-indigo-600': color === 'indigo',
+        'hover:bg-gray-600': color === 'gray'
       }"
       role="button"
       @click="openUncompletedOrCreate()"
@@ -86,9 +86,17 @@
         }"
         :to="`/score/rs/${props.groupId}/${entry.id}/${scoresheet.id}`"
       >
-        <div class="px-2 pt-2">Created</div><div class="px-2 pt-2">{{ formatDate(scoresheet.createdAt) }}</div>
-        <div class="px-2">Completed</div><div class="px-2">{{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}</div>
-        <journal-tally class="col-span-2" :tally="localScoresheets[scoresheet.id]?.tally ?? {}" />
+        <div class="px-2 pt-2">
+          Created
+        </div><div class="px-2 pt-2">
+          {{ formatDate(scoresheet.createdAt) }}
+        </div>
+        <div class="px-2">
+          Completed
+        </div><div class="px-2">
+          {{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}
+        </div>
+        <journal-tally class="col-span-2" :tally="localScoresheets?.[scoresheet.id]?.tally ?? {}" />
       </router-link>
     </div>
   </div>
@@ -139,7 +147,7 @@ const router = useRouter()
 const assignments = toRef(props, 'assignments')
 const assignment = computed(() => assignments.value?.find(a => a.competitionEventId === entry.value.competitionEventId && a.category.id === entry.value.category.id))
 
-const showPrevious = ref(false)
+const showPrevious = ref(true)
 
 const createScoresheetMutation = useCreateMarkScoresheetMutation({
   refetchQueries: ['GroupScoresheets']
@@ -149,7 +157,7 @@ const color = computed(() => {
   if (props.entry.didNotSkipAt) return 'gray'
   if (
     props.entry.lockedAt ||
-    (markScoresheets.value.length > 0 && markScoresheets.value.every(scsh => !(scsh as MarkScoresheetFragment).completedAt))
+    (markScoresheets.value.length > 0 && markScoresheets.value.some(scsh => (scsh as MarkScoresheetFragment).completedAt))
   ) return 'indigo'
   return 'green'
 })
