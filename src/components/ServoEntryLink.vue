@@ -52,13 +52,13 @@
         @click="showPrevious = !showPrevious"
       >
         <span v-if="showPrevious">Hide scoresheets</span>
-        <span v-else>Show scoresheets</span>
+        <span v-else>Show all scoresheets</span>
       </button>
     </div>
 
-    <div v-if="showPrevious">
+    <div>
       <a
-        v-for="scoresheet of prevScoresheets"
+        v-for="scoresheet of (showPrevious ? prevScoresheets : prevScoresheets.slice(0, 1))"
         :key="scoresheet.id"
         class="block border-t grid grid-rows-2 grid-cols-[min-content,auto] gap-x-2"
         :class="{
@@ -68,8 +68,12 @@
         }"
         @click.prevent="openScoresheet(scoresheet.id)"
       >
-        <div class="px-2 pt-2">Created</div><div class="px-2 pt-2">{{ formatDate(scoresheet.createdAt) }}</div>
-        <div class="px-2">Completed</div><div class="px-2">{{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}</div>
+        <div class="px-2 pt-2">Created</div>
+        <div class="px-2 pt-2">{{ formatDate(scoresheet.createdAt) }}</div>
+
+        <div class="px-2">Completed</div>
+        <div class="px-2">{{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}</div>
+
         <journal-tally class="col-span-2" :tally="scoresheet.tally" />
       </a>
     </div>
@@ -106,6 +110,10 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits<{
+  loadedLocal: []
+}>()
+
 const entry = toRef(props, 'entry')
 const judge = toRef(props, 'judge')
 const competitionId = toRef(props, 'competitionId')
@@ -131,12 +139,16 @@ watch(() => [
   judge.value,
   competitionId.value
 ] as const, async ([newEn, newJu, newCId]) => {
-  prevScoresheets.value = await getServoScoresheetsForEntry({
+  prevScoresheets.value = [...await getServoScoresheetsForEntry({
     competitionId: newCId,
     entryId: newEn.EntryNumber,
     judgeSequence: newJu.JudgeSequence
-  })
+  })].sort((a, b) => b.createdAt - a.createdAt)
 }, { immediate: true })
+
+watch(prevScoresheets, () => {
+  emit('loadedLocal')
+}, { once: true })
 
 const createScoresheetLoading = ref(false)
 async function createScoresheet () {

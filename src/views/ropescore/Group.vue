@@ -58,6 +58,7 @@
       :assignments="judge?.assignments!"
       :group-id="group.id"
       :current-heat="entry.heat === currentHeat"
+      @loaded-local="correctScroll()"
     />
   </div>
 
@@ -70,7 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { apiDomain } from '../../apollo'
 import { useAuth } from '../../hooks/auth'
@@ -78,20 +79,13 @@ import ScoreButton from '../../components/ScoreButton.vue'
 import BatteryStatus from '../../components/BatteryStatus.vue'
 import EntryLink from '../../components/EntryLink.vue'
 import { type MarkScoresheetFragment, type ScoresheetBaseFragment, useGroupScoresheetsQuery } from '../../graphql/generated'
+import { useDebounceFn } from '@vueuse/core'
 
 const auth = useAuth()
 const router = useRouter()
 const route = useRoute()
 
 const { result, loading, error, refetch } = useGroupScoresheetsQuery({ groupId: route.params.id as string }, () => ({ fetchPolicy: 'cache-and-network', pollInterval: 30_000, enabled: auth.isLoggedIn.value }))
-
-watch(result, (newData, oldData) => {
-  if (oldData == null && newData?.group?.currentHeat != null) {
-    scrollToHeat(newData?.group?.currentHeat)
-  }
-}, {
-  flush: 'post'
-})
 
 const group = computed(() => result.value?.group)
 const judge = computed(() => group.value?.deviceJudge)
@@ -110,10 +104,27 @@ const entries = computed(() =>
     : []
 )
 
+watch(result, (newData, oldData) => {
+  if (oldData == null && newData?.group?.currentHeat != null) {
+    scrollToHeat(currentHeat.value)
+  }
+}, {
+  flush: 'post'
+})
+
 function scrollToHeat (heatNumber: number) {
   document.getElementById(`heat-${heatNumber}`)?.scrollIntoView({
     behavior: 'instant',
     block: 'center',
   })
 }
+
+const corrected = ref(false)
+const correctScroll = useDebounceFn(() => {
+  if (corrected.value) return
+  corrected.value = true
+  void nextTick(() => {
+    scrollToHeat(currentHeat.value)
+  })
+}, 100)
 </script>

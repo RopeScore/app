@@ -55,7 +55,7 @@
         @click="showPrevious = !showPrevious"
       >
         <span v-if="showPrevious">Hide scoresheets</span>
-        <span v-else>Show scoresheets</span>
+        <span v-else>Show all scoresheets</span>
       </button>
       <button
         v-if="!entry.didNotSkipAt && !entry.lockedAt"
@@ -74,9 +74,9 @@
       </button>
     </div>
 
-    <div v-if="showPrevious">
+    <div>
       <router-link
-        v-for="scoresheet of markScoresheets"
+        v-for="scoresheet of (showPrevious ? markScoresheets : markScoresheets.slice(0, 1))"
         :key="scoresheet.id"
         class="border-t grid grid-rows-2 grid-cols-[min-content,auto] gap-x-2"
         :class="{
@@ -88,14 +88,18 @@
       >
         <div class="px-2 pt-2">
           Created
-        </div><div class="px-2 pt-2">
+        </div>
+        <div class="px-2 pt-2">
           {{ formatDate(scoresheet.createdAt) }}
         </div>
+
         <div class="px-2">
           Completed
-        </div><div class="px-2">
+        </div>
+        <div class="px-2">
           {{ scoresheet.completedAt ? formatDate(scoresheet.completedAt) : 'No' }}
         </div>
+
         <journal-tally class="col-span-2" :tally="localScoresheets?.[scoresheet.id]?.tally ?? {}" />
       </router-link>
     </div>
@@ -105,7 +109,7 @@
 <script lang="ts" setup>
 import { type ScoresheetBaseFragment, type MarkScoresheetFragment, type Entry, useCreateMarkScoresheetMutation, type AthleteFragment, type TeamFragment, type Category, type JudgeFragment, type JudgeAssignment } from '../graphql/generated'
 import { useRouter } from 'vue-router'
-import { type PropType, toRef, ref, computed } from 'vue'
+import { type PropType, toRef, ref, computed, watch } from 'vue'
 import { formatDate } from '../helpers'
 import { getRopeScoreLocalScoresheet, isRemoteMarkScoresheet } from '../hooks/scoresheet'
 import JournalTally from './JournalTally.vue'
@@ -138,16 +142,20 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits<{
+  loadedLocal: []
+}>()
+
 const entry = toRef(props, 'entry')
 const _scoresheets = toRef(props, 'scoresheets')
-const markScoresheets = computed(() => _scoresheets.value?.filter(scsh => isRemoteMarkScoresheet(scsh)) ?? [])
+const markScoresheets = computed(() => [...(_scoresheets.value?.filter(scsh => isRemoteMarkScoresheet(scsh)) ?? [])].sort((a, b) => b.createdAt - a.createdAt))
 const judge = toRef(props, 'judge')
 const router = useRouter()
 
 const assignments = toRef(props, 'assignments')
 const assignment = computed(() => assignments.value?.find(a => a.competitionEventId === entry.value.competitionEventId && a.category.id === entry.value.category.id))
 
-const showPrevious = ref(true)
+const showPrevious = ref(false)
 
 const createScoresheetMutation = useCreateMarkScoresheetMutation({
   refetchQueries: ['GroupScoresheets']
@@ -169,6 +177,10 @@ const localScoresheets = computedAsync(async () => Object.fromEntries(
     .filter(scsh => scsh != null)
     .map(scsh => [scsh.id, scsh])
 ))
+
+watch(localScoresheets, () => {
+  emit('loadedLocal')
+}, { once: true })
 
 async function createScoresheet () {
   const res = await createScoresheetMutation.mutate({

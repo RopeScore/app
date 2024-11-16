@@ -3,9 +3,9 @@ import { useRouter } from 'vue-router'
 import ScoreButton from '../../components/ScoreButton.vue'
 import ServoEntryLink from '../../components/ServoEntryLink.vue'
 import BatteryStatus from '../../components/BatteryStatus.vue'
-import { useFetch } from '@vueuse/core'
+import { useDebounceFn, useFetch } from '@vueuse/core'
 import { useServoAuth } from '../../hooks/servo-auth'
-import { computed, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { type AssignmentCodeLookupResponse } from '../../hooks/scoresheet'
 import { version } from '../../helpers'
 
@@ -40,14 +40,6 @@ const { data, error, isFetching, execute: refetch } = useFetch(url, {
   }
 }).json<AssignmentCodeLookupResponse>()
 
-watch(data, (newData, oldData) => {
-  if (oldData == null && newData?.Session.CurrentHeatNumber != null) {
-    scrollToHeat(newData.Session.CurrentHeatNumber)
-  }
-}, {
-  flush: 'post'
-})
-
 const currentHeat = computed(() => data.value?.Session.CurrentHeatNumber ?? 1)
 
 const entries = computed(() =>
@@ -60,12 +52,29 @@ const entries = computed(() =>
     : []
 )
 
+watch(data, (newData, oldData) => {
+  if (oldData == null && newData?.Session.CurrentHeatNumber != null) {
+    scrollToHeat(currentHeat.value)
+  }
+}, {
+  flush: 'post'
+})
+
 function scrollToHeat (heatNumber: number) {
   document.getElementById(`heat-${heatNumber}`)?.scrollIntoView({
     behavior: 'instant',
     block: 'center',
   })
 }
+
+const corrected = ref(false)
+const correctScroll = useDebounceFn(() => {
+  if (corrected.value) return
+  corrected.value = true
+  void nextTick(() => {
+    scrollToHeat(currentHeat.value)
+  })
+}, 100)
 </script>
 
 <template>
@@ -125,6 +134,7 @@ function scrollToHeat (heatNumber: number) {
       :competition-id="data.Competition.CompetitionID"
       :station-name="data.StationName"
       :current-heat="currentHeat === entry.HeatNumber"
+      @loaded-local="correctScroll()"
     />
   </div>
 
