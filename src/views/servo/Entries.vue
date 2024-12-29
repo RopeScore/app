@@ -44,11 +44,7 @@ const currentHeat = computed(() => data.value?.Session.CurrentHeatNumber ?? 1)
 
 const entries = computed(() =>
   data.value
-    ? [...data.value.Entries]
-        .sort((a, b) => {
-          if (a.HeatNumber !== b.HeatNumber) return (a.HeatNumber ?? Infinity) - (b.HeatNumber ?? Infinity)
-          else return a.Participants[0].FirstName.localeCompare(b.Participants[0].FirstName)
-        })
+    ? [...data.value.Entries] // server owns entry sort order
     : []
 )
 
