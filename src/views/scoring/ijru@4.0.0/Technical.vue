@@ -16,21 +16,21 @@
     />
 
     <score-button
-      label="more than 5s, less than 10s"
+      :label="`${formatTime(eventDuration - 10)}&ndash;${formatTime(eventDuration - 6)}`"
       color="red"
       class="col-start-2 row-start-2"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'timeViolation', value: 4 })"
     />
     <score-button
-      label="more than 10s, less than 15s"
+      :label="`${formatTime(eventDuration - 15)}&ndash;${formatTime(eventDuration - 11)}`"
       color="red"
       class="col-start-2 row-start-3"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'timeViolation', value: 8 })"
     />
     <score-button
-      label="more than 15s"
+      :label="`0:00&ndash;${formatTime(eventDuration - 16)}`"
       color="red"
       class="col-start-2 row-start-4"
       :disabled="!!scoresheet?.completedAt"
@@ -222,7 +222,7 @@ watch(() => scoresheet.value?.marks, marks => {
         accumulatedDuration.value = 0
         idx = -1
       }
-    } else if (lastStartMark.value == null) {
+    } else if (lastStartMark.value == null && props.step !== 'timeViolations') {
       lastStartMark.value = mark
     }
 
@@ -244,4 +244,10 @@ useIntervalFn(() => {
   }
   duration.value = Math.round(d / 100) / 10
 }, 100)
+
+const eventDuration = computed(() => cEvtDef.value?.timing.split('x').map(v => parseInt(v, 10)).reduce((a, b) => a * b, 1) ?? 0)
+
+function formatTime (seconds: number) {
+  return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`
+}
 </script>
