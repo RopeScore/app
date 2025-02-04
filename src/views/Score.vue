@@ -26,33 +26,33 @@
 
 <script lang="ts" setup>
 import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useWakeLock } from '@vueuse/core'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
+import { useWakeLock, useEventListener } from '@vueuse/core'
 import models from '../models'
 import ScoreNavigation from '../components/ScoreNavigation.vue'
 import BatteryStatus from '../components/BatteryStatus.vue'
 import { useScoresheet } from '../hooks/scoresheet'
 
-function preventDefualt (event: TouchEvent) {
+function preventDefault (event: TouchEvent) {
   event.preventDefault()
 }
 
 const route = useRoute()
 const scsh = useScoresheet()
 const wakeLock = useWakeLock()
+const touchCleanup = ref<ReturnType<typeof useEventListener>>()
 
 const currentStep = ref<string>()
 
 onMounted(async () => {
-  document.body.addEventListener('touchmove', preventDefualt, { passive: false })
+  touchCleanup.value = useEventListener('touchmove', preventDefault, { passive: false })
   await wakeLock.request('screen')
-  await scsh.open(route.params.system as string, ...route.params.vendor)
+  await scsh.open(route.params.system as string, ...route.params.vendor as string[])
 })
 
 onUnmounted(async () => {
-  await scsh.close()
+  await scsh.close(false)
   await wakeLock.release()
-  document.body.removeEventListener('touchmove', preventDefualt)
 })
 
 watch(() => route.params, async (next, prev) => {
@@ -65,8 +65,8 @@ watch(() => route.params, async (next, prev) => {
     return
   }
   if (next.system && next.vendor) {
-    await scsh.close()
-    await scsh.open(next.system as string, ...next.vendor)
+    await scsh.close(false)
+    await scsh.open(next.system as string, ...next.vendor as string[])
   }
 })
 
@@ -78,13 +78,30 @@ const model = computed(() => {
   ))
   if (!model) return null
 
-  if (model.allowScroll) {
-    document.body.removeEventListener('touchmove', preventDefualt)
-  } else {
-    document.body.addEventListener('touchmove', preventDefualt, { passive: false })
-  }
-
   return model
+})
+
+watch(model, model => {
+  if (model == null) return
+
+  if (model.allowScroll) {
+    touchCleanup.value?.()
+  } else {
+    touchCleanup.value = useEventListener('touchmove', preventDefault, { passive: false })
+  }
+})
+
+useEventListener('beforeunload', event => {
+  event.preventDefault()
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  event.returnValue = 'Do you really want to leave, the scoresheet will not be saved.'
+})
+
+onBeforeRouteLeave(() => {
+  if (scsh.scoresheet.value) {
+    const confirm = window.confirm('Do you really want to leave, the scoresheet will not be saved.')
+    if (!confirm) return false
+  }
 })
 
 watch(model, (newModel, oldModel) => {
