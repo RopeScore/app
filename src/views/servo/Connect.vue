@@ -87,7 +87,7 @@ const qrcode = useQRCode(completeUri)
         <img class="aspect-1/1 w-full max-w-40 mx-auto mt-2" alt="" :src="qrcode">
 
         <a
-          :href="prompt.uriComplete"
+          :href="prompt.uriComplete ?? prompt.uri"
           class="text-indigo-700 hover:text-indigo-900"
           target="_blank"
           rel="noopener"
