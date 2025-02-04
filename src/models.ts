@@ -234,7 +234,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@2.0.0/AthletePresentation.vue'))
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@20203', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'Pa',
     name: 'Athlete Presentation',
     historic: true,
@@ -335,7 +335,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@2.0.0/RoutinePresentation.vue'))
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@20203', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'Pr',
     name: 'Routine Presentation',
     historic: true,
@@ -426,7 +426,7 @@ const models: Model[] = [
     ]
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@20203', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'R',
     name: 'Required Elements',
     historic: true,
@@ -735,7 +735,7 @@ const models: Model[] = [
   },
 
   {
-    rulesId: ['ijru.ddc.2023', 'ijru.ddcf.2023'],
+    rulesId: ['ijru.freestyle.ddc@2023', 'ijru.ddc.2023', 'ijru.ddcf.2023'],
     judgeType: 'J',
     name: 'Jumper',
     allowScroll: true,
@@ -746,7 +746,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru.ddc.2023', 'ijru.ddcf.2023'],
+    rulesId: ['ijru.freestyle.ddc@2023', 'ijru.ddc.2023', 'ijru.ddcf.2023'],
     judgeType: 'T',
     name: 'Turner',
     allowScroll: true,
@@ -757,7 +757,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru.ddc.2023', 'ijru.ddcf.2023'],
+    rulesId: ['ijru.freestyle.ddc@2023', 'ijru.ddc.2023', 'ijru.ddcf.2023'],
     judgeType: 'E',
     name: 'Expression',
     allowScroll: true,
@@ -768,7 +768,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru.ddc.2023', 'ijru.ddcf.2023'],
+    rulesId: ['ijru.freestyle.ddc@2023', 'ijru.ddc.2023', 'ijru.ddcf.2023'],
     judgeType: 'S',
     name: 'Staging',
     allowScroll: true,
