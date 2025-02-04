@@ -4,7 +4,7 @@
       label="Timer"
       color="none"
       class="col-start-1 row-start-1"
-      :value="duration.toFixed(1)"
+      :value="formatTime(duration, 1)"
       disabled
     />
 
@@ -52,7 +52,7 @@
       label="Start Timer"
       color="green"
       class="col-start-1 row-start-1"
-      :value="duration.toFixed(1)"
+      :value="formatTime(duration, 1)"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'resumeTimer' })"
     />
@@ -61,7 +61,7 @@
       label="Pause Timer"
       color="orange"
       class="col-start-1 row-start-1"
-      :value="duration.toFixed(1)"
+      :value="formatTime(duration, 1)"
       :disabled="!!scoresheet?.completedAt"
       @click="addMark({ schema: 'pauseTimer' })"
     />
@@ -247,7 +247,7 @@ useIntervalFn(() => {
 
 const eventDuration = computed(() => cEvtDef.value?.timing.split('x').map(v => parseInt(v, 10)).reduce((a, b) => a * b, 1) ?? 0)
 
-function formatTime (seconds: number) {
-  return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`
+function formatTime (seconds: number, decimals = 0) {
+  return `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(decimals).padStart(2, '0')}`
 }
 </script>
