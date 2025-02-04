@@ -11,7 +11,10 @@ interface TokenRequest {
   user_prompt: string
   // Or just this code
   code: string
-  //
+  // Or let them open this URL and enter the code
+  // or scan a QR and with the complete URI
+  verification_uri: string | null
+  verification_uri_complete: string | null
   available: boolean
   profile: 'judgeClientSimple'
   profile_version: '1.0'
@@ -64,7 +67,9 @@ export function useServoAuth () {
   const prompt = computed(() => pendingAuthFlow.value
     ? {
         text: pendingAuthFlow.value.user_prompt,
-        code: pendingAuthFlow.value.code
+        code: pendingAuthFlow.value.code,
+        uri: pendingAuthFlow.value.verification_uri,
+        uriComplete: pendingAuthFlow.value.verification_uri_complete,
       }
     : undefined)
   const tokenRequestUri = computed(() => {

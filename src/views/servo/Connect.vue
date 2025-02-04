@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useQRCode } from '@vueuse/integrations/useQRCode'
 import { TextField, NoteCard } from '@ropescore/components'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import ScoreButton from '../../components/ScoreButton.vue'
 import { useServoAuth } from '../../hooks/servo-auth'
 import { useRouter } from 'vue-router'
@@ -9,6 +10,9 @@ const accessCode = ref<string>('https://scoring.ijru.sport/a/')
 
 const router = useRouter()
 const { assignment, prompt, loading, error, initialize, logOut } = useServoAuth()
+
+const completeUri = computed(() => prompt.value?.uriComplete ?? '')
+const qrcode = useQRCode(completeUri)
 </script>
 
 <template>
@@ -71,11 +75,24 @@ const { assignment, prompt, loading, error, initialize, logOut } = useServoAuth(
     <note-card v-if="error" color="red">
       {{ error }}
     </note-card>
-    <note-card v-if="prompt">
+    <note-card v-if="prompt" class="text-center">
       {{ prompt.text }}
-      <p class="text-center text-2xl font-bold font-mono">
+      <p class="text-2xl font-bold font-mono">
         {{ prompt.code }}
       </p>
+
+      <div v-if="prompt.uri" class="mt-6">
+        Or scan the QR code below to log in with your IJRU Account
+
+        <img class="aspect-1/1 w-full max-w-40 mx-auto mt-2" alt="" :src="qrcode">
+
+        <a
+          :href="prompt.uriComplete"
+          class="text-indigo-700 hover:text-indigo-900"
+          target="_blank"
+          rel="noopener"
+        >{{ prompt.uri }}</a>
+      </div>
     </note-card>
   </main>
 </template>
