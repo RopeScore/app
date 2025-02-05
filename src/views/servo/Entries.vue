@@ -31,9 +31,15 @@ const { data, error, isFetching, execute: refetch } = useFetch(url, {
       return
     }
 
-    options.headers = {
-      ...options.headers,
-      authorization: `Bearer ${token.value}`
+    if (Array.isArray(options.headers)) {
+      options.headers = [...options.headers, ['authorization', `Bearer ${token.value}`]]
+    } else if (options.headers instanceof Headers) {
+      options.headers.append('authorization', `Bearer ${token.value}`)
+    } else {
+      options.headers = {
+        ...options.headers,
+        authorization: `Bearer ${token.value}`
+      }
     }
 
     return { options }

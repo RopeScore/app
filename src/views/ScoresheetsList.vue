@@ -2,7 +2,7 @@
 import { computedAsync } from '@vueuse/core'
 import ScoreButton from '../components/ScoreButton.vue'
 import { useRouter } from 'vue-router'
-import { listScoresheets, isServoIntermediateScoresheet, isRemoteTallyScoresheet, isRemoteMarkScoresheet, type Scoresheet } from '../hooks/scoresheet'
+import { listScoresheets, isServoIntermediateScoresheet, isRemoteTallyScoresheet, isRemoteMarkScoresheet, type Scoresheet, type LocalScoresheet } from '../hooks/scoresheet'
 import { formatDate } from '../helpers'
 import JournalTally from '../components/JournalTally.vue'
 
@@ -82,7 +82,7 @@ function scoresheetLink (scoresheet: Scoresheet<string>) {
           Judge Type: <span class="font-bold">{{ scoresheet.judgeType }}</span>
         </div>
       </div>
-      <journal-tally :tally="scoresheet.tally" />
+      <journal-tally :tally="(scoresheet as LocalScoresheet<string>).tally" />
       <div class="grid grid-cols-2 grid-rows-1">
         <router-link
           :to="`/score/${scoresheetLink(scoresheet)}`"

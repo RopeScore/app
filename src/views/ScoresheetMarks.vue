@@ -14,7 +14,7 @@ function goBack () {
 }
 
 onMounted(async () => {
-  await scsh.open(route.params.system as string, ...route.params.vendor)
+  await scsh.open(route.params.system as string, ...route.params.vendor as string[])
 })
 
 watch(() => route.params, async (next, prev) => {
@@ -28,7 +28,7 @@ watch(() => route.params, async (next, prev) => {
   }
   if (next.system && next.vendor) {
     await scsh.close()
-    await scsh.open(next.system as string, ...next.vendor)
+    await scsh.open(next.system as string, ...next.vendor as string[])
   }
 })
 
