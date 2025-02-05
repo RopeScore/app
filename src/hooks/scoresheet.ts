@@ -473,9 +473,14 @@ const openServo = async (competitionId: number, entryId: number, judgeSequence: 
       }
     }
 
-    const model = await importCompetitionEventModel(scoresheet.value.rulesId)
-    const judge = model.judges.find(j => j(scoresheet.value?.options ?? {}).id === scoresheet.value?.judgeType)?.(scoresheet.value.options ?? {})
-    markReducer.value = judge?.createMarkReducer()
+    try {
+      const model = await importCompetitionEventModel(scoresheet.value.rulesId)
+      const judge = model.judges.find(j => j(scoresheet.value?.options ?? {}).id === scoresheet.value?.judgeType)?.(scoresheet.value.options ?? {})
+      markReducer.value = judge?.createMarkReducer()
+    } catch (err) {
+      console.warn('Failed to import preconfigured competition event, falling back to simple reducer', err)
+      markReducer.value = createMarkReducer(simpleReducer)
+    }
   } catch (err) {
     if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
     throw err
@@ -535,7 +540,7 @@ const closeServo = async ({ save }: CloseScoresheetOptions) => {
         method = 'POST'
       }
 
-      const scores = model.converters?.servo?.(scoresheet.value)
+      const scores = model.converters?.servo?.(scoresheet.value, tally.value)
 
       // store the remote copy
       const response = await fetch(url, {
@@ -708,7 +713,7 @@ export async function createServoScoresheet ({ competitionId, entryId, judgeSequ
         else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'Dj'
         else if (judgeSequence >= 31 && judgeSequence <= 39) judgeType = 'Dt'
         else throw new TypeError(`Invalid judge sequence ${judgeSequence} for scoring model ${scoringModel}`)
-      } else if (scoringModel.startsWith('ijru.freestyle.') || scoringModel.startsWith('ijru.teamshow.')) {
+      } else if (scoringModel.startsWith('ijru.freestyle.') || scoringModel.startsWith('ijru.teamshow.') || scoringModel.startsWith('ijru.freestyle.teamshow@')) {
         if (judgeSequence >= 1 && judgeSequence <= 9) judgeType = 'Pa'
         else if (judgeSequence >= 11 && judgeSequence <= 19) judgeType = 'Pr'
         else if (judgeSequence >= 21 && judgeSequence <= 29) judgeType = 'R'
@@ -717,7 +722,7 @@ export async function createServoScoresheet ({ competitionId, entryId, judgeSequ
       } else if (scoringModel.startsWith('ijru.speed.')) {
         if (judgeSequence === 1) judgeType = 'Shj'
         else judgeType = 'S'
-      } else if (scoringModel.startsWith('ijru.ddcf.') || scoringModel.startsWith('ijru.ddc.')) {
+      } else if (scoringModel.startsWith('ijru.ddcf.') || scoringModel.startsWith('ijru.ddc.') || scoringModel.startsWith('ijru.freestyle.ddc@')) {
         switch (judgeSequence) {
           case 1:
           case 2:

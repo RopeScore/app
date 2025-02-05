@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { type Component, defineAsyncComponent } from 'vue'
-import { calculateTally, convertMarksToServoIntermediate, type ServoIntermediateScoresheet } from './hooks/scoresheet'
+import { convertMarksToServoIntermediate, type ScoreTally, type ServoIntermediateScoresheet } from './hooks/scoresheet'
 import type { CompetitionEventDefinition } from '@ropescore/rulesets'
 
 export interface BaseOption {
@@ -42,12 +41,11 @@ export interface Model {
 
   // I would kinda like this broken out somehow, but this will do for now
   converters?: {
-    servo?: (scoresheet: ServoIntermediateScoresheet<any>) => Record<string, unknown>
+    servo?: (scoresheet: ServoIntermediateScoresheet<any>, tally: ScoreTally<string>) => Record<string, unknown>
   }
 }
 
-function servoDdc2023Converter (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ddc@2023/Judge.vue').Schema>) {
-  const tally = calculateTally(scoresheet.marks)
+function servoDdc2023Converter (scoresheet: ServoIntermediateScoresheet<import('./views/scoring/ddc@2023/Judge.vue').Schema>, tally: ScoreTally<import('./views/scoring/ddc@2023/Judge.vue').Schema>) {
   const scores: Record<string, number> = {
     Bonus: tally.bonus ?? 0,
     Misses: tally.miss ?? 0
@@ -147,7 +145,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Difficulty.vue'))
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'D',
     historic: true,
     name: 'Difficulty',
@@ -234,7 +232,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@2.0.0/AthletePresentation.vue'))
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@20203', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'Pa',
     name: 'Athlete Presentation',
     historic: true,
@@ -335,7 +333,7 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@2.0.0/RoutinePresentation.vue'))
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@20203', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'Pr',
     name: 'Routine Presentation',
     historic: true,
@@ -426,7 +424,7 @@ const models: Model[] = [
     ]
   },
   {
-    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@20203', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
+    rulesId: ['ijru@3.0.0', 'ijru.freestyle.2023', 'ijru.freestyle.teamshow@2023', 'ijru.teamshow.2023', 'svgf-par@3.0.0'],
     judgeType: 'R',
     name: 'Required Elements',
     historic: true,
