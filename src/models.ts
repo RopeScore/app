@@ -216,7 +216,10 @@ const models: Model[] = [
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/DDDifficulty.vue'))
   },
   {
-    rulesId: ['ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0', 'ijru@4.0.0'],
+    rulesId: [
+      'ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0', 'ijru@4.0.0',
+      'ijru.freestyle.sr@4.2.0', 'ijru@4.2.0',
+    ],
     judgeType: ['Dp', 'Dm', 'Dr', 'Da', 'Db'],
     name: 'Difficulty (Single Rope and Wheel)',
     localAlternativeCompetitionEvents: 'e.ijru.fs.sr.srif.1.75@4.0.0',
@@ -402,7 +405,10 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru.freestyle.dd@4.0.0', 'ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0', 'ijru@4.0.0'],
+    rulesId: [
+      'ijru.freestyle.dd@4.0.0', 'ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0', 'ijru@4.0.0',
+      'ijru.freestyle.sr@4.2.0', 'ijru@4.2.0',
+    ],
     judgeType: 'P',
     name: 'Presentation',
     localAlternativeCompetitionEvents: 'e.ijru.fs.dd.ddsf.3.75@4.0.0',
@@ -581,7 +587,10 @@ const models: Model[] = [
     steps: ['marks', 'timeViolations'],
   },
   {
-    rulesId: ['ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0', 'ijru@4.0.0'],
+    rulesId: [
+      'ijru.freestyle.sr@4.0.0', 'ijru.freestyle.wh@4.0.0', 'ijru@4.0.0',
+      'ijru.freestyle.sr@4.2.0', 'ijru@4.2.0',
+    ],
     judgeType: 'T',
     name: 'Technical (Single Rope and Wheel)',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/Technical.vue')),

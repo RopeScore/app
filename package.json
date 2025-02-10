@@ -19,9 +19,9 @@
     "codegen:watch": "npm run codegen -- --watch"
   },
   "dependencies": {
-    "@apollo/client": "^3.12.9",
+    "@apollo/client": "^3.12.11",
     "@ropescore/components": "^1.9.1",
-    "@ropescore/rulesets": "^0.13.5",
+    "@ropescore/rulesets": "^0.14.0",
     "@sentry/vue": "^8.54.0",
     "@vue/apollo-composable": "^4.2.1",
     "@vue/tsconfig": "^0.7.0",
@@ -47,11 +47,11 @@
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/compiler-sfc": "^3.5.13",
-    "eslint": "^9.19.0",
+    "eslint": "^9.20.0",
     "eslint-plugin-vue": "^9.32.0",
-    "neostandard": "^0.12.0",
+    "neostandard": "^0.12.1",
     "typescript": "5.7",
-    "vite": "^6.0.11",
+    "vite": "^6.1.0",
     "vite-plugin-pwa": "^0.21.1",
     "vite-plugin-windicss": "^1.9.4",
     "vue-tsc": "^2.2.0"
