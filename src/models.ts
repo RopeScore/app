@@ -92,7 +92,7 @@ function servoSpeedConverter (scoresheet: ServoIntermediateScoresheet<import('./
 
 const models: Model[] = [
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru.speed@1.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru.speed@1.0.0', 'svgf-rh@2020', 'svgf-rh@2025', 'svgf-par@2.0.0', 'svgf-vh@2023', 'ijru.speed.2020'],
     judgeType: 'S',
     name: 'Speed',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Speed.vue')),
@@ -109,7 +109,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru.speed@1.0.0', 'svgf-rh@2020', 'svgf-par@2.0.0', 'ijru.speed.2020'],
+    rulesId: ['ijru@1.1.0', 'ijru@2.0.0', 'ijru@3.0.0', 'ijru.speed@1.0.0', 'svgf-rh@2020', 'svgf-rh@2025', 'svgf-par@2.0.0', 'ijru.speed.2020'],
     judgeType: 'Shj',
     name: 'Speed Head Judge',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@1.1.0/Speed.vue')),
