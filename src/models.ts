@@ -602,7 +602,7 @@ const models: Model[] = [
   },
 
   {
-    rulesId: 'svgf-rh@2020',
+    rulesId: ['svgf-rh@2020', 'svgf-rh@2025'],
     judgeType: 'D',
     name: 'Difficulty',
     localAlternativeCompetitionEvents: 'e.svgf.fs.sr.srif-rh.1.75@2020',
@@ -617,6 +617,17 @@ const models: Model[] = [
     localAlternativeCompetitionEvents: [
       ['Single Rope', 'e.svgf.fs.sr.srif-rh.1.75@2020'],
       ['Double Dutch', 'e.svgf.fs.dd.ddpf-rh.4.75@2020']
+    ]
+  },
+  {
+    rulesId: 'svgf-rh@2025',
+    judgeType: 'P',
+    name: 'Presentation',
+    allowScroll: true,
+    component: defineAsyncComponent(async () => await import('./views/scoring/svgf-rh@2025/Presentation.vue')),
+    localAlternativeCompetitionEvents: [
+      ['Single Rope', 'e.svgf.fs.sr.srif-rh.1.75@2025'],
+      ['Double Dutch', 'e.svgf.fs.dd.ddpf-rh.4.75@2025']
     ]
   },
 
