@@ -20,7 +20,6 @@ if (import.meta.env.PROD) {
     release: import.meta.env.VITE_COMMIT_REF?.toString(),
     environment: import.meta.env.VITE_CONTEXT?.toString(),
     tracePropagationTargets: ['ropescore.app', 'api.ropescore.com'],
-    logErrors: true,
     integrations: [Sentry.browserTracingIntegration({
       router
     })],
