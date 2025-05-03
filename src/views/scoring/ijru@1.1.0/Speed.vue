@@ -75,5 +75,5 @@ const { addMark, tally, scoresheet } = useScoresheet<Schema>()
 
 const isHeadJudge = computed(() => scoresheet.value?.judgeType === 'Shj')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-const hasSwitches = computed(() => (scoresheet.value?.options?.falseSwitches ?? 0) > 0 || /\.\d+x\d+@.*$/.test(scoresheet.value?.competitionEventId ?? ''))
+const hasSwitches = computed(() => (scoresheet.value?.options?.falseSwitches ?? 0) > 0 || /\.\d+x\d+(@.*)?$/.test(scoresheet.value?.competitionEventId ?? ''))
 </script>
