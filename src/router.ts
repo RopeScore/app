@@ -7,7 +7,7 @@ export default createRouter({
   routes: [
     { path: '/', component: async () => await import('./views/Home.vue') },
     { path: '/practice', component: async () => await import('./views/PracticeIndex.vue') },
-    { path: '/score/:system/:vendor+', component: async () => await import('./views/Score.vue') },
+    { path: '/score/:system/:vendor+', component: async () => await import('./views/Score.vue'), meta: { disableModals: true } },
     { path: '/scoresheets', component: async () => await import('./views/ScoresheetsList.vue') },
     { path: '/scoresheets/:system/:vendor+/marks', component: async () => await import('./views/ScoresheetMarks.vue') },
 

@@ -31,16 +31,6 @@
       </router-link>
     </nav>
 
-    <div v-if="needRefresh" class="mb-8">
-      <span class="font-bold">Update required, reload to activate</span>
-      <button
-        class="block p-2 mt-2 text-center text-lg text-white bg-purple-500 hover:bg-purple-600 rounded hover:outline-none focus:outline-none outline-none w-full"
-        @click="updateSW()"
-      >
-        Reload
-      </button>
-    </div>
-
     <p>
       &copy; Swantzter 2019-2024, Lyra Sports Inc. 2024 &mdash;
       {{ version }}
@@ -92,16 +82,6 @@
       </router-link>
     </nav>
 
-    <div v-if="needRefresh" class="mb-8">
-      <span class="font-bold">Update required, reload to activate</span>
-      <button
-        class="block p-2 mt-2 text-center text-lg text-white bg-red-500 hover:bg-red-600 rounded hover:outline-none focus:outline-none outline-none w-full"
-        @click="updateSW()"
-      >
-        Reload
-      </button>
-    </div>
-
     <div class="mb-8">
       <p>Server: {{ apiDomain }}</p>
       <select-field
@@ -136,7 +116,6 @@
 <script lang="ts" setup>
 import { computed, ref, watchEffect } from 'vue'
 import logo from '../assets/logo.svg'
-import { useSW } from '../hooks/sw'
 import { apiDomain, localManual, localApis } from '../apollo'
 import { version } from '../helpers'
 
@@ -151,6 +130,4 @@ watchEffect(() => {
 
 const route = useRoute()
 const isLyra = computed(() => 'lyra' in route.query)
-
-const { needRefresh, updateSW } = useSW()
 </script>
