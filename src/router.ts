@@ -26,6 +26,17 @@ export default createRouter({
     // IJRU
     { path: '/servo/connect', component: async () => await import('./views/servo/Connect.vue') },
     {
+      path: '/:type([a|s])/:code',
+      redirect: to => ({
+        path: '/servo/connect',
+        query: {
+          type: to.params.type,
+          code: to.params.code,
+          'base-url': to.query['base-url'],
+        }
+      }),
+    },
+    {
       path: '/servo/entries',
       component: async () => await import('./views/servo/Entries.vue'),
       beforeEnter: (to, fron) => {

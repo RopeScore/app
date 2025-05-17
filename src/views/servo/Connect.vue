@@ -1,18 +1,33 @@
 <script setup lang="ts">
 import { useQRCode } from '@vueuse/integrations/useQRCode'
 import { TextField, NoteCard } from '@ropescore/components'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import ScoreButton from '../../components/ScoreButton.vue'
 import { useServoAuth } from '../../hooks/servo-auth'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
-const accessCode = ref<string>('https://scoring.ijru.sport/a/')
+const defaultServoBaseUrl = import.meta.env.VITE_DEFAULT_SERVO_BASE_URL ?? 'https://scoring.ijru.sport/'
+const defaultServoCodeType = 'a'
+
+const route = useRoute()
+const accessCode = ref<string>(new URL(`${defaultServoCodeType}/`, defaultServoBaseUrl).href)
 
 const router = useRouter()
 const { assignment, prompt, loading, error, initialize, logOut } = useServoAuth()
 
 const completeUri = computed(() => prompt.value?.uriComplete ?? '')
 const qrcode = useQRCode(completeUri)
+
+onMounted(() => {
+  if (typeof route.query.code === 'string' && /^\d+(?:-\d+)$/.test(route.query.code)) {
+    const baseUrl = typeof route.query['base-url'] === 'string' ? route.query['base-url'] : defaultServoBaseUrl
+    const type = typeof route.query.type === 'string' && ['a', 's'].includes(route.query.type) ? route.query.type : defaultServoCodeType
+
+    accessCode.value = new URL(`${type}/${route.query.code}`, baseUrl).href
+
+    void initialize(accessCode.value)
+  }
+})
 </script>
 
 <template>

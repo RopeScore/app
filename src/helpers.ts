@@ -11,6 +11,7 @@ declare global {
     VITE_CONTEXT?: string
     VITE_GRAPHQL_ENDPOINT?: string
     VITE_GRAPHQL_WS_ENDPOINT?: string
+    VITE_DEFAULT_SERVO_BASE_URL?: string
   }
 }
 
