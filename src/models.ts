@@ -202,14 +202,14 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru.freestyle.dd@4.0.0', 'ijru@4.0.0'],
+    rulesId: ['ijru.freestyle.dd@4.0.0', 'ijru@4.0.0', 'ijru.freestyle.dd@4.2.0', 'ijru@4.2.0'],
     judgeType: 'Dt',
     name: 'Turner Difficulty (Double Dutch)',
     localAlternativeCompetitionEvents: 'e.ijru.fs.dd.ddsf.3.75@4.0.0',
     component: defineAsyncComponent(async () => await import('./views/scoring/ijru@4.0.0/DDDifficulty.vue'))
   },
   {
-    rulesId: ['ijru.freestyle.dd@4.0.0', 'ijru@4.0.0'],
+    rulesId: ['ijru.freestyle.dd@4.0.0', 'ijru@4.0.0', 'ijru.freestyle.dd@4.2.0', 'ijru@4.2.0'],
     judgeType: 'Dj',
     name: 'Jumper Difficulty (Double Dutch)',
     localAlternativeCompetitionEvents: 'e.ijru.fs.dd.ddsf.3.75@4.0.0',
@@ -579,7 +579,7 @@ const models: Model[] = [
     }
   },
   {
-    rulesId: ['ijru.freestyle.dd@4.0.0', 'ijru@4.0.0'],
+    rulesId: ['ijru.freestyle.dd@4.0.0', 'ijru@4.0.0', 'ijru.freestyle.dd@4.2.0', 'ijru@4.2.0'],
     judgeType: 'T',
     name: 'Technical (Double Dutch)',
     localAlternativeCompetitionEvents: 'e.ijru.fs.dd.ddsf.1.75@4.0.0',
