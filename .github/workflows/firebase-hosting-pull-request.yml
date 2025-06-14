@@ -17,13 +17,16 @@ jobs:
       url: ${{ steps.firebase-deploy.outputs.details_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci --prefer-offline
-      - run: npm run codegen
-      - run: npm run build
+          node-version: 24
+          cache: pnpm
+      - run: pnpm ci --prefer-offline
+      - run: pnpm run codegen
+      - run: pnpm run build
         env:
           VITE_COMMIT_REF: ${{ github.sha }}
           VITE_CONTEXT: ${{ github.ref_name }}
