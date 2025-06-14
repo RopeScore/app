@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
-    "@ropescore/components": "^1.10.0",
+    "@ropescore/components": "^1.10.1",
     "@ropescore/rulesets": "^0.15.3",
     "@sentry/vue": "^9.29.0",
     "@vue/apollo-composable": "^4.2.2",
