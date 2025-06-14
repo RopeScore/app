@@ -1,0 +1,5 @@
+mutation AddServoStreamMark ($entryId: ID!, $mark: JSONObject!, $tally: JSONObject!) {
+  addServoStreamMark (entryId: $entryId, mark: $mark, tally: $tally) {
+    sequence
+  }
+}

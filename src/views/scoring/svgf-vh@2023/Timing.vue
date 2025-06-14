@@ -30,7 +30,7 @@
 import { ref } from 'vue'
 import ScoreButton from '../../../components/ScoreButton.vue'
 import { useScoresheet } from '../../../hooks/scoresheet'
-import { useIntervalFn } from '@vueuse/shared'
+import { useIntervalFn } from '@vueuse/core'
 
 import type { PropType } from 'vue'
 import type { Model } from '../../../models'

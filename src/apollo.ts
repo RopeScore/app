@@ -8,6 +8,7 @@ import { computed, watch } from 'vue'
 import { useFetch, useIntervalFn, useLocalStorage } from '@vueuse/core'
 import useNotifications from './hooks/notifications'
 import { Kind, OperationTypeNode } from 'graphql'
+import { useServoAuth } from './hooks/servo-auth'
 
 const localDiscover = useFetch('http://ropescore.local').get().text()
 const resolvedReachable = useFetch(
@@ -56,13 +57,15 @@ const wsLink = new WebSocketLink({
   lazyCloseTimeout: 20 * 1000,
   numConnections: 3,
   connectionParams: () => {
+    const servoAuth = useServoAuth()
     const auth = useAuth()
-    watch(auth.token, () => {
+    watch(() => [auth.token.value, servoAuth.token.value], () => {
       for (const client of wsLink.clients) client.restart()
     })
 
     return {
-      Authorization: auth.token.value ? `Bearer ${auth.token.value}` : ''
+      Authorization: auth.token.value ? `Bearer ${auth.token.value}` : '',
+      'Servo-Authorization': servoAuth.token.value ? `Bearer ${servoAuth.token.value}` : '',
     }
   }
 })
@@ -73,10 +76,12 @@ const httpLink = createHttpLink({
 
 const authLink = setContext(async (_, { headers }) => {
   const auth = useAuth()
+  const servoAuth = useServoAuth()
   return {
     headers: {
       ...headers,
-      authorization: auth.token.value ? `Bearer ${auth.token.value}` : ''
+      authorization: auth.token.value ? `Bearer ${auth.token.value}` : '',
+      'servo-authorization': servoAuth.token.value ? `Bearer ${servoAuth.token.value}` : '',
     }
   }
 })
@@ -131,7 +136,8 @@ const splitLink = split(
       definition.name?.kind === Kind.NAME &&
       (
         definition.name.value === 'AddStreamMark' ||
-        definition.name.value === 'AddDeviceStreamMark'
+        definition.name.value === 'AddDeviceStreamMark' ||
+        definition.name.value === 'AddServoStreamMark'
       )
     )
   },

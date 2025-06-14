@@ -4,7 +4,7 @@ import { reactive, ref } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { apolloClient } from '../apollo'
 import { provideApolloClient } from '@vue/apollo-composable'
-import { type MarkScoresheetFragment, type ScoresheetBaseFragment, type TallyScoresheetFragment, useAddDeviceStreamMarkMutation, useAddStreamMarkMutation, useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
+import { type MarkScoresheetFragment, type ScoresheetBaseFragment, type TallyScoresheetFragment, useAddDeviceStreamMarkMutation, useAddServoStreamMarkMutation, useAddStreamMarkMutation, useGroupScoresheetQuery, useOpenScoresheetMutation, useSaveScoresheetMutation } from '../graphql/generated'
 
 import type { Ref } from 'vue'
 import { useServoAuth } from './servo-auth'
@@ -221,19 +221,35 @@ function addMark <Schema extends string> (mark: MarkPayload<Schema>) {
     processMark(tally, mark)
 
     if (scsh.options?.live === true) {
-      const mutation = useAddStreamMarkMutation({})
-      mutation.mutate({
-        scoresheetId: scsh.id,
-        mark: {
-          timestamp: Date.now(),
-          sequence: scsh.marks.length - 1,
-          ...mark
-        },
-        tally: tally.value
-      })
-        .catch(err => {
-          if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+      if (isServoIntermediateScoresheet(scsh)) {
+        const mutation = useAddServoStreamMarkMutation({})
+        mutation.mutate({
+          entryId: `${scsh.entry.id}`,
+          mark: {
+            timestamp: Date.now(),
+            sequence: scsh.marks.length - 1,
+            ...mark
+          },
+          tally: tally.value
         })
+          .catch(err => {
+            if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+          })
+      } else {
+        const mutation = useAddStreamMarkMutation({})
+        mutation.mutate({
+          scoresheetId: scsh.id,
+          mark: {
+            timestamp: Date.now(),
+            sequence: scsh.marks.length - 1,
+            ...mark
+          },
+          tally: tally.value
+        })
+          .catch(err => {
+            if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
+          })
+      }
     }
 
     if (scsh.options?.deviceStream === true) {
