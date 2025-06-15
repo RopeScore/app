@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm ci --prefer-offline
+      - run: pnpm install
       - run: pnpm run codegen
       - run: pnpm run build
         env:
