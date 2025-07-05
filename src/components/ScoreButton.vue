@@ -25,10 +25,9 @@
     }"
     :disabled="disabled"
     @click.prevent.stop
-    @mousedown.prevent="handleClick()"
-    @mouseup="focus = false"
-    @touchstart.prevent="handleClick()"
-    @touchend="focus = false"
+    @pointerdown.prevent="handleClick()"
+    @pointerup="focus = false"
+    @pointercancel="focus = false"
     @touchmove.prevent
   >
     <template v-if="value === null || value === undefined">
