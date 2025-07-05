@@ -48,6 +48,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { numFmt } from '../helpers'
+import { useThrottleFn } from '@vueuse/core'
 
 const props = defineProps({
   color: {
@@ -80,12 +81,12 @@ const emit = defineEmits<{
 }>()
 
 const focus = ref(false)
-function handleClick () {
+const handleClick = useThrottleFn(function handleClick () {
   if (props.disabled) return
 
   emit('click')
   focus.value = true
   if (props.color === 'none') return
   navigator.vibrate?.(props.vibration)
-}
+}, 150)
 </script>
