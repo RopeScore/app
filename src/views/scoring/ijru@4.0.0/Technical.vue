@@ -16,6 +16,25 @@
     />
 
     <score-button
+      label="Did you start the timer immediately?"
+      color="none"
+      class="col-start-1 row-start-2 text-red-500"
+      disabled
+    />
+    <score-button
+      label="Did you stop the timer immediately?"
+      color="none"
+      class="col-start-1 row-start-3 text-red-500"
+      disabled
+    />
+    <score-button
+      label="The timer is a helper, you are the judge."
+      color="none"
+      class="col-start-1 row-start-4 text-red-500"
+      disabled
+    />
+
+    <score-button
       :label="`${formatTime(eventDuration - 10)}&ndash;${formatTime(eventDuration - 6)}`"
       color="red"
       class="col-start-2 row-start-2"

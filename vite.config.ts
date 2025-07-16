@@ -9,7 +9,8 @@ export default defineConfig({
     sourcemap: true
   },
   server: {
-    port: 5001
+    port: 5001,
+    allowedHosts: true,
   },
   plugins: [
     vue(),
