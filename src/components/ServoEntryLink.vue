@@ -10,22 +10,28 @@
     }"
   >
     <a
-      class="w-full relative grid grid-cols-[3rem,auto,3rem] grid-rows-[max-content,max-content,max-content,max-content] p-2"
+      class="w-full relative grid grid-cols-[3rem,auto,3rem] p-2"
       :class="{
         'hover:bg-green-600': color === 'green',
         'hover:bg-indigo-600': color === 'indigo',
-        'hover:bg-gray-600': color === 'gray'
+        'hover:bg-gray-600': color === 'gray',
+
+        'grid-rows-[max-content,max-content,max-content,max-content]': entry.GroupName == null,
+        'grid-rows-[max-content,max-content,max-content,max-content,max-content]': entry.GroupName != null,
       }"
       role="button"
       @click="createScoresheet()"
     >
-      <div class="row-span-4 flex justify-center items-center">
+      <div class="flex justify-center items-center" :class="[entry.GroupName == null ? 'row-span-4' : 'row-span-5']">
         {{ entry.HeatNumber }}
       </div>
       <div class="col-start-2 col-end-2 font-bold">
         Entry#: {{ entry.EntryNumber }}
       </div>
-      <div class="col-start-2 col-end-2 font-bold">
+      <div v-if="entry.GroupName != null" class="col-start-2 col-end-2 font-bold">
+        {{ entry.GroupName }}
+      </div>
+      <div class="col-start-2 col-end-2" :class="{ 'font-bold': entry.GroupName == null }">
         {{ formatList(entry.Participants.map(p => `${p.FirstName} ${p.LastName}`)) }}
       </div>
       <div class="col-start-2 col-end-2">
@@ -35,7 +41,7 @@
         <span class="font-bold">{{ judge.JudgeType ?? '' }}</span>{{ judge.JudgeSequence }}:
         {{ judge.AssignedJudge?.FirstName ?? '' }} {{ judge.AssignedJudge?.LastName ?? '' }}
       </div>
-      <div v-if="!entry.IsScratched && !entry.IsLocked" class="row-span-4 row-start-1 col-start-3 flex justify-center items-center">
+      <div v-if="!entry.IsScratched && !entry.IsLocked" class="row-start-1 col-start-3 flex justify-center items-center" :class="[entry.GroupName == null ? 'row-span-4' : 'row-span-5']">
         <span v-if="!createScoresheetLoading">New</span>
         <span v-else>Loading</span>
       </div>

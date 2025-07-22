@@ -117,6 +117,7 @@ export interface ServoEntry {
   IsScratched: boolean
   IsLocked: boolean
   TeamName: string
+  GroupName: string
   HasJudgeScoreData: boolean
   IsJudgeScored: boolean
   Participants: Array<{
@@ -131,6 +132,8 @@ export interface ServoEntry {
     participantId: string
     competitionEvent: string
   }
+  HeatAssignmentBlockSequence: number
+  EventSequenceInBlock: number
 }
 
 export interface ServoSession {
