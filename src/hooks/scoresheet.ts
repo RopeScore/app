@@ -15,6 +15,7 @@ import models from '../models'
 import useNotifications from './notifications'
 import { createMarkReducer, filterMarkStream, simpleReducer, type JudgeType } from '@ropescore/rulesets'
 import { importCompetitionEventModel, importPreconfiguredCompetitionEvent } from '../import-helpers'
+import { captureException } from '@sentry/vue'
 
 export interface GenericMark<Schema extends string> {
   readonly timestamp: number
@@ -87,6 +88,7 @@ export interface ServoIntermediateScoresheet<T extends string> {
   openedAt?: number
   completedAt?: number
   submittedAt?: number
+  submitAttemptCount?: number
 
   options?: Partial<Record<string, any>> | null
 }
@@ -507,63 +509,64 @@ const openServo = async (competitionId: number, entryId: number, judgeSequence: 
 }
 
 const closeServo = async ({ save }: CloseScoresheetOptions) => {
-  try {
-    const { baseUrl, token, deviceId } = useServoAuth()
-    if (baseUrl.value == null || token.value == null) {
-      const err = new Error('Not logged in')
-      console.error(err)
-      pushNotification({ message: err.message, color: 'red' })
-      await router.push({ path: '/servo/connect' })
-      return
+  const { baseUrl, token, deviceId } = useServoAuth()
+  if (baseUrl.value == null || token.value == null) {
+    const err = new Error('Not logged in')
+    console.error(err)
+    pushNotification({ message: err.message, color: 'red' })
+    await router.push({ path: '/servo/connect' })
+    return
+  }
+
+  if (!scoresheet.value) {
+    const err = new Error('Scoresheet is not open')
+    console.error(err)
+    pushNotification({ message: err.message, color: 'orange' })
+    return
+  }
+  if (!isServoIntermediateScoresheet(scoresheet.value)) {
+    throw new Error('Trying to save something that isn\'t a servo scoresheet')
+  }
+  const rulesId = scoresheet.value.rulesId
+  const judgeType = scoresheet.value.judgeType
+  const model = models.find(model => model.rulesId.includes(rulesId) && (Array.isArray(model.judgeType) ? model.judgeType.includes(judgeType) : model.judgeType === judgeType))
+  if (!model) {
+    throw new Error('Could not find model for scoresheet')
+  }
+  if (model.converters?.servo == null) {
+    console.warn('Model does not have a converter for servo scoring - using new structure')
+  }
+  const [,competitionId, entryId, judgeSequence] = scoresheet.value.id.split('::')
+
+  if (save && scoresheet.value.submittedAt == null) {
+    // Store the local copy
+    await ready
+    await idbKeyval.set(scoresheet.value.id, {
+      ...JSON.parse(JSON.stringify(scoresheet.value)),
+      tally: { ...tally.value }
+    })
+
+    const battery = useBattery()
+
+    const prevScoresheets = await getServoScoresheetsForEntry({ competitionId, entryId, judgeSequence })
+    const rejump = prevScoresheets.length > 0 && prevScoresheets.some(scsh => scsh.submittedAt != null)
+
+    let url: URL, method: string
+    if (rejump) {
+      url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}`, baseUrl.value)
+      method = 'PUT'
+    } else {
+      url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores`, baseUrl.value)
+      method = 'POST'
     }
 
-    if (!scoresheet.value) {
-      const err = new Error('Scoresheet is not open')
-      console.error(err)
-      pushNotification({ message: err.message, color: 'orange' })
-      return
-    }
-    if (!isServoIntermediateScoresheet(scoresheet.value)) {
-      throw new Error('Trying to save something that isn\'t a servo scoresheet')
-    }
-    const rulesId = scoresheet.value.rulesId
-    const judgeType = scoresheet.value.judgeType
-    const model = models.find(model => model.rulesId.includes(rulesId) && (Array.isArray(model.judgeType) ? model.judgeType.includes(judgeType) : model.judgeType === judgeType))
-    if (!model) {
-      throw new Error('Could not find model for scoresheet')
-    }
-    if (model.converters?.servo == null) {
-      console.warn('Model does not have a converter for servo scoring - using new structure')
-    }
-    const [,competitionId, entryId, judgeSequence] = scoresheet.value.id.split('::')
+    const scores = model.converters?.servo?.(scoresheet.value, tally.value)
 
-    if (save && scoresheet.value.submittedAt == null) {
-      // Store the local copy
-      await ready
-      await idbKeyval.set(scoresheet.value.id, {
-        ...JSON.parse(JSON.stringify(scoresheet.value)),
-        tally: { ...tally.value }
-      })
-
-      const battery = useBattery()
-
-      const prevScoresheets = await getServoScoresheetsForEntry({ competitionId, entryId, judgeSequence })
-      const rejump = prevScoresheets.length > 0 && prevScoresheets.some(scsh => scsh.submittedAt != null)
-
-      let url: URL, method: string
-      if (rejump) {
-        url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}`, baseUrl.value)
-        method = 'PUT'
-      } else {
-        url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores`, baseUrl.value)
-        method = 'POST'
-      }
-
-      const scores = model.converters?.servo?.(scoresheet.value, tally.value)
-
-      // store the remote copy
+    // store the remote copy
+    try {
       const response = await fetch(url, {
         method,
+        signal: AbortSignal.timeout(30000),
         headers: {
           accept: 'application/json',
           'content-type': 'application/json',
@@ -589,32 +592,39 @@ const closeServo = async ({ save }: CloseScoresheetOptions) => {
         const body = await response.text()
         throw new Error(`Request to ${method} ${url.href} failed with status code ${response.status} and body ${body}`)
       }
+    } catch (err) {
+      scoresheet.value.submitAttemptCount ??= 0
+      scoresheet.value.submitAttemptCount += 1
 
-      scoresheet.value.submittedAt = Date.now()
-      await idbKeyval.set(scoresheet.value.id, {
-        ...JSON.parse(JSON.stringify(scoresheet.value)),
-        tally: { ...tally.value }
-      })
-    }
-
-    if (scoresheet.value.submittedAt == null) {
-      const url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}/scoresheet-closed`, baseUrl.value)
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          accept: 'application/json',
-          authorization: `Bearer ${token.value}`
-        }
-      })
-      if (!response.ok) {
-        const body = await response.text()
-        console.error(new Error(`Request to ${url.href} failed with status code ${response.status} and body ${body}`))
-        pushNotification({ message: body, color: 'orange' })
+      if (scoresheet.value.submitAttemptCount != null && scoresheet.value.submitAttemptCount > 3) {
+        pushNotification({ message: `Failed to submit scoresheet after ${scoresheet.value.submitAttemptCount} attempts. The scoresheet is still saved on the device for later checking.`, color: 'red' })
+        return
       }
+      throw err
     }
-  } catch (err) {
-    if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
-    throw err
+
+    scoresheet.value.submittedAt = Date.now()
+    await idbKeyval.set(scoresheet.value.id, {
+      ...JSON.parse(JSON.stringify(scoresheet.value)),
+      tally: { ...tally.value }
+    })
+  }
+
+  if (scoresheet.value.submittedAt == null) {
+    const url = new URL(`/api/v1/Competitions/${competitionId}/Entries/${entryId}/Scores/${judgeSequence}/scoresheet-closed`, baseUrl.value)
+    const response = await fetch(url, {
+      method: 'POST',
+      signal: AbortSignal.timeout(30000),
+      headers: {
+        accept: 'application/json',
+        authorization: `Bearer ${token.value}`
+      }
+    })
+    if (!response.ok) {
+      const body = await response.text()
+      console.error(new Error(`Request to ${url.href} failed with status code ${response.status} and body ${body}`))
+      pushNotification({ message: body, color: 'orange' })
+    }
   }
 }
 
@@ -675,6 +685,7 @@ export function useScoresheet <Schema extends string> (): UseScoresheetReturn<Sc
         tally.value = reactive({})
         markReducer.value = undefined
       } catch (err) {
+        captureException(err)
         if (err instanceof Error) pushNotification({ message: err.message, color: 'red' })
         throw err
       }
